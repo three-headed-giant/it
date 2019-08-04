@@ -6,4 +6,5 @@ setup(
     packages=["inspectortiger"],
     url="https://github.com/thg-consulting/inspectortiger",
     author="thg",
+    requirements=["reportme"],
 )

@@ -1,10 +1,13 @@
 import argparse
 import ast
 import tokenize
+from dataclasses import asdict
 from pathlib import Path
 from pprint import pprint
 
 from inspectortiger.inspector import Inspector
+from reportme.publisher import ReportBuffer
+from reportme.reporter import Report
 
 
 class DoesntExist(Exception):
@@ -35,7 +38,17 @@ def main():
         inspector.visit(ast.parse(content))
         results.extend(inspector.results)
 
-    pprint(results)
+    with Report(name="InspectorTiger", version="1.0.0") as report:
+        report.description = "Tiger inspected your code and find these mistakes"
+
+        with report.add_category(name="Pythonicity") as pythonicity:
+            with pythonicity.add_node("Approachs") as approachs:
+                for approach in results:
+                    approachs.add_requirement(**asdict(approach))
+
+    buf = ReportBuffer()
+    buf.render(report)
+    buf.print()
 
 
 if __name__ == "__main__":

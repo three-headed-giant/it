@@ -32,9 +32,7 @@ class Inspector(ast.NodeVisitor):
     def wrapper(self, hooks, node):
         for hook in hooks:
             if hook(node, self._hook_db):
-                req_type = self.results.append(
-                    getattr(Approach, hook.__name__.upper())()
-                )
+                req_type = getattr(Approach, hook.__name__.upper())()
                 self.results.append(Requirement(self.file, node.lineno, req_type))
         return self.generic_visit(node)
 
