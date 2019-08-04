@@ -1,7 +1,9 @@
 import argparse
-import tokenize
 import ast
+import tokenize
 from pathlib import Path
+from pprint import pprint
+
 from inspectortiger.inspector import Inspector
 
 
@@ -25,13 +27,15 @@ def main():
         else:
             files.extend(path.glob("**/*.py"))
 
-    inspector = Inspector()
+    results = []
     for file in files:
+        inspector = Inspector(file)
         with tokenize.open(file) as f:
             content = f.read()
         inspector.visit(ast.parse(content))
+        results.extend(inspector.results)
 
-    print(inspector.results)
+    pprint(results)
 
 
 if __name__ == "__main__":

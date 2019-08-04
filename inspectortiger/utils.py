@@ -1,21 +1,19 @@
 import ast
+
 from astpretty import pprint
+
 
 def is_single_node(a, b):
     return len(a.body) == 1 and isinstance(a.body[0], b)
 
 
 def name_check(a, b):
-    return (
-        isinstance(a, ast.Name)
-        and a.id == b
-    )
+    return isinstance(a, ast.Name) and a.id == b
+
 
 def biname_check(a, b):
-    return (
-        isinstance(a, ast.Name) and isinstance(b, ast.Name)
-        and a.id == b.id
-    )
+    return isinstance(a, ast.Name) and isinstance(b, ast.Name) and a.id == b.id
+
 
 def tuple_check(a, b):
     if len(a.elts) != len(b.elts):
@@ -26,6 +24,7 @@ def tuple_check(a, b):
     else:
         return True
     return False
+
 
 def target_check(a, b):
     if type(a) != type(b):
