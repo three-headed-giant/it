@@ -15,7 +15,7 @@ class Level(Enum):
     EXTREME_HIGH = auto()
 
     def __call__(self, func):
-        func._report_level = self
+        func.report_level = self
         return func
 
 

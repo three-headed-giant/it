@@ -7,8 +7,7 @@ from itertools import chain
 from pathlib import Path
 from pprint import pprint
 
-from inspectortiger.inspector import Inspector
-from inspectortiger.inspector import Level
+from inspectortiger.inspector import Inspector, Level
 from reportme.publisher import ReportBuffer
 from reportme.reporter import Report
 

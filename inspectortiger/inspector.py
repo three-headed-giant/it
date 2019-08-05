@@ -2,7 +2,8 @@ import ast
 from collections import defaultdict
 from functools import partial
 
-from inspectortiger.utils import MUTABLE_TYPE, Level, is_single_node, target_check
+from inspectortiger.utils import (MUTABLE_TYPE, Level, is_single_node,
+                                  name_check, target_check)
 from reportme.reporter import Requirement
 from reportme.reports import Approach
 
@@ -32,7 +33,7 @@ class Inspector(ast.NodeVisitor):
         for hook in hooks:
             if hook(node, self._hook_db):
                 req_type = getattr(Approach, hook.__name__.upper())()
-                self.results[hook._report_level].append(
+                self.results[hook.report_level].append(
                     Requirement(self.file, node.lineno, req_type)
                 )
         return self.generic_visit(node)
@@ -44,8 +45,19 @@ class Inspector(ast.NodeVisitor):
         raise AttributeError(attr)
 
 
+@Inspector.register(ast.Attribute)
+@Level.EXTREME_LOW
+def protected_access(node, db):
+    return (
+        node.attr.startswith("_")
+        and not name_check(node.value, "self")
+        and not name_check(node.value, "cls")
+        and not node.attr.startswith("__")
+    )
+
+
 @Inspector.register(ast.For)
-@Level.LOW
+@Level.AVG
 def yield_from(node, db):
     return (
         is_single_node(node, ast.Expr)
