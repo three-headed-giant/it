@@ -23,8 +23,8 @@ def is_single_node(a, b):
     return len(a.body) == 1 and isinstance(a.body[0], b)
 
 
-def name_check(a, b):
-    return isinstance(a, ast.Name) and a.id == b
+def name_check(a, *b):
+    return isinstance(a, ast.Name) and a.id in b
 
 
 def biname_check(a, b):

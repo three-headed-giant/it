@@ -1,9 +1,15 @@
 import ast
+import builtins
 from collections import defaultdict
 from functools import partial
 
-from inspectortiger.utils import (MUTABLE_TYPE, Level, is_single_node,
-                                  name_check, target_check)
+from inspectortiger.utils import (
+    MUTABLE_TYPE,
+    Level,
+    is_single_node,
+    name_check,
+    target_check,
+)
 from reportme.reporter import Requirement
 from reportme.reports import Approach
 
@@ -45,13 +51,18 @@ class Inspector(ast.NodeVisitor):
         raise AttributeError(attr)
 
 
+@Inspector.register(ast.Name)
+@Level.AVG
+def builtin_name_assignment(node, db):
+    return isinstance(node.ctx, ast.Store) and name_check(node, *dir(builtins))
+
+
 @Inspector.register(ast.Attribute)
 @Level.EXTREME_LOW
 def protected_access(node, db):
     return (
         node.attr.startswith("_")
-        and not name_check(node.value, "self")
-        and not name_check(node.value, "cls")
+        and not name_check(node.value, "self", "cls")
         and not node.attr.startswith("__")
     )
 
