@@ -3,7 +3,6 @@ import ast
 import tokenize
 from collections import defaultdict
 from dataclasses import asdict
-from itertools import chain
 from pathlib import Path
 from pprint import pprint
 

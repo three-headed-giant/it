@@ -1,5 +1,7 @@
 import ast
+from collections import defaultdict
 from enum import Enum, auto
+from itertools import chain
 
 if __debug__:
     from astpretty import pprint
@@ -13,6 +15,8 @@ class Level(Enum):
     AVG = auto()
     HIGH = auto()
     EXTREME_HIGH = auto()
+
+    WATCHER = auto()
 
     def __call__(self, func):
         func.report_level = self
@@ -51,3 +55,17 @@ def target_check(a, b):
         return True
     else:
         return False
+
+
+def traverse_exception(base, exceptions=None, level=0):
+    exceptions = exceptions or {}
+    exceptions[base.__name__] = level
+    level += 1
+    for exc in base.__subclasses__():
+        exceptions[exc.__name__] = level
+        traverse_exception(exc, exceptions, level)
+    return exceptions
+
+
+EXC_TREE = traverse_exception(BaseException)
+ALL_EXCS = EXC_TREE.keys()

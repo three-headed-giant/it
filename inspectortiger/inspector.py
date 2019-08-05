@@ -15,7 +15,7 @@ class Inspector(ast.NodeVisitor):
 
     def __init__(self, file, *args, **kwargs):
         self.file = file
-        self._hook_db = {}
+        self._hook_db = defaultdict(dict)
         self.results = defaultdict(list)
         super().__init__(*args, **kwargs)
 
