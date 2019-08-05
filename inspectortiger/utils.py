@@ -1,6 +1,22 @@
 import ast
+from enum import Enum, auto
 
-from astpretty import pprint
+if __debug__:
+    from astpretty import pprint
+
+MUTABLE_TYPE = (ast.List, ast.Dict, ast.Set)
+
+
+class Level(Enum):
+    EXTREME_LOW = auto()
+    LOW = auto()
+    AVG = auto()
+    HIGH = auto()
+    EXTREME_HIGH = auto()
+
+    def __call__(self, func):
+        func._report_level = self
+        return func
 
 
 def is_single_node(a, b):

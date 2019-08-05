@@ -2,13 +2,12 @@ import ast
 from collections import defaultdict
 from functools import partial
 
-from astpretty import pprint
-
-from inspectortiger.utils import is_single_node, target_check
+from inspectortiger.utils import MUTABLE_TYPE, Level, is_single_node, target_check
 from reportme.reporter import Requirement
 from reportme.reports import Approach
 
-MUTABLE_TYPE = (ast.List, ast.Dict, ast.Set)
+if __debug__:
+    from astpretty import pprint
 
 
 class Inspector(ast.NodeVisitor):
@@ -17,8 +16,8 @@ class Inspector(ast.NodeVisitor):
 
     def __init__(self, file, *args, **kwargs):
         self.file = file
-        self._hook_db = defaultdict(dict)
-        self.results = []
+        self._hook_db = {}
+        self.results = defaultdict(list)
         super().__init__(*args, **kwargs)
 
     @classmethod
@@ -33,7 +32,9 @@ class Inspector(ast.NodeVisitor):
         for hook in hooks:
             if hook(node, self._hook_db):
                 req_type = getattr(Approach, hook.__name__.upper())()
-                self.results.append(Requirement(self.file, node.lineno, req_type))
+                self.results[hook._report_level].append(
+                    Requirement(self.file, node.lineno, req_type)
+                )
         return self.generic_visit(node)
 
     def __getattr__(self, attr):
@@ -44,6 +45,7 @@ class Inspector(ast.NodeVisitor):
 
 
 @Inspector.register(ast.For)
+@Level.LOW
 def yield_from(node, db):
     return (
         is_single_node(node, ast.Expr)
@@ -53,5 +55,6 @@ def yield_from(node, db):
 
 
 @Inspector.register(ast.FunctionDef)
+@Level.HIGH
 def default_mutable_arg(node, db):
     return any(isinstance(default, MUTABLE_TYPE) for default in node.args.defaults)
