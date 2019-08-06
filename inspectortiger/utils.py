@@ -7,7 +7,7 @@ if __debug__:
     from astpretty import pprint
 
 MUTABLE_TYPE = (ast.List, ast.Dict, ast.Set)
-
+PSEUDO_LEVELS = {"watcher"}
 
 class Level(Enum):
     EXTREME_LOW = auto()

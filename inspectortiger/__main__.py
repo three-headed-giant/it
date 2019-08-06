@@ -8,7 +8,7 @@ from pprint import pprint
 
 import inspectortiger.inspects
 from inspectortiger.inspector import Inspector
-from inspectortiger.utils import Level
+from inspectortiger.utils import Level, PSEUDO_LEVELS
 from reportme.publisher import ReportBuffer
 from reportme.reporter import Report
 
@@ -32,6 +32,7 @@ def main():
         levels = [
             getattr(Level, level.upper())
             for level in args.levels or Level.__members__.keys()
+            if level.casefold() not in PSEUDO_LEVELS
         ]
     except AttributeError as exc:
         raise DoesntExist(
