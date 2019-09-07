@@ -44,7 +44,7 @@ def builtin_name_assignment(node, db):
 
 
 @Inspector.register(ast.Attribute)
-@Level.EXTREME_LOW
+@Level.DISABLED
 def protected_access(node, db):
     return (
         node.attr.startswith("_")

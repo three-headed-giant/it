@@ -7,7 +7,8 @@ if __debug__:
     from astpretty import pprint
 
 MUTABLE_TYPE = (ast.List, ast.Dict, ast.Set)
-PSEUDO_LEVELS = {"watcher"}
+PSEUDO_LEVELS = {"watcher", "disabled"}
+
 
 class Level(Enum):
     EXTREME_LOW = auto()
@@ -17,6 +18,7 @@ class Level(Enum):
     EXTREME_HIGH = auto()
 
     WATCHER = auto()
+    DISABLED = auto()
 
     def __call__(self, func):
         func.report_level = self

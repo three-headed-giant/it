@@ -8,7 +8,7 @@ from pprint import pprint
 
 import inspectortiger.inspects
 from inspectortiger.inspector import Inspector
-from inspectortiger.utils import Level, PSEUDO_LEVELS
+from inspectortiger.utils import PSEUDO_LEVELS, Level
 from reportme.publisher import ReportBuffer
 from reportme.reporter import Report
 
