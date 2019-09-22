@@ -71,9 +71,13 @@ def main():
                     for approach in results[level]:
                         approachs.add_requirement(**asdict(approach))
 
-    buf = ReportBuffer()
-    buf.render(report)
-    buf.print()
+    if results:
+        buf = ReportBuffer()
+        buf.render(report)
+        buf.print()
+        exit(1)
+    else:
+        print("Inspector tiger inspected your code and found it very well")
 
 
 if __name__ == "__main__":

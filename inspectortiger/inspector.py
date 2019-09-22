@@ -7,9 +7,6 @@ from reportme.reports import Approach
 
 from inspectortiger.utils import Events
 
-if __debug__:
-    from astpretty import pprint
-
 
 class Inspector(ast.NodeVisitor):
 

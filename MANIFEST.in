@@ -1,1 +1,1 @@
-include inspectortiger/config.ini
+recursive-include *.ini

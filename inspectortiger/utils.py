@@ -3,9 +3,6 @@ from collections import defaultdict
 from enum import Enum, auto
 from itertools import chain
 
-if __debug__:
-    from astpretty import pprint
-
 
 class Level(Enum):
     EXTREME_LOW = auto()
