@@ -6,8 +6,6 @@ from itertools import chain
 if __debug__:
     from astpretty import pprint
 
-PSEUDO_LEVELS = {"watcher", "disabled"}
-
 
 class Level(Enum):
     EXTREME_LOW = auto()
@@ -22,6 +20,9 @@ class Level(Enum):
     def __call__(self, func):
         func.report_level = self
         return func
+
+
+PSEUDO_LEVELS = {Level.WATCHER, Level.DISABLED}
 
 
 class Events(Enum):

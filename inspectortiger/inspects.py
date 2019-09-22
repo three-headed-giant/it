@@ -7,8 +7,7 @@ class PluginLoadError(Exception):
     pass
 
 
-def load_plugins(config_path=None):
-    manager = ConfigManager(config_path)
+def load_plugins(manager):
     namespaces = manager.discover()
     for namespace, plugins in namespaces.items():
         for plugin_name, plugin in plugins.items():

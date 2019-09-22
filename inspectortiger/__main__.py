@@ -9,6 +9,7 @@ from pprint import pprint
 from reportme.publisher import ReportBuffer
 from reportme.reporter import Report
 
+from inspectortiger.configmanager import ConfigManager
 from inspectortiger.inspector import Inspector
 from inspectortiger.inspects import load_plugins
 from inspectortiger.utils import PSEUDO_LEVELS, Level
@@ -28,18 +29,19 @@ def main():
     )
     args = parser.parse_args()
     files = []
-    load_plugins()
+    manager = ConfigManager()
+    load_plugins(manager)
 
     try:
         levels = [
-            getattr(Level, level.upper())
-            for level in args.levels or Level.__members__.keys()
-            if level.casefold() not in PSEUDO_LEVELS
+            getattr(Level, level.upper()) for level in args.levels or manager.levels
         ]
     except AttributeError as exc:
         raise DoesntExist(
             f"Specified level doesnt exist, it must be in this list: {', '.join(Level.__members__.keys())}"
         ) from exc
+
+    levels = filter(lambda level: level not in PSEUDO_LEVELS, levels)
 
     for path in args.paths:
         if not path.exists():
