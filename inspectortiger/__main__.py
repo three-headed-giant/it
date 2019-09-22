@@ -6,11 +6,12 @@ from dataclasses import asdict
 from pathlib import Path
 from pprint import pprint
 
-import inspectortiger.inspects
-from inspectortiger.inspector import Inspector
-from inspectortiger.utils import PSEUDO_LEVELS, Level
 from reportme.publisher import ReportBuffer
 from reportme.reporter import Report
+
+from inspectortiger.inspector import Inspector
+from inspectortiger.inspects import load_plugins
+from inspectortiger.utils import PSEUDO_LEVELS, Level
 
 
 class DoesntExist(Exception):
@@ -27,6 +28,7 @@ def main():
     )
     args = parser.parse_args()
     files = []
+    load_plugins()
 
     try:
         levels = [

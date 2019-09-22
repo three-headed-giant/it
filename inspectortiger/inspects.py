@@ -1,102 +1,20 @@
-import ast
-import builtins
+import importlib
 
-from inspectortiger.inspector import Inspector
-from inspectortiger.utils import (
-    ALL_EXCS,
-    EXC_TREE,
-    MUTABLE_TYPE,
-    Context,
-    Contexts,
-    Events,
-    Level,
-    is_single_node,
-    name_check,
-    target_check,
-)
-
-if __debug__:
-    from astpretty import pprint
+from inspectortiger.configmanager import ConfigManager
 
 
-@Inspector.register(Events.INITAL)
-def prepare_contexts(db):
-    db["previous_contexts"] = []
-    db["context"] = Context("__main__", Contexts.GLOBAL)
+class PluginLoadError(Exception):
+    pass
 
 
-@Inspector.register(ast.ClassDef)
-@Level.WATCHER
-def exception_defs(node, db):
-    exc_bases = [base.id for base in node.bases if name_check(base, *ALL_EXCS)]
-    if exc_bases:
-        severity = min(EXC_TREE[exc] for exc in exc_bases)
-        db["user_exceptions"][node.name] = severity
-
-
-def change_context(db, name, context):
-    db["previous_contexts"].append(db["context"])
-    db["context"] = Context(name, context)
-
-
-@Inspector.register(ast.ClassDef)
-@Level.WATCHER
-def context_change(node, db):
-    change_context(db, node.name, Contexts.CLASS)
-
-
-@Inspector.register(ast.FunctionDef)
-@Level.WATCHER
-def context_change(node, db):
-    change_context(db, node.name, Contexts.FUNCTION)
-
-
-@Inspector.register(ast.Try)
-@Level.HIGH
-def unreachable_except(node, db):
-    handlers = [
-        handler.type.id
-        for handler in node.handlers
-        if isinstance(handler.type, ast.Name)
-    ]
-    current_level = float("inf")
-    for handler in handlers:
-        level = EXC_TREE.get(handler)
-        level = level or db["user_exceptions"].get(handler)
-        if level is None:
-            return False
-        if level > current_level:
-            return True
-        current_level = level
-
-
-@Inspector.register(ast.Name)
-@Level.AVG
-def builtin_name_assignment(node, db):
-    return isinstance(node.ctx, ast.Store) and name_check(node, *dir(builtins))
-
-
-@Inspector.register(ast.Attribute)
-@Level.DISABLED
-def protected_access(node, db):
-    return (
-        node.attr.startswith("_")
-        and not name_check(node.value, "self", "cls")
-        and not node.attr.startswith("__")
-    )
-
-
-@Inspector.register(ast.For)
-@Level.AVG
-def yield_from(node, db):
-    return (
-        is_single_node(node, ast.Expr)
-        and isinstance(node.body[0].value, ast.Yield)
-        and target_check(node.body[0].value.value, node.target)
-    )
-
-
-@Inspector.register(ast.FunctionDef)
-@Level.HIGH
-def default_mutable_arg(node, db):
-    return any(isinstance(default, MUTABLE_TYPE) for default in node.args.defaults)
+def load_plugins(config_path=None):
+    manager = ConfigManager(config_path)
+    namespaces = manager.discover()
+    for namespace, plugins in namespaces.items():
+        for plugin_name, plugin in plugins.items():
+            try:
+                importlib.import_module(f"{namespace}.{plugin}")
+            except ImportError:
+                raise PluginLoadError(
+                    f"Couldn't load '{plugin_name.title()}' from `{namespace}` namespace"
+                )

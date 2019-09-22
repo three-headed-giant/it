@@ -1,13 +1,11 @@
 import ast
 from collections import defaultdict
-from dataclasses import dataclass
 from enum import Enum, auto
 from itertools import chain
 
 if __debug__:
     from astpretty import pprint
 
-MUTABLE_TYPE = (ast.List, ast.Dict, ast.Set)
 PSEUDO_LEVELS = {"watcher", "disabled"}
 
 
@@ -29,19 +27,6 @@ class Level(Enum):
 class Events(Enum):
     INITAL = auto()
     FINAL = auto()
-
-
-class Contexts(Enum):
-    ANON = auto()  # comps + lambda
-    CLASS = auto()
-    GLOBAL = auto()
-    FUNCTION = auto()
-
-
-@dataclass
-class Context:
-    name: str
-    context: Contexts
 
 
 def is_single_node(a, b):
@@ -76,17 +61,3 @@ def target_check(a, b):
         return True
     else:
         return False
-
-
-def traverse_exception(base, exceptions=None, level=0):
-    exceptions = exceptions or {}
-    exceptions[base.__name__] = level
-    level += 1
-    for exc in base.__subclasses__():
-        exceptions[exc.__name__] = level
-        traverse_exception(exc, exceptions, level)
-    return exceptions
-
-
-EXC_TREE = traverse_exception(BaseException)
-ALL_EXCS = EXC_TREE.keys()
