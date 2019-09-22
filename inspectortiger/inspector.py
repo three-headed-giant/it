@@ -5,6 +5,8 @@ from functools import partial
 from reportme.reporter import Requirement
 from reportme.reports import Approach
 
+from inspectortiger.utils import Events
+
 if __debug__:
     from astpretty import pprint
 
@@ -12,17 +14,28 @@ if __debug__:
 class Inspector(ast.NodeVisitor):
 
     _hooks = defaultdict(list)
+    _event_hooks = defaultdict(list)
 
     def __init__(self, file, *args, **kwargs):
         self.file = file
         self._hook_db = defaultdict(dict)
         self.results = defaultdict(list)
+
+        for initalizer in self._event_hooks[Events.INITAL]:
+            initalizer(self._hook_db)
+
         super().__init__(*args, **kwargs)
 
     @classmethod
-    def register(cls, node):
+    def register(cls, triggerer):
         def wrapper(func):
-            cls._hooks[node].append(func)
+            if isinstance(triggerer, type) and issubclass(triggerer, ast.AST):
+                hooks = cls._hooks[triggerer]
+            elif isinstance(triggerer, Events):
+                hooks = cls._event_hooks[triggerer]
+            else:
+                raise ValueError(f"Unsupported triggerer, {triggerer!r}")
+            hooks.append(func)
             return func
 
         return wrapper

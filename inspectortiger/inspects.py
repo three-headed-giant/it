@@ -2,11 +2,27 @@ import ast
 import builtins
 
 from inspectortiger.inspector import Inspector
-from inspectortiger.utils import (ALL_EXCS, EXC_TREE, MUTABLE_TYPE, Level,
-                                  is_single_node, name_check, target_check)
+from inspectortiger.utils import (
+    ALL_EXCS,
+    EXC_TREE,
+    MUTABLE_TYPE,
+    Context,
+    Contexts,
+    Events,
+    Level,
+    is_single_node,
+    name_check,
+    target_check,
+)
 
 if __debug__:
     from astpretty import pprint
+
+
+@Inspector.register(Events.INITAL)
+def prepare_contexts(db):
+    db["previous_contexts"] = []
+    db["context"] = Context("__main__", Contexts.GLOBAL)
 
 
 @Inspector.register(ast.ClassDef)
@@ -16,6 +32,23 @@ def exception_defs(node, db):
     if exc_bases:
         severity = min(EXC_TREE[exc] for exc in exc_bases)
         db["user_exceptions"][node.name] = severity
+
+
+def change_context(db, name, context):
+    db["previous_contexts"].append(db["context"])
+    db["context"] = Context(name, context)
+
+
+@Inspector.register(ast.ClassDef)
+@Level.WATCHER
+def context_change(node, db):
+    change_context(db, node.name, Contexts.CLASS)
+
+
+@Inspector.register(ast.FunctionDef)
+@Level.WATCHER
+def context_change(node, db):
+    change_context(db, node.name, Contexts.FUNCTION)
 
 
 @Inspector.register(ast.Try)

@@ -1,5 +1,6 @@
 import ast
 from collections import defaultdict
+from dataclasses import dataclass
 from enum import Enum, auto
 from itertools import chain
 
@@ -23,6 +24,24 @@ class Level(Enum):
     def __call__(self, func):
         func.report_level = self
         return func
+
+
+class Events(Enum):
+    INITAL = auto()
+    FINAL = auto()
+
+
+class Contexts(Enum):
+    ANON = auto()  # comps + lambda
+    CLASS = auto()
+    GLOBAL = auto()
+    FUNCTION = auto()
+
+
+@dataclass
+class Context:
+    name: str
+    context: Contexts
 
 
 def is_single_node(a, b):
