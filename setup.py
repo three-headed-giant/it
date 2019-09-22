@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 current_dir = Path(__file__).parent.resolve()
 
@@ -9,8 +9,8 @@ with open(current_dir / "README.md", encoding="utf-8") as f:
 
 setup(
     name="inspectortiger",
-    version="0.4.2",
-    packages=["inspectortiger"],
+    version="0.4.3",
+    packages=find_packages(),
     url="https://github.com/thg-consulting/inspectortiger",
     author="thg",
     install_requires=["reportme"],
