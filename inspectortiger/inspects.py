@@ -1,7 +1,5 @@
 import importlib
 
-from inspectortiger.configmanager import ConfigManager
-
 
 class PluginLoadError(Exception):
     pass

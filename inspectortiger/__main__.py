@@ -4,7 +4,6 @@ import tokenize
 from collections import defaultdict
 from dataclasses import asdict
 from pathlib import Path
-from pprint import pprint
 
 from reportme.publisher import ReportBuffer
 from reportme.reporter import Report

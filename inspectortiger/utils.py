@@ -1,7 +1,5 @@
 import ast
-from collections import defaultdict
 from enum import Enum, auto
-from itertools import chain
 
 
 class Level(Enum):
