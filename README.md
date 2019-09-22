@@ -1,4 +1,7 @@
 # InspectorTiger
+[![PyPI version](https://badge.fury.io/py/inspectortiger.svg)](https://badge.fury.io/py/inspectortiger)
+
+
 Inspector Tiger is a common non pythonic pattern checker
 
 ## Example
