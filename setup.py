@@ -9,7 +9,7 @@ with open(current_dir / "README.md", encoding="utf-8") as f:
 
 setup(
     name="inspectortiger",
-    version="0.4.3",
+    version="0.4.5",
     packages=find_packages(),
     url="https://github.com/thg-consulting/inspectortiger",
     author="thg",
@@ -19,5 +19,5 @@ setup(
     long_description_content_type="text/markdown",
     entry_points={"console_scripts": ["inspectortiger = inspectortiger.__main__:main"]},
     include_package_data=True,
-    package_data={"inspectortiger": ["inspectortiger/*.ini"]},
+    package_data={"inspectortiger": ["*.ini"]},
 )

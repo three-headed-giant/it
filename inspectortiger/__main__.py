@@ -2,6 +2,7 @@ import argparse
 import ast
 import tokenize
 from collections import defaultdict
+from concurrent.futures import ProcessPoolExecutor
 from dataclasses import asdict
 from pathlib import Path
 
@@ -18,6 +19,14 @@ class DoesntExist(Exception):
     pass
 
 
+def inspect(file):
+    inspector = Inspector(file)
+    with tokenize.open(file) as f:
+        content = f.read()
+    inspector.visit(ast.parse(content))
+    return inspector.results
+
+
 def main():
     parser = argparse.ArgumentParser(description="InspectorTiger")
     parser.add_argument(
@@ -25,6 +34,9 @@ def main():
     )
     parser.add_argument(
         "-l", "--levels", type=str, nargs="*", help="whitelist of levels"
+    )
+    parser.add_argument(
+        "--workers", type=int, help="number of worker processes", default=4
     )
     args = parser.parse_args()
     files = []
@@ -52,13 +64,10 @@ def main():
             files.extend(path.glob("**/*.py"))
 
     results = defaultdict(list)
-    for file in files:
-        inspector = Inspector(file)
-        with tokenize.open(file) as f:
-            content = f.read()
-        inspector.visit(ast.parse(content))
-        for level, result in inspector.results.items():
-            results[level].extend(result)
+    with ProcessPoolExecutor(max_workers=args.workers) as executor:
+        for inspection in executor.map(inspect, files):
+            for level, result in inspection.items():
+                results[level].extend(result)
 
     results = {level: results[level] for level in levels if results[level]}
     with Report(name="InspectorTiger", version="1.0.0") as report:
