@@ -18,6 +18,9 @@ class Contexts(Enum):
     FUNCTION = auto()
 
 
+CTX_TYPES = {ast.ClassDef: Contexts.CLASS, ast.FunctionDef: Contexts.FUNCTION}
+
+
 @dataclass
 class Context:
     name: str
@@ -29,10 +32,18 @@ def change_context(db, name, context):
     db["context"] = Context(name, context)
 
 
-@Inspector.register(Events.INITAL)
-def prepare_contexts(db):
+@Inspector.register(ast.Module)
+def prepare_contexts(node, db):
     db["previous_contexts"] = []
+    db["next_contexes"] = {}
     db["context"] = Context("__main__", Contexts.GLOBAL)
+    for possible_context in node.body:
+        if isinstance(possible_context, tuple(CTX_TYPES)):
+            ctx = CTX_TYPES[type(possible_context)]
+            ctx = Context(possible_context.name, ctx)
+            db["next_contexes"][
+                (possible_context.lineno, possible_context.end_lineno)
+            ] = ctx
 
 
 @Inspector.register(ast.ClassDef)

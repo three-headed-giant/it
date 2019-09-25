@@ -14,9 +14,10 @@ from inspectortiger.inspector import Inspector
 from inspectortiger.inspects import load_plugins
 from inspectortiger.utils import PSEUDO_LEVELS, Level
 
-
-class DoesntExist(Exception):
-    pass
+parser = argparse.ArgumentParser(description="InspectorTiger")
+parser.add_argument("paths", metavar="p", type=Path, nargs="+", help="paths to check")
+parser.add_argument("-l", "--levels", type=str, nargs="*", help="whitelist of levels")
+parser.add_argument("--workers", type=int, help="number of worker processes", default=4)
 
 
 def inspect(file):
@@ -27,18 +28,7 @@ def inspect(file):
     return inspector.results
 
 
-def main():
-    parser = argparse.ArgumentParser(description="InspectorTiger")
-    parser.add_argument(
-        "paths", metavar="p", type=Path, nargs="+", help="paths to check"
-    )
-    parser.add_argument(
-        "-l", "--levels", type=str, nargs="*", help="whitelist of levels"
-    )
-    parser.add_argument(
-        "--workers", type=int, help="number of worker processes", default=4
-    )
-    args = parser.parse_args()
+def main(args):
     files = []
     manager = ConfigManager()
     load_plugins(manager)
@@ -56,7 +46,7 @@ def main():
 
     for path in args.paths:
         if not path.exists():
-            raise DoesntExist(path)
+            raise FileNotFoundError(path)
 
         if path.is_file():
             files.append(path)
@@ -65,13 +55,17 @@ def main():
 
     results = defaultdict(list)
     with ProcessPoolExecutor(max_workers=args.workers) as executor:
-        for inspection in executor.map(inspect, files):
+        for inspection in executor.map(inspect, set(files)):
             for level, result in inspection.items():
+                result = filter(
+                    lambda result: result.report.requirement not in manager.ignore,
+                    result,
+                )
                 results[level].extend(result)
 
     results = {level: results[level] for level in levels if results[level]}
     with Report(name="InspectorTiger", version="1.0.0") as report:
-        report.description = "Tiger inspected your code and find these mistakes"
+        report.description = "Tiger inspected your code and found these mistakes"
 
         with report.add_category(name="Pythonicity") as pythonicity:
             for level in results:
@@ -89,4 +83,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(parser.parse_args())

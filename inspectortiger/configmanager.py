@@ -37,3 +37,10 @@ class ConfigManager:
             return ()
         else:
             return levels
+
+    @property
+    def ignore(self):
+        if "ignore" in self.defaults:
+            return [ignore.upper() for ignore in self.defaults["ignore"].split(", ")]
+        else:
+            return ()
