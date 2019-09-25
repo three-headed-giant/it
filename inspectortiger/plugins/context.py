@@ -27,6 +27,26 @@ class Context:
     context: Contexts
 
 
+@dataclass(unsafe_hash=True)
+class KPair:
+    start: int
+    end: int
+
+    def distance(self, other):
+        return ((self.start - other.start) ** 2 + (self.end - other.end) ** 2) ** 0.5
+
+
+def get_context(next_contexts, node):
+    possible_contexts = []
+    node_kpair = KPair(node.lineno, node.end_lineno)
+    for kpair, context in next_contexts.items():
+        if start >= kpair.start and end <= kpair.end:
+            possible_contexts.append((kpair.distance(node_kpair), context))
+
+    possible_contexts.sort(key=lambda ctx: ctx[0])
+    return possible_contexts.pop(0)[1]
+
+
 def change_context(db, name, context):
     db["previous_contexts"].append(db["context"])
     db["context"] = Context(name, context)
@@ -35,14 +55,13 @@ def change_context(db, name, context):
 @Inspector.register(ast.Module)
 def prepare_contexts(node, db):
     db["previous_contexts"] = []
-    db["next_contexes"] = {}
     db["context"] = Context("__main__", Contexts.GLOBAL)
-    for possible_context in node.body:
+    for possible_context in ast.walk(node):
         if isinstance(possible_context, tuple(CTX_TYPES)):
             ctx = CTX_TYPES[type(possible_context)]
             ctx = Context(possible_context.name, ctx)
-            db["next_contexes"][
-                (possible_context.lineno, possible_context.end_lineno)
+            db["next_contexts"][
+                KPair(possible_context.lineno, possible_context.end_lineno)
             ] = ctx
 
 
