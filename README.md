@@ -8,7 +8,7 @@ InspectorTiger is a modern python code review tool which warns you about improva
 
 ## FAQ
 
-**Question**: Where does name come from?
+**Question**: Where does the Inspector Tiger name come from?
 
 
 **Answer**: It is a [character](https://montypython.fandom.com/wiki/Inspector_Tiger) from Monty Python
@@ -58,20 +58,53 @@ This is a registration to a specific node, this function will be invoked when a 
 @Level.HIGH
 ```
 Level defines severity of this event. It allows users to ignore / allow only needed plugins.
-```
+```py
 def name_startswith_underscore(node, db):
     return node.name.startswith("__")
 ```
 The function takes the node itself and a database which can contain some useful information about file.
 
 
-When this file installed as a python module, then `~/.inspect.rc` should be configured to activate this plugin.
+When this package installed, then `~/.inspect.rc` should be configured to activate this plugin.
 ```ini
 [Plugins example_plugins]
 ```
 This section specifies all plugins that are defined in here is a part of `example_plugins` package.
 
-```ini
+```
 check name dunder = example_plugin
 ```
 `check name dunder` is the name of our plugin, and the `example_plugin` is the module which is located inside of `example_plugins`
+
+##
+
+**Question**: How to configure `~/.inspect.rc`
+
+
+**Answer**: Beside the plugin registrations, other settings is a part of `[Config inspectortiger]` section
+
+| setting   | description                                      | type                                                               |
+|-----------|--------------------------------------------------|--------------------------------------------------------------------|
+| levels    | which levels to allow                            | level names seperated by a comma or all/any                        |
+| ignore    | which plugins to ignore                          | name of the plugins seperated by a comma (e.g default_mutable_arg) |
+| workers   | child processes to spawn for parallel processing | an integer or 'max'                                                |
+
+##
+
+**Question**: What are the severity levels?
+
+
+**Answer**: Severity levels shows how important that handler's check is. There are currently 6 levels: EXTREME_LOW, LOW, AVG, HIGH, EXTREME_HIGH
+
+##
+
+**Question**: Can i use this as an pre-commit hook?
+
+**Answer**: Yes, just add this to your `.pre-commit-config.yml`
+
+```yml
+-   repo: https://github.com/thg-consulting/inspectortiger
+    rev: master
+    hooks:
+    -   id: inspectortiger
+```

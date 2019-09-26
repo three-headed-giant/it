@@ -1,5 +1,6 @@
 from collections import defaultdict
 from configparser import ConfigParser
+from multiprocessing import cpu_count
 from pathlib import Path
 
 from inspectortiger.utils import Level
@@ -37,6 +38,15 @@ class ConfigManager:
             return ()
         else:
             return levels
+
+    @property
+    def workers(self):
+        workers = self.defaults.get("workers", "max")
+        if workers.isdigit():
+            workers = int(workers)
+        else:
+            workers = cpu_count()
+        return workers
 
     @property
     def ignore(self):

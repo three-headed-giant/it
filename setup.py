@@ -9,7 +9,7 @@ with open(current_dir / "README.md", encoding="utf-8") as f:
 
 setup(
     name="inspectortiger",
-    version="0.4.5",
+    version="0.5.0",
     packages=find_packages(),
     url="https://github.com/thg-consulting/inspectortiger",
     author="thg",

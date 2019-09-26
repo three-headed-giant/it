@@ -14,11 +14,6 @@ from inspectortiger.inspector import Inspector
 from inspectortiger.inspects import load_plugins
 from inspectortiger.utils import PSEUDO_LEVELS, Level
 
-parser = argparse.ArgumentParser(description="InspectorTiger")
-parser.add_argument("paths", metavar="p", type=Path, nargs="+", help="paths to check")
-parser.add_argument("-l", "--levels", type=str, nargs="*", help="whitelist of levels")
-parser.add_argument("--workers", type=int, help="number of worker processes", default=4)
-
 
 def inspect(file):
     inspector = Inspector(file)
@@ -28,17 +23,32 @@ def inspect(file):
     return inspector.results
 
 
-def main(args):
+def main():
     files = []
     manager = ConfigManager()
-    load_plugins(manager)
 
+    parser = argparse.ArgumentParser(description="InspectorTiger")
+    parser.add_argument(
+        "paths", metavar="p", type=Path, nargs="+", help="paths to check"
+    )
+    parser.add_argument(
+        "-l", "--levels", type=str, nargs="*", help="whitelist of levels"
+    )
+    parser.add_argument(
+        "--workers",
+        type=int,
+        help="number of worker processes",
+        default=manager.workers,
+    )
+    args = parser.parse_args()
+
+    load_plugins(manager)
     try:
         levels = [
             getattr(Level, level.upper()) for level in args.levels or manager.levels
         ]
     except AttributeError as exc:
-        raise DoesntExist(
+        raise ValueError(
             f"Specified level doesnt exist, it must be in this list: {', '.join(Level.__members__.keys())}"
         ) from exc
 
@@ -83,4 +93,4 @@ def main(args):
 
 
 if __name__ == "__main__":
-    main(parser.parse_args())
+    main()
