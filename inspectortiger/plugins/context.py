@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from enum import Enum, auto
 
 from inspectortiger.inspector import Inspector
-from inspectortiger.utils import Events, Level
+from inspectortiger.utils import Level
 
 
 class Contexts(Enum):

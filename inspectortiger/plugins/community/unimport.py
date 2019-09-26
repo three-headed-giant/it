@@ -9,7 +9,7 @@ import ast
 from unimport import UnImport
 
 from inspectortiger.inspector import Inspector
-from inspectortiger.utils import Events, Level
+from inspectortiger.utils import Level
 
 
 @Inspector.register(ast.Module)
