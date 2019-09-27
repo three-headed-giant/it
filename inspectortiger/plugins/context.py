@@ -1,7 +1,6 @@
 """ Context change recorder """
 
 __author__ = "Batuhan Taskaya"
-__version__ = "1.0.0"
 
 import ast
 from dataclasses import dataclass

@@ -1,7 +1,6 @@
 """ Unimport integration """
 
 __author__ = "Batuhan Taskaya"
-__version__ = "1.0.0"
 __requires__ = ["unimport"]
 
 import ast

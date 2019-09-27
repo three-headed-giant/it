@@ -1,7 +1,6 @@
 """ Finds syntaxs that can be improved """
 
 __author__ = "Batuhan Taskaya"
-__version__ = "1.0.0"
 
 import ast
 

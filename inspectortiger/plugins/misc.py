@@ -1,7 +1,6 @@
 """ General checks about code quality and common mistakes """
 
 __author__ = "Batuhan Taskaya"
-__version__ = "1.0.0"
 
 import ast
 

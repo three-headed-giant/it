@@ -1,7 +1,6 @@
 """ Find exception catching statements that are never going to work because of ordering """
 
 __author__ = "Batuhan Taskaya"
-__version__ = "1.0.0"
 
 import ast
 
