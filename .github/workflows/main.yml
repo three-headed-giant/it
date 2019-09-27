@@ -1,0 +1,26 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup python
+      run: |
+        sudo add-apt-repository ppa:deadsnakes/nightly
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends python3.8-dev python3.8-distutils
+    - name: Setup testing deps
+      run: |
+        python3.8 -m pip install setuptools
+        python3.8 -m pip install -r requirements-dev.txt
+    - name: Build
+      run: |
+        python3.8 -m pip install -e .
+    - name: Test
+      run: |
+        python3.8 -m pytest --cov=inspectortiger tests/
