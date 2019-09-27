@@ -47,7 +47,7 @@ An example plugin which checks if a function name starts with dunder.
 ```py
 # example_plugins/example_plugin.py
 
-from inspectortiger.inspector import Inspector
+from inspectortiger import Inspector
 from inspectortiger.utils import Level
 
 ```
