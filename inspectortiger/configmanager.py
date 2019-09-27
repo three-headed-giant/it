@@ -6,15 +6,15 @@ from pathlib import Path
 from inspectortiger.utils import Level
 
 BUILTIN_CONFIG = Path(__file__).parent / "config.ini"
-CONFIG_DIRECTORY = Path("~/.inspector.rc").expanduser()
+USER_CONFIG = Path("~/.inspector.rc").expanduser()
 
 
 class ConfigManager:
     def __init__(self):
         self.config = ConfigParser()
         self.config.read(BUILTIN_CONFIG)
-        if CONFIG_DIRECTORY.exists():
-            self.config.read(CONFIG_DIRECTORY)
+        if USER_CONFIG.exists():
+            self.config.read(USER_CONFIG)
         self.defaults = self.config["Config inspectortiger"]
 
     def discover(self):
@@ -33,11 +33,11 @@ class ConfigManager:
             levels = ["all"]
 
         if "all" in levels:
-            return Level.__members__.keys()
+            return tuple(Level.__members__.keys())
         elif "any" in levels:
             return ()
         else:
-            return levels
+            return tuple(levels)
 
     @property
     def workers(self):
@@ -51,6 +51,8 @@ class ConfigManager:
     @property
     def ignore(self):
         if "ignore" in self.defaults:
-            return [ignore.upper() for ignore in self.defaults["ignore"].split(", ")]
+            return tuple(
+                ignore.upper() for ignore in self.defaults["ignore"].split(", ")
+            )
         else:
             return ()
