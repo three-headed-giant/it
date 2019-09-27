@@ -46,6 +46,9 @@ def test_tuple_check():
     assert tuple_check(
         mytuple, ast.Tuple([ast.Name("a"), ast.Name("b"), ast.Name("c")])
     )
+    assert not tuple_check(
+        mytuple, ast.Tuple([ast.Name("a"), ast.Name("c"), ast.Name("b")])
+    )
     assert not tuple_check(mytuple, ast.Expression())
     assert not tuple_check(mytuple, ast.Tuple([ast.Name("a"), ast.Name("b")]))
 
