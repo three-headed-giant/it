@@ -7,11 +7,10 @@ import ast
 
 from inspectortiger.inspector import Inspector
 from inspectortiger.plugins.context import Contexts, get_context
-from inspectortiger.utils import Level, is_single_node, name_check, target_check
+from inspectortiger.utils import is_single_node, name_check, target_check
 
 
 @Inspector.register(ast.For)
-@Level.AVG
 def yield_from(node, db):
     return (
         is_single_node(node, ast.Expr)
@@ -21,7 +20,6 @@ def yield_from(node, db):
 
 
 @Inspector.register(ast.Call)
-@Level.AVG
 def super_args(node, db):
     return (
         get_context(node, db["next_contexts"]) is db["context"]

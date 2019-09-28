@@ -4,17 +4,12 @@ from multiprocessing import cpu_count
 import pytest
 
 from inspectortiger.configmanager import ConfigManager
-from inspectortiger.utils import Level
-
-LEVELS = tuple(Level.__members__.keys())
 
 
 @pytest.fixture
 def parser():
     parser = ConfigParser()
-    parser["Config inspectortiger"] = dict.fromkeys(
-        ("levels", "ignore", "workers"), "-"
-    )
+    parser["Config inspectortiger"] = dict.fromkeys(("ignore", "workers"), "-")
     return parser
 
 
@@ -50,41 +45,6 @@ def test_configmanager_discover(manager):
     for plugin in plugins:
         assert plugin in namespace
         assert namespace[plugin] == {f"epic_{plugin}": f"itplugin_{plugin}"}
-
-
-def test_configmanager_levels_no(manager):
-    del manager.defaults["levels"]
-    assert manager.levels == LEVELS
-
-
-def test_configmanager_levels_all(manager):
-    manager.defaults["levels"] = "all"
-    assert manager.levels == LEVELS
-
-
-def test_configmanager_levels_any(manager):
-    manager.defaults["levels"] = "any"
-    assert manager.levels == ()
-
-
-def test_configmanager_levels_one(manager):
-    manager.defaults["levels"] = "xyz"
-    assert manager.levels == ("xyz",)
-
-
-def test_configmanager_levels_multiple(manager):
-    manager.defaults["levels"] = "xyz, abc, dyz"
-    assert manager.levels == ("xyz", "abc", "dyz")
-
-
-def test_configmanager_levels_multiple_all(manager):
-    manager.defaults["levels"] = "xyz, abc, all"
-    assert manager.levels == LEVELS
-
-
-def test_configmanager_levels_multiple_any(manager):
-    manager.defaults["levels"] = "xyz, any"
-    assert manager.levels == ()
 
 
 def test_configmanager_ignore_no(manager):

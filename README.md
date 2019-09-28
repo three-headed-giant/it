@@ -58,10 +58,6 @@ from inspectortiger.utils import Level
 This is a registration to a specific node, this function will be invoked when a `FunctionDef` node comes.
 
 ```py
-@Level.HIGH
-```
-Level defines severity of this event. It allows users to ignore / allow only needed plugins.
-```py
 def name_startswith_underscore(node, db):
     return node.name.startswith("__")
 ```
@@ -86,11 +82,10 @@ check name dunder = example_plugin
 
 **Answer**: Beside the plugin registrations, other settings is a part of `[Config inspectortiger]` section
 
-| setting   | description                                      | type                                                               |
-|-----------|--------------------------------------------------|--------------------------------------------------------------------|
-| levels    | which levels to allow                            | level names seperated by a comma or all/any                        |
-| ignore    | which plugins to ignore                          | name of the plugins seperated by a comma (e.g default_mutable_arg) |
-| workers   | child processes to spawn for parallel processing | an integer or 'max'                                                |
+| setting    | description                                      | type                                                               |
+|----------- |--------------------------------------------------|--------------------------------------------------------------------|
+| ignore     | which plugins to ignore                          | name of the plugins seperated by a comma (e.g default_mutable_arg) |
+| workers    | child processes to spawn for parallel processing | an integer or 'max'                                                |
 
 ##
 

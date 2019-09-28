@@ -2,24 +2,6 @@ import ast
 from enum import Enum, IntEnum, auto
 
 
-class Level(Enum):
-    EXTREME_LOW = auto()
-    LOW = auto()
-    AVG = auto()
-    HIGH = auto()
-    EXTREME_HIGH = auto()
-
-    WATCHER = auto()
-    DISABLED = auto()
-
-    def __call__(self, func):
-        func.report_level = self
-        return func
-
-
-PSEUDO_LEVELS = {Level.WATCHER, Level.DISABLED}
-
-
 class Events(Enum):
     INITAL = auto()
     FINAL = auto()

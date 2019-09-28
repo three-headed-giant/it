@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from enum import Enum, auto
 
 from inspectortiger.inspector import Inspector
-from inspectortiger.utils import Events, Level
+from inspectortiger.utils import Events
 
 __author__ = "Batuhan Taskaya"
 
@@ -55,12 +55,12 @@ def get_context(node, next_contexts):
     possible_contexts.sort(key=lambda ctx: ctx[0])
     if possible_contexts:
         context = possible_contexts[0][1]
-
+    else:
+        context = Context("__main__", Contexts.GLOBAL, KPair(0, 0))
     return context
 
 
 @Inspector.register(ast.Module)
-@Level.WATCHER
 def prepare_contexts(node, db):
     db["previous_contexts"] = []
     db["context"] = Context("__main__", Contexts.GLOBAL, KPair(0, 0))
@@ -75,7 +75,6 @@ def prepare_contexts(node, db):
 
 @Inspector.register(ast.FunctionDef)
 @Inspector.register(ast.ClassDef)
-@Level.WATCHER
 def change_context(node, db):
     context = get_context(node, db["next_contexts"])
     db["previous_contexts"].append(db["context"])
@@ -84,7 +83,6 @@ def change_context(node, db):
 
 @Inspector.register(Events.NODE_FINALIZE, ast.FunctionDef)
 @Inspector.register(Events.NODE_FINALIZE, ast.ClassDef)
-@Level.WATCHER
 def finalize_context(node, db):
     context = db["previous_contexts"].pop()
     db["context"] = context

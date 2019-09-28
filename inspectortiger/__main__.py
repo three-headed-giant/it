@@ -1,5 +1,6 @@
 import argparse
 import ast
+import json
 import tokenize
 from collections import defaultdict
 from concurrent.futures import ProcessPoolExecutor
@@ -9,8 +10,6 @@ from pathlib import Path
 from inspectortiger.configmanager import ConfigManager
 from inspectortiger.inspector import Inspector
 from inspectortiger.inspects import load_plugins
-from inspectortiger.reports import prepare
-from inspectortiger.utils import PSEUDO_LEVELS, Level
 
 
 def inspect(file):
@@ -29,9 +28,7 @@ def main():
     parser.add_argument(
         "paths", metavar="p", type=Path, nargs="+", help="paths to check"
     )
-    parser.add_argument(
-        "-l", "--levels", type=str, nargs="*", help="whitelist of levels"
-    )
+    parser.add_argument("--plugins", type=str, nargs="*", help="whitelist of plugins")
     parser.add_argument(
         "--workers",
         type=int,
@@ -39,18 +36,7 @@ def main():
         default=manager.workers,
     )
     args = parser.parse_args()
-
-    load_plugins(manager)
-    try:
-        levels = [
-            getattr(Level, level.upper()) for level in args.levels or manager.levels
-        ]
-    except AttributeError as exc:
-        raise ValueError(
-            f"Specified level doesnt exist, it must be in this list: {', '.join(Level.__members__.keys())}"
-        ) from exc
-
-    levels = filter(lambda level: level not in PSEUDO_LEVELS, levels)
+    load_plugins(manager, args.plugins)
 
     for path in args.paths:
         if not path.exists():
@@ -64,14 +50,23 @@ def main():
     all_reports = defaultdict(list)
     with ProcessPoolExecutor(max_workers=args.workers) as executor:
         for inspection in executor.map(inspect, set(files)):
-            for level, reports in inspection.items():
-                report = filter(
-                    lambda report: report.code not in manager.ignore, reports
+            for plugin, reports in inspection.items():
+                all_reports[plugin].extend(
+                    asdict(report)
+                    for report in reports
+                    if report.code not in manager.ignore
                 )
-                all_reports[level].extend(reports)
 
-    result = prepare(all_reports, levels)
-    print(result)
+    if all_reports:
+        print(
+            "InspectorTiger inspected \N{right-pointing magnifying glass} and found these problems;"
+        )
+        print(json.dumps(all_reports, indent=4))
+        exit(1)
+    else:
+        print(
+            "InspectorTiger inspected \N{right-pointing magnifying glass} your code and it is perfect \N{white heavy check mark}"
+        )
 
 
 if __name__ == "__main__":

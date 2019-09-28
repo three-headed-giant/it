@@ -5,7 +5,7 @@ __author__ = "Batuhan Taskaya"
 import ast
 
 from inspectortiger.inspector import Inspector
-from inspectortiger.utils import Level, name_check
+from inspectortiger.utils import name_check
 
 
 def traverse_exception(base, exceptions=None, level=0):
@@ -23,7 +23,6 @@ ALL_EXCS = EXC_TREE.keys()
 
 
 @Inspector.register(ast.ClassDef)
-@Level.WATCHER
 def exception_defs(node, db):
     exc_bases = [base.id for base in node.bases if name_check(base, *ALL_EXCS)]
     if exc_bases:
@@ -32,7 +31,6 @@ def exception_defs(node, db):
 
 
 @Inspector.register(ast.Try)
-@Level.HIGH
 def unreachable_except(node, db):
     handlers = [
         handler.type.id

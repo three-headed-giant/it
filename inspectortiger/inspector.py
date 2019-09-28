@@ -44,8 +44,9 @@ class Inspector(ast.NodeVisitor):
         for hook in hooks:
             if hook(node, self._hook_db):
                 code = hook.__name__.upper()
+                plugin = getattr(hook, "plugin", "unknown")
                 report = Report(code, node.lineno, str(self.file))
-                self.results[hook.report_level].append(report)
+                self.results[plugin].append(report)
 
         self.generic_visit(node)
         for node_finalizer in self._event_hooks[Events.NODE_FINALIZE]:

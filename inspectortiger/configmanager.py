@@ -3,8 +3,6 @@ from configparser import ConfigParser
 from multiprocessing import cpu_count
 from pathlib import Path
 
-from inspectortiger.utils import Level
-
 BUILTIN_CONFIG = Path(__file__).parent / "config.ini"
 USER_CONFIG = Path("~/.inspector.rc").expanduser()
 
@@ -24,20 +22,6 @@ class ConfigManager:
                 namespace = section[len("Plugins ") :]
                 plugins[namespace].update(self.config[section])
         return plugins
-
-    @property
-    def levels(self):
-        if "levels" in self.defaults:
-            levels = self.defaults["levels"].split(", ")
-        else:
-            levels = ["all"]
-
-        if "all" in levels:
-            return tuple(Level.__members__.keys())
-        elif "any" in levels:
-            return ()
-        else:
-            return tuple(levels)
 
     @property
     def workers(self):

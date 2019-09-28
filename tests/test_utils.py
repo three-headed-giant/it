@@ -1,21 +1,12 @@
 import ast
 
 from inspectortiger.utils import (
-    Level,
     biname_check,
     is_single_node,
     name_check,
     target_check,
     tuple_check,
 )
-
-
-def test_level_decorator():
-    low = Level.LOW
-    dummy = lambda: None
-    assert low(dummy) is dummy
-    assert hasattr(dummy, "report_level")
-    assert dummy.report_level is low
 
 
 def test_is_single_node():

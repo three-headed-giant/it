@@ -28,6 +28,7 @@ def test_inspector_events_initalization():
 def test_inspector_visit():
     dummy = Mock()
     dummy.__name__ = "dummy"
+    dummy.plugin = "dummy"
     Inspector.register(ast.Name)(dummy)
     inspector = Inspector(None)
     visitor = inspector.visit_Name
@@ -36,7 +37,7 @@ def test_inspector_visit():
     dummy.assert_called_once()
     assert (
         Report(filename="None", lineno=1, code="DUMMY")
-        in inspector.results[dummy.report_level]
+        in inspector.results[dummy.plugin]
     )
 
 
