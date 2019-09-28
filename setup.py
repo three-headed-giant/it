@@ -13,7 +13,6 @@ setup(
     packages=find_packages(),
     url="https://github.com/thg-consulting/inspectortiger",
     author="thg",
-    install_requires=["reportme"],
     description="Inspector Tiger is a common non-pythonic pattern checker",
     long_description=long_description,
     long_description_content_type="text/markdown",

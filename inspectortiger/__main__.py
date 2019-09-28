@@ -6,12 +6,10 @@ from concurrent.futures import ProcessPoolExecutor
 from dataclasses import asdict
 from pathlib import Path
 
-from reportme.publisher import ReportBuffer
-from reportme.reporter import Report
-
 from inspectortiger.configmanager import ConfigManager
 from inspectortiger.inspector import Inspector
 from inspectortiger.inspects import load_plugins
+from inspectortiger.reports import prepare
 from inspectortiger.utils import PSEUDO_LEVELS, Level
 
 
@@ -63,33 +61,17 @@ def main():
         else:
             files.extend(path.glob("**/*.py"))
 
-    results = defaultdict(list)
+    all_reports = defaultdict(list)
     with ProcessPoolExecutor(max_workers=args.workers) as executor:
         for inspection in executor.map(inspect, set(files)):
-            for level, result in inspection.items():
-                result = filter(
-                    lambda result: result.report.requirement not in manager.ignore,
-                    result,
+            for level, reports in inspection.items():
+                report = filter(
+                    lambda report: report.code not in manager.ignore, reports
                 )
-                results[level].extend(result)
+                all_reports[level].extend(reports)
 
-    results = {level: results[level] for level in levels if results[level]}
-    with Report(name="InspectorTiger", version="1.0.0") as report:
-        report.description = "Tiger inspected your code and found these mistakes"
-
-        with report.add_category(name="Pythonicity") as pythonicity:
-            for level in results:
-                with pythonicity.add_node(level.name.title()) as approachs:
-                    for approach in results[level]:
-                        approachs.add_requirement(**asdict(approach))
-
-    if results:
-        buf = ReportBuffer()
-        buf.render(report)
-        buf.print()
-        exit(1)
-    else:
-        print("Inspector tiger inspected your code and found it very well")
+    result = prepare(all_reports, levels)
+    print(result)
 
 
 if __name__ == "__main__":

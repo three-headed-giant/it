@@ -2,10 +2,9 @@ import ast
 from unittest.mock import Mock
 
 import pytest
-from reportme.reporter import Requirement
-from reportme.reports import Approach
 
 from inspectortiger import Inspector
+from inspectortiger.reports import Report
 from inspectortiger.utils import Events
 
 
@@ -36,7 +35,7 @@ def test_inspector_visit():
     visitor(ast.parse("xyz", "<ast>", "eval").body)
     dummy.assert_called_once()
     assert (
-        Requirement(file=None, line=1, report=Approach.DUMMY())
+        Report(filename="None", lineno=1, code="DUMMY")
         in inspector.results[dummy.report_level]
     )
 

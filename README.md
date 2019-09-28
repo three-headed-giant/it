@@ -4,6 +4,7 @@
 ![PyPI version](https://badge.fury.io/py/inspectortiger.svg)
 ![black](https://img.shields.io/badge/code%20style-black-000000.svg)
 ![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)
+![Dependicy Free](https://img.shields.io/static/v1?label=dependicy&message=free&color=success)
 
 InspectorTiger is a modern python code review tool which warns you about improvable code and possible bugs. For an example if you have a function where you assing an argument's default value to a mutable object (like list) it'll warn you.
 

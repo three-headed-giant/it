@@ -2,9 +2,7 @@ import ast
 from collections import defaultdict
 from functools import partial
 
-from reportme.reporter import Requirement
-from reportme.reports import Approach
-
+from inspectortiger.reports import Report
 from inspectortiger.utils import Events, Priority
 
 
@@ -26,14 +24,14 @@ class Inspector(ast.NodeVisitor):
     @classmethod
     def register(cls, *triggerer):
         def wrapper(func):
-            nonlocal triggerer
-            if len(triggerer) == 1:
-                (triggerer,) = triggerer
-
-            if isinstance(triggerer, type) and issubclass(triggerer, ast.AST):
-                hooks = cls._hooks[triggerer]
-            elif isinstance(triggerer, Events):
-                hooks = cls._event_hooks[triggerer]
+            trigger = triggerer[0]
+            if isinstance(trigger, type) and issubclass(trigger, ast.AST):
+                hooks = cls._hooks[trigger]
+            elif isinstance(trigger, Events):
+                if len(triggerer) > 1:
+                    hooks = cls._event_hooks[triggerer]
+                else:
+                    hooks = cls._event_hooks[trigger]
             else:
                 raise ValueError(f"Unsupported triggerer, {triggerer!r}")
             hooks.append(func)
@@ -45,13 +43,12 @@ class Inspector(ast.NodeVisitor):
         hooks.sort(key=lambda hook: getattr(hook, "priority", Priority.AVG))
         for hook in hooks:
             if hook(node, self._hook_db):
-                req_type = getattr(Approach, hook.__name__.upper())()
-                self.results[hook.report_level].append(
-                    Requirement(self.file, node.lineno, req_type)
-                )
+                code = hook.__name__.upper()
+                report = Report(code, node.lineno, str(self.file))
+                self.results[hook.report_level].append(report)
 
         self.generic_visit(node)
-        for node_finalizer in self._event_hooks[Events.NODE_FINALIZE, type(node)]:
+        for node_finalizer in self._event_hooks[Events.NODE_FINALIZE]:
             node_finalizer(node, self._hook_db)
 
     def __getattr__(self, attr):
