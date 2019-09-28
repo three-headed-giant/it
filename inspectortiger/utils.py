@@ -1,5 +1,5 @@
 import ast
-from enum import Enum, auto
+from enum import Enum, IntEnum, auto
 
 
 class Level(Enum):
@@ -23,6 +23,17 @@ PSEUDO_LEVELS = {Level.WATCHER, Level.DISABLED}
 class Events(Enum):
     INITAL = auto()
     FINAL = auto()
+    NODE_FINALIZE = auto()
+
+
+class Priority(IntEnum):
+    FIRST = 0
+    AVG = 1
+    LAST = 2
+
+    def __call__(self, func):
+        func.priority = self
+        return func
 
 
 def is_single_node(a, b, /):

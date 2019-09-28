@@ -1,11 +1,13 @@
 """ Finds syntaxs that can be improved """
 
 __author__ = "Batuhan Taskaya"
+__requires__ = ["inspectortiger.plugins.context"]
 
 import ast
 
 from inspectortiger.inspector import Inspector
-from inspectortiger.utils import Level, is_single_node, target_check
+from inspectortiger.plugins.context import Contexts, get_context
+from inspectortiger.utils import Level, is_single_node, name_check, target_check
 
 
 @Inspector.register(ast.For)
@@ -15,4 +17,16 @@ def yield_from(node, db):
         is_single_node(node, ast.Expr)
         and isinstance(node.body[0].value, ast.Yield)
         and target_check(node.body[0].value.value, node.target)
+    )
+
+
+@Inspector.register(ast.Call)
+@Level.AVG
+def super_args(node, db):
+    return (
+        get_context(node, db["next_contexts"]) is db["context"]
+        and db["context"].context is Contexts.FUNCTION
+        and db["previous_contexts"][-1].context is Contexts.CLASS
+        and name_check(node.func, "super")
+        and node.args
     )
