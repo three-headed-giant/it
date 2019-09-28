@@ -10,17 +10,17 @@ from inspectortiger.utils import Events
 
 def test_inspector_triggerer():
     dummy = Mock()
+    dummy.handles = set()
     Inspector.register(ast.Expr)(dummy)
     assert dummy in Inspector._hooks[ast.Expr]
-    Inspector.register(Events.INITAL)(dummy)
+    Inspector.on_event(Events.INITAL)(dummy)
     assert dummy in Inspector._event_hooks[Events.INITAL]
-    with pytest.raises(ValueError):
-        Inspector.register(None)(dummy)
 
 
 def test_inspector_events_initalization():
     dummy = Mock()
-    Inspector.register(Events.INITAL)(dummy)
+    dummy.handles = set()
+    Inspector.on_event(Events.INITAL)(dummy)
     Inspector(None)
     dummy.assert_called_once()
 

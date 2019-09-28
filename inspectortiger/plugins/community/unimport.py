@@ -15,8 +15,7 @@ def set_unimport(node, db):
     db["unimport"] = UnImport(node)
 
 
-@Inspector.register(ast.Import)
-@Inspector.register(ast.ImportFrom)
+@Inspector.register(ast.Import, ast.ImportFrom)
 def unused_import(node, db):
     for unused in db["unimport"].get_diff():
         if unused["lineno"] == node.lineno:

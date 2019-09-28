@@ -22,19 +22,28 @@ class Inspector(ast.NodeVisitor):
         super().__init__(*args, **kwargs)
 
     @classmethod
-    def register(cls, *triggerer):
+    def register(cls, *nodes):
         def wrapper(func):
-            trigger = triggerer[0]
-            if isinstance(trigger, type) and issubclass(trigger, ast.AST):
-                hooks = cls._hooks[trigger]
-            elif isinstance(trigger, Events):
-                if len(triggerer) > 1:
-                    hooks = cls._event_hooks[triggerer]
-                else:
-                    hooks = cls._event_hooks[trigger]
+            handles = set(nodes)
+            if hasattr(func, "handles"):
+                func.handles.update(handles)
             else:
-                raise ValueError(f"Unsupported triggerer, {triggerer!r}")
-            hooks.append(func)
+                func.handles = handles
+
+            for node in nodes:
+                cls._hooks[node].append(func)
+            return func
+
+        return wrapper
+
+    @classmethod
+    def on_event(cls, *events):
+        def wrapper(func):
+            if hasattr(func, "handles"):
+                for handle in func.handles:
+                    cls._hooks[handle].remove(func)
+            for event in events:
+                cls._event_hooks[event].append(func)
             return func
 
         return wrapper
@@ -50,7 +59,8 @@ class Inspector(ast.NodeVisitor):
 
         self.generic_visit(node)
         for node_finalizer in self._event_hooks[Events.NODE_FINALIZE]:
-            node_finalizer(node, self._hook_db)
+            if isinstance(node, tuple(node_finalizer.handles)):
+                node_finalizer(node, self._hook_db)
 
     def __getattr__(self, attr):
         _attr = attr.strip("visit_")

@@ -22,7 +22,7 @@ def yield_from(node, db):
 @Inspector.register(ast.Call)
 def super_args(node, db):
     return (
-        get_context(node, db["next_contexts"]) is db["context"]
+        get_context(node, db) is db["context"]
         and db["context"].context is Contexts.FUNCTION
         and db["previous_contexts"][-1].context is Contexts.CLASS
         and name_check(node.func, "super")
