@@ -15,3 +15,6 @@ All notable changes to this project will be documented in this file.
 - Context management improved with scope finalizing
 #### Upgradeable
 - Implemented a handler for old `super` usage with arguments
+#### Community
+##### Unimport
+- Unimport plugin is updated for `unimport@v0.1`

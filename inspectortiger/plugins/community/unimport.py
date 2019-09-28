@@ -5,18 +5,18 @@ __requires__ = ["unimport"]
 
 import ast
 
-from unimport import UnImport
+from unimport.unused import get_unused
 
 from inspectortiger.inspector import Inspector
 
 
 @Inspector.register(ast.Module)
 def set_unimport(node, db):
-    db["unimport"] = UnImport(node)
+    db["unimport"] = get_unused(node)
 
 
 @Inspector.register(ast.Import, ast.ImportFrom)
 def unused_import(node, db):
-    for unused in db["unimport"].get_diff():
+    for unused in db["unimport"]:
         if unused["lineno"] == node.lineno:
             return True

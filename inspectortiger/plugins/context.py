@@ -8,7 +8,6 @@ from __future__ import annotations
 import ast
 from dataclasses import dataclass
 from enum import Enum, auto
-from pprint import pprint
 
 from inspectortiger.inspector import Inspector
 from inspectortiger.utils import Events
@@ -54,7 +53,10 @@ def get_context(node, db):
             possible_contexts.append((kpair.distance(node_kpair), context))
 
     possible_contexts.sort(key=lambda ctx: ctx[0])
-    return possible_contexts[0][1]
+    try:
+        return possible_contexts[0][1]
+    except IndexError:
+        return db["global_ctx"]
 
 
 @Inspector.register(ast.Module)
