@@ -26,3 +26,11 @@ repos:
     hooks:
     -   id: mypy
         stages: [manual]
+-   repo: local
+    hooks:
+    -   id: plugin-help
+        name: Generate PLUGINS.md
+        pass_filenames: false
+        entry: 'bin/generate_plugins.py'
+        args: [--output=PLUGINS.md]
+        language: script

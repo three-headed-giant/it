@@ -1,7 +1,12 @@
-""" Context management plugin
+"""
+## Context
+Context management for AST
 
-db["context"] => A context instance that gives current context
-db["previous_contexts"] => A list of previous contexts
+- `db['context']` => Current context
+- `db['previous_contexts']` => Previous contexts
+- `db['next_contexts']` => Next contexts
+- `db['global_context']` => Global context
+- `get_context(node, db)` => Infer context of given `node`
 """
 from __future__ import annotations
 
@@ -56,12 +61,14 @@ def get_context(node, db):
     try:
         return possible_contexts[0][1]
     except IndexError:
-        return db["global_ctx"]
+        return db["global_context"]
 
 
 @Inspector.register(ast.Module)
 def prepare_contexts(node, db):
-    db["global_ctx"] = global_ctx = Context("__main__", Contexts.GLOBAL, KPair(0, 0))
+    db["global_context"] = global_ctx = Context(
+        "__main__", Contexts.GLOBAL, KPair(0, 0)
+    )
     db["previous_contexts"] = []
     db["context"] = global_ctx
     for possible_context in ast.walk(node):

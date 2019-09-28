@@ -1,4 +1,10 @@
-""" Find exception catching statements that are never going to work because of ordering """
+"""
+## Unreachable Except
+Unreacable except finder
+
+- `db['user_exceptions']` => A mapping of user-defined exceptions with name:tree_value
+- Checks if an except statement is unreachable due to a more broad except
+"""
 
 __author__ = "Batuhan Taskaya"
 

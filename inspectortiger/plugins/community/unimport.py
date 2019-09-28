@@ -1,7 +1,12 @@
-""" Unimport integration """
+"""
+### Unimport
+`unimport` integration to InspectorTiger
+
+- `db['unimport']` => A list of imports that are not used
+- Checks if an import is not used through `unimport`
+"""
 
 __author__ = "Batuhan Taskaya"
-__requires__ = ["unimport"]
 
 import ast
 

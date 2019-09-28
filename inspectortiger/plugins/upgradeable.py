@@ -1,7 +1,12 @@
-""" Finds syntaxs that can be improved """
+"""
+## Upgradeable
+Finds syntaxes that can be improvable (for 3.8+)
+
+- Checks if a yield can be replaced with yield from
+- Checks if `super()` called with arguments (old style)
+"""
 
 __author__ = "Batuhan Taskaya"
-__requires__ = ["inspectortiger.plugins.context"]
 
 import ast
 

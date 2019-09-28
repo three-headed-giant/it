@@ -1,4 +1,9 @@
-""" General checks about code quality and common mistakes """
+"""
+## Misc
+Common gotchas
+
+- Checks if a default argument is something mutable
+"""
 
 __author__ = "Batuhan Taskaya"
 
