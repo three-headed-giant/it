@@ -8,8 +8,9 @@ All notable changes to this project will be documented in this file.
 - Instead of reportme, reports are now in JSON format ([#2](https://github.com/thg-consulting/inspectortiger/issues/2))
 - Severity level system removed (eg `@Level.AVG`) ([#3](https://github.com/thg-consulting/inspectortiger/issues/3))
 - Report grouping changed to plugins instead of levels ([#3](https://github.com/thg-consulting/inspectortiger/issues/3))
-- Event registration changed to `on_event` instead of `register`.
-- Now both `register` and `on_event` can take multiple triggerers.
+- Event registration changed to `on_event` instead of `register`
+- Now both `register` and `on_event` can take multiple triggerers
+- An option to not exit with `1` on fails (`--fail-exit`)
 ### Plugins
 #### Context
 - Context management improved with scope finalizing

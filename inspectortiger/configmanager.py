@@ -1,5 +1,6 @@
 from collections import defaultdict
 from configparser import ConfigParser
+from distutils.util import strtobool
 from multiprocessing import cpu_count
 from pathlib import Path
 
@@ -34,9 +35,13 @@ class ConfigManager:
 
     @property
     def ignore(self):
-        if "ignore" in self.defaults:
-            return tuple(
-                ignore.upper() for ignore in self.defaults["ignore"].split(", ")
-            )
-        else:
-            return ()
+        ignore = self.defaults.get("ignore", ())
+        if ignore:
+            ignore = tuple(ignore.upper() for ignore in ignore.split(", "))
+
+        return ignore
+
+    @property
+    def fail_exit(self):
+        fail_exit = self.defaults.get("fail exit", "yes")
+        return strtobool(fail_exit)

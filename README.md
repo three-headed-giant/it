@@ -82,10 +82,11 @@ check name dunder = example_plugin
 
 **Answer**: Beside the plugin registrations, other settings is a part of `[Config inspectortiger]` section
 
-| setting    | description                                      | type                                                               |
-|----------- |--------------------------------------------------|--------------------------------------------------------------------|
-| ignore     | which plugins to ignore                          | name of the plugins seperated by a comma (e.g default_mutable_arg) |
-| workers    | child processes to spawn for parallel processing | an integer or 'max'                                                |
+| setting   | description                                      | type                                      | cmdline flag   |
+|-----------|--------------------------------------------------|-------------------------------------------|----------------|
+| ignore    | which handlers to ignore                         | name of the handlers seperated by a comma | --ignore       |
+| workers   | child processes to spawn for parallel processing | an integer or 'max'                       | --workers      |
+| fail exit | on fail exit with error code                     | yes/no/true/false etc.                    | --fail-exit    |
 
 ##
 

@@ -5,6 +5,7 @@ import tokenize
 from collections import defaultdict
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import asdict
+from distutils.util import strtobool
 from pathlib import Path
 
 from inspectortiger.configmanager import ConfigManager
@@ -30,10 +31,23 @@ def main():
     )
     parser.add_argument("--plugins", type=str, nargs="*", help="whitelist of plugins")
     parser.add_argument(
+        "--ignore",
+        type=str,
+        nargs="*",
+        default=manager.ignore,
+        help="handlers to ignore",
+    )
+    parser.add_argument(
         "--workers",
         type=int,
         help="number of worker processes",
         default=manager.workers,
+    )
+    parser.add_argument(
+        "--fail-exit",
+        type=strtobool,
+        help="on fail exit with error code",
+        default=manager.fail_exit,
     )
     args = parser.parse_args()
     load_plugins(manager, args.plugins)
@@ -54,18 +68,21 @@ def main():
                 all_reports[plugin].extend(
                     asdict(report)
                     for report in reports
-                    if report.code not in manager.ignore
+                    if report.code not in args.ignore
                 )
 
     if all_reports:
         print(
-            "InspectorTiger inspected \N{right-pointing magnifying glass} and found these problems;"
+            "InspectorTiger inspected \N{right-pointing magnifying glass}"
+            "and found these problems;"
         )
         print(json.dumps(all_reports, indent=4))
-        exit(1)
+        if args.fail_exit:
+            exit(1)
     else:
         print(
-            "InspectorTiger inspected \N{right-pointing magnifying glass} your code and it is perfect \N{white heavy check mark}"
+            "InspectorTiger inspected \N{right-pointing magnifying glass}"
+            "your code and it is perfect \N{white heavy check mark}"
         )
 
 
