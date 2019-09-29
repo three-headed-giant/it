@@ -1,9 +1,8 @@
 """
 ## Unreachable Except
-Unreacable except finder
+Unreacable excepts
 
 - `db['user_exceptions']` => A mapping of user-defined exceptions with name:tree_value
-- Checks if an except statement is unreachable due to a more broad except
 """
 
 __author__ = "Batuhan Taskaya"
@@ -38,6 +37,8 @@ def exception_defs(node, db):
 
 @Inspector.register(ast.Try)
 def unreachable_except(node, db):
+    """Except statement is unreachable due to a more broad except."""
+
     handlers = [
         handler.type.id
         for handler in node.handlers

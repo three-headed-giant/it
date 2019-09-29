@@ -1,9 +1,7 @@
 """
 ## Upgradeable
-Finds syntaxes that can be improvable (for 3.8+)
+Improvable (for 3.8+) syntaxes
 
-- Checks if a yield can be replaced with yield from
-- Checks if `super()` called with arguments (old style)
 """
 
 __author__ = "Batuhan Taskaya"
@@ -17,6 +15,8 @@ from inspectortiger.utils import is_single_node, name_check, target_check
 
 @Inspector.register(ast.For)
 def yield_from(node, db):
+    """Yield can be replaced with yield from."""
+
     return (
         is_single_node(node, ast.Expr)
         and isinstance(node.body[0].value, ast.Yield)
@@ -26,6 +26,7 @@ def yield_from(node, db):
 
 @Inspector.register(ast.Call)
 def super_args(node, db):
+    """`super()` called with arguments (old style)."""
     return (
         get_context(node, db) is db["context"]
         and db["context"].context is Contexts.FUNCTION

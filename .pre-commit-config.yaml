@@ -29,9 +29,9 @@ repos:
         stages: [manual]
 -   repo: local
     hooks:
-    -   id: plugin-help
-        name: Generate PLUGINS.md
+    -   id: docs
+        name: Generate Documents
         pass_filenames: false
         entry: 'bin/generate_plugins.py'
-        args: [--output=PLUGINS.md]
+        args: [--output=docs/]
         language: script

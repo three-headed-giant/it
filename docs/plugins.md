@@ -12,24 +12,19 @@ Context management for AST
 - `get_context(node, db)` => Infer context of given `node`
 
 ## Unreachable Except
-Unreacable except finder
+Unreacable excepts
 
 - `db['user_exceptions']` => A mapping of user-defined exceptions with name:tree_value
-- Checks if an except statement is unreachable due to a more broad except
 
 ## Upgradeable
-Finds syntaxes that can be improvable (for 3.8+)
+Improvable (for 3.8+) syntaxes
 
-- Checks if a yield can be replaced with yield from
-- Checks if `super()` called with arguments (old style)
 
 ## Misc
 Common gotchas
 
-- Checks if a default argument is something mutable
 
 ### Unimport
-`unimport` integration to InspectorTiger
+`unimport` integration
 
 - `db['unimport']` => A list of imports that are not used
-- Checks if an import is not used through `unimport`

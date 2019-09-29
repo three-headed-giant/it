@@ -1,9 +1,8 @@
 """
 ### Unimport
-`unimport` integration to InspectorTiger
+`unimport` integration
 
 - `db['unimport']` => A list of imports that are not used
-- Checks if an import is not used through `unimport`
 """
 
 __author__ = "Batuhan Taskaya"
@@ -22,6 +21,7 @@ def set_unimport(node, db):
 
 @Inspector.register(ast.Import, ast.ImportFrom)
 def unused_import(node, db):
+    """A module/name is imported but not used."""
     for unused in db["unimport"]:
         if unused["lineno"] == node.lineno:
             return True
