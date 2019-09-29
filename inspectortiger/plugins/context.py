@@ -47,7 +47,9 @@ class KPair:
         return cls(start=node.lineno, end=node.end_lineno)
 
     def distance(self, other):
-        return ((self.start - other.start) ** 2 + (self.end - other.end) ** 2) ** 0.5
+        return (
+            (self.start - other.start) ** 2 + (self.end - other.end) ** 2
+        ) ** 0.5
 
 
 def get_context(node, db):

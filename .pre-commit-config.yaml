@@ -13,6 +13,7 @@ repos:
     rev: ae5588cf073be10b51dc48ad2fc513e11c4f3e03
     hooks:
     -   id: black
+        args: [-l 79]
 -   repo: https://github.com/asottile/seed-isort-config
     rev: v1.9.2
     hooks:

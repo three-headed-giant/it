@@ -2,21 +2,22 @@ from pathlib import Path
 
 from setuptools import find_packages, setup
 
+name = "inspectortiger"
 current_dir = Path(__file__).parent.resolve()
 
 with open(current_dir / "README.md", encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
-    name="inspectortiger",
+    name=f"{name}",
     version="0.5.0",
     packages=find_packages(),
     url="https://github.com/thg-consulting/inspectortiger",
     author="thg",
-    description="Inspector Tiger is a common non-pythonic pattern checker",
+    description="InspectorTiger is a modern python code review tool which warns you about improvable code and possible bugs.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    entry_points={"console_scripts": ["inspectortiger = inspectortiger.__main__:main"]},
+    entry_points={"console_scripts": [f"{name} = {name}.__main__:main"]},
     include_package_data=True,
     package_data={"inspectortiger": ["*.ini"]},
 )
