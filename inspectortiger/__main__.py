@@ -31,6 +31,12 @@ def main():
     )
 
     parser.add_argument(
+        "--annotate",
+        default=False,
+        action="store_true",
+        help="include code to reports",
+    )
+    parser.add_argument(
         "--plugins", type=str, nargs="*", help="whitelist of plugins"
     )
     parser.add_argument(
@@ -58,13 +64,13 @@ def main():
 
     if args.paths:
         files = traverse_paths(args.paths)
-        reports = inspector(files, args.workers, args.ignore)
+        reports = inspector(files, args.workers, args.ignore, args.annotate)
         if reports:
             print(
                 "InspectorTiger inspected \N{right-pointing magnifying glass} "
                 "and found these problems;"
             )
-            print(json.dumps(all_reports, indent=4))
+            print(json.dumps(reports, indent=4))
             if args.fail_exit:
                 exit(1)
         else:

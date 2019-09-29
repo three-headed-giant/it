@@ -1,4 +1,5 @@
 import ast
+import tokenize
 from collections import defaultdict
 from functools import partial
 
@@ -11,8 +12,16 @@ class Inspector(ast.NodeVisitor):
     _hooks = defaultdict(list)
     _event_hooks = defaultdict(list)
 
-    def __init__(self, file, *args, **kwargs):
-        self.file = file
+    def __init__(self, source, annotate=True, *args, **kwargs):
+        if isinstance(source, ast.AST):
+            self.file = "<unknown>"
+            self.source = source
+            self.annotate = False
+        else:
+            self.file = source
+            self.source = None
+            self.annotate = annotate
+
         self._hook_db = defaultdict(dict)
         self.results = defaultdict(list)
 
@@ -20,6 +29,10 @@ class Inspector(ast.NodeVisitor):
             initalizer(self._hook_db)
 
         super().__init__(*args, **kwargs)
+
+        if not self.source:
+            with tokenize.open(self.file) as f:
+                self.source = f.read()
 
     @classmethod
     def register(cls, *nodes):
@@ -51,10 +64,17 @@ class Inspector(ast.NodeVisitor):
     def visitor(self, hooks, node):
         hooks.sort(key=lambda hook: getattr(hook, "priority", Priority.AVG))
         for hook in hooks:
-            if hook(node, self._hook_db):
+            if affects := hook(node, self._hook_db):
                 code = hook.__name__.upper()
                 plugin = getattr(hook, "plugin", "unknown")
                 report = Report(code, node.lineno, str(self.file))
+                if self.annotate:
+                    if affects is True:
+                        affects = node
+
+                    report.annotation = ast.get_source_segment(
+                        self.source, affects
+                    ).split("\n")[0]
                 self.results[plugin].append(report)
 
         self.generic_visit(node)
@@ -62,8 +82,11 @@ class Inspector(ast.NodeVisitor):
             if isinstance(node, tuple(node_finalizer.handles)):
                 node_finalizer(node, self._hook_db)
 
+    def handle(self):
+        self.visit(ast.parse(self.source, self.file))
+
     def __getattr__(self, attr):
-        _attr = attr.strip("visit_")
+        _attr = attr[len("visit_") :]
         if hasattr(ast, _attr):
             return partial(self.visitor, self._hooks[getattr(ast, _attr)])
         raise AttributeError(attr)
