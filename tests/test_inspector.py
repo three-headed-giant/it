@@ -21,7 +21,7 @@ def test_inspector_events_initalization():
     dummy = Mock()
     dummy.handles = set()
     Inspector.on_event(Events.INITAL)(dummy)
-    Inspector(None)
+    Inspector(ast.Module([]))
     dummy.assert_called_once()
 
 
@@ -30,18 +30,18 @@ def test_inspector_visit():
     dummy.__name__ = "dummy"
     dummy.plugin = "dummy"
     Inspector.register(ast.Name)(dummy)
-    inspector = Inspector(None)
+    inspector = Inspector(ast.Module([]))
     visitor = inspector.visit_Name
     assert dummy in visitor.args[0]
     visitor(ast.parse("xyz", "<ast>", "eval").body)
     dummy.assert_called_once()
     assert (
-        Report(filename="None", lineno=1, code="DUMMY")
+        Report(filename="<unknown>", lineno=1, code="DUMMY")
         in inspector.results[dummy.plugin]
     )
 
 
 def test_attribute_error():
-    inspector = Inspector(None)
+    inspector = Inspector(ast.Module([]))
     with pytest.raises(AttributeError):
         inspector.blabla()
