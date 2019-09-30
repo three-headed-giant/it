@@ -32,6 +32,9 @@ $ git rebase upstream/master
 Try to follow PEP8 & PEP20 but don't hesitate about following a style that is presented in this project but not complies with PEP8. If you are adding a new handler and you aren't sure about which plugin it fits, just open a about what that plugin does.
 
 ### Commit Messages
+
+We use `prefix: a short desc` template for our commit messages. Prefixes;
+| prefix            | desc                                                                   |
 |-------------------|------------------------------------------------------------------------|
 | docs              | docs or typos                                                          |
 | tests             | testing                                                                |
