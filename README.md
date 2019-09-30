@@ -25,6 +25,12 @@ InspectorTiger is a modern python code review tool which warns you about improva
 
 ##
 
+**Question**: How can i contribute?
+
+**Answer**: We have a [contributing](https://github.com/thg-consulting/inspectortiger/blob/master/docs/contributing.md) file for the environment and some basics. After that is fixing bugs or adding handlers for patterns you regularly encounter with.
+
+##
+
 **Question**: So, it is a plugin based tool?
 
 
@@ -43,38 +49,6 @@ InspectorTiger is a modern python code review tool which warns you about improva
 
 **Answer**: Plugins are simply python packages and they are configured in `~/.inspector.rc`. On every run, InspectorTiger will read your configuration and try to register plugins you've specified.
 
-
-An example plugin which checks if a function name starts with dunder.
-```py
-# example_plugins/example_plugin.py
-
-from inspectortiger import Inspector
-from inspectortiger.utils import Level
-
-```
-```py
-@Inspector.register(ast.FunctionDef)
-```
-This is a registration to a specific node, this function will be invoked when a `FunctionDef` node comes.
-
-```py
-def name_startswith_underscore(node, db):
-    return node.name.startswith("__")
-```
-The function takes the node itself and a database which can contain some useful information about file.
-
-
-When this package installed, then `~/.inspect.rc` should be configured to activate this plugin.
-```ini
-[Plugins example_plugins]
-```
-This section specifies all plugins that are defined in here is a part of `example_plugins` package.
-
-```
-check name dunder = example_plugin
-```
-`check name dunder` is the name of our plugin, and the `example_plugin` is the module which is located inside of `example_plugins`
-
 ##
 
 **Question**: How to configure `~/.inspect.rc`
@@ -88,12 +62,6 @@ check name dunder = example_plugin
 | workers   | child processes to spawn for parallel processing | an integer or 'max'                       | --workers      |
 | fail exit | on fail exit with error code                     | yes/no/true/false etc.                    | --fail-exit    |
 
-##
-
-**Question**: What are the severity levels?
-
-
-**Answer**: Severity levels shows how important that handler's check is. There are currently 6 levels: EXTREME_LOW, LOW, AVG, HIGH, EXTREME_HIGH
 
 ##
 
