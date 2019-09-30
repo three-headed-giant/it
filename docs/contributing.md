@@ -34,6 +34,7 @@ Try to follow PEP8 & PEP20 but don't hesitate about following a style that is pr
 ### Commit Messages
 
 We use `prefix: a short desc` template for our commit messages. Prefixes;
+
 | prefix            | desc                                                                   |
 |-------------------|------------------------------------------------------------------------|
 | docs              | docs or typos                                                          |

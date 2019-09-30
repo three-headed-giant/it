@@ -30,8 +30,14 @@ repos:
 -   repo: local
     hooks:
     -   id: docs
-        name: Generate Documents
+        name: Generate documents
         pass_filenames: false
         entry: 'bin/generate_plugins.py'
         args: [--output=docs/]
+        language: script
+
+    -   id: commit-check
+        name: Check commit message
+        stages: [commit-msg, prepare-commit-msg]
+        entry: 'bin/check_commit_message.py'
         language: script
