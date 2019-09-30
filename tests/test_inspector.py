@@ -21,7 +21,7 @@ def test_inspector_events_initalization():
     dummy = Mock()
     dummy.handles = set()
     Inspector.on_event(Events.INITAL)(dummy)
-    Inspector(None)
+    Inspector(ast.Module([]))
     dummy.assert_called_once()
 
 
@@ -36,7 +36,7 @@ def test_inspector_visit():
     visitor(ast.parse("xyz", "<ast>", "eval").body)
     dummy.assert_called_once()
     assert (
-        Report(filename="None", lineno=1, code="DUMMY")
+        Report(filename="<unknown>", lineno=1, code="DUMMY")
         in inspector.results[dummy.plugin]
     )
 
