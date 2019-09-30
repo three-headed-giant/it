@@ -30,7 +30,7 @@ def test_inspector_visit():
     dummy.__name__ = "dummy"
     dummy.plugin = "dummy"
     Inspector.register(ast.Name)(dummy)
-    inspector = Inspector(None)
+    inspector = Inspector(ast.Module([]))
     visitor = inspector.visit_Name
     assert dummy in visitor.args[0]
     visitor(ast.parse("xyz", "<ast>", "eval").body)
@@ -42,6 +42,6 @@ def test_inspector_visit():
 
 
 def test_attribute_error():
-    inspector = Inspector(None)
+    inspector = Inspector(ast.Module([]))
     with pytest.raises(AttributeError):
         inspector.blabla()
