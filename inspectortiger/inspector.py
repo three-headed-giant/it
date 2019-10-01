@@ -24,6 +24,7 @@ class Inspector(ast.NodeVisitor):
 
         self._hook_db = defaultdict(dict)
         self.results = defaultdict(list)
+        self.sort_hooks()
 
         for initalizer in self._event_hooks[Events.INITAL]:
             initalizer(self._hook_db)
@@ -38,6 +39,11 @@ class Inspector(ast.NodeVisitor):
     def register(cls, *nodes):
         def wrapper(func):
             handles = set(nodes)
+            if not all(
+                isinstance(handle, type) and issubclass(handle, ast.AST)
+                for handle in handles
+            ):
+                raise TypeError("All triggers should be AST nodes!")
             if hasattr(func, "handles"):
                 func.handles.update(handles)
             else:
@@ -61,8 +67,17 @@ class Inspector(ast.NodeVisitor):
 
         return wrapper
 
+    def sort_hooks(self):
+        def priority(hook):
+            return getattr(hook, "priority", Priority.AVG)
+
+        for hooks in self._hooks.values():
+            hooks.sort(key=priority)
+
+        for event_hooks in self._event_hooks.values():
+            event_hooks.sort(key=priority)
+
     def visitor(self, hooks, node):
-        hooks.sort(key=lambda hook: getattr(hook, "priority", Priority.AVG))
         for hook in hooks:
             if affects := hook(node, self._hook_db):
                 code = hook.__name__.upper()
@@ -83,7 +98,10 @@ class Inspector(ast.NodeVisitor):
                 node_finalizer(node, self._hook_db)
 
     def handle(self):
-        self.visit(ast.parse(self.source, self.file))
+        tree = ast.parse(self.source, self.file)
+        for tree_transformer in self._event_hooks[Events.TREE_TRANSFORMER]:
+            tree = tree_transformer(tree)
+        self.visit(tree)
 
     def __getattr__(self, attr):
         _attr = attr[len("visit_") :]

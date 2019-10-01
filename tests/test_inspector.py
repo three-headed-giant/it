@@ -5,12 +5,13 @@ import pytest
 
 from inspectortiger import Inspector
 from inspectortiger.reports import Report
-from inspectortiger.utils import Events
+from inspectortiger.utils import Events, Priority
 
 
 def test_inspector_triggerer():
     dummy = Mock()
     dummy.handles = set()
+    dummy.priority = Priority.AVG
     Inspector.register(ast.Expr)(dummy)
     assert dummy in Inspector._hooks[ast.Expr]
     Inspector.on_event(Events.INITAL)(dummy)
@@ -20,6 +21,7 @@ def test_inspector_triggerer():
 def test_inspector_events_initalization():
     dummy = Mock()
     dummy.handles = set()
+    dummy.priority = Priority.AVG
     Inspector.on_event(Events.INITAL)(dummy)
     Inspector(ast.Module([]))
     dummy.assert_called_once()
@@ -29,6 +31,7 @@ def test_inspector_visit():
     dummy = Mock()
     dummy.__name__ = "dummy"
     dummy.plugin = "dummy"
+    dummy.priority = Priority.AVG
     Inspector.register(ast.Name)(dummy)
     inspector = Inspector(ast.Module([]))
     visitor = inspector.visit_Name

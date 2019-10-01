@@ -6,6 +6,7 @@ class Events(Enum):
     INITAL = auto()
     FINAL = auto()
     NODE_FINALIZE = auto()
+    TREE_TRANSFORMER = auto()
 
 
 class Priority(IntEnum):

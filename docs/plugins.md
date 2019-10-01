@@ -24,6 +24,11 @@ Improvable (for 3.8+) syntaxes
 Common gotchas
 
 
+## Parentize
+`parent` field to each node
+
+- `parent_to(child, node)` => yields all parents of child until it reaches `node`
+
 ### Unimport
 `unimport` integration
 
