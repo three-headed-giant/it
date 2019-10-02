@@ -10,7 +10,12 @@ import ast
 
 from inspectortiger.inspector import Inspector
 from inspectortiger.plugins.context import Contexts, get_context
-from inspectortiger.utils import is_single_node, name_check, target_check
+from inspectortiger.utils import (
+    constant_check,
+    is_single_node,
+    name_check,
+    target_check,
+)
 
 
 @Inspector.register(ast.For)
@@ -36,3 +41,22 @@ def super_args(node, db):
         and node.args
     ):
         return node
+
+
+@Inspector.register(ast.Subscript)
+def optional(node, db):
+    """`Union[Type, None]` can be replaced with `Optional[Type]`."""
+    if (
+        name_check(node.value, "Union")
+        and isinstance(node.slice.value, ast.Tuple)
+        and len(node.slice.value.elts) == 2
+        and len(
+            list(
+                filter(
+                    lambda node: constant_check(node, None),
+                    node.slice.value.elts,
+                )
+            )
+        )
+    ):
+        return node.value

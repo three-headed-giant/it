@@ -2,7 +2,9 @@
 All notable changes to this project will be documented in this file.
 
 ## [0.7.0] - Unrelased
-
+### Plugins
+#### Upgradeable
+- `Union[Type, None]` replacement warning for `Optional[Type]`
 
 ## [0.6.1] - 2/10/2019
 ### Core

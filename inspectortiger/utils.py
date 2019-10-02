@@ -27,6 +27,10 @@ def name_check(a, /, *b):
     return isinstance(a, ast.Name) and a.id in b
 
 
+def constant_check(a, /, *b):
+    return isinstance(a, ast.Constant) and a.value in b
+
+
 def biname_check(a, b, /):
     return isinstance(a, ast.Name) and isinstance(b, ast.Name) and a.id == b.id
 
