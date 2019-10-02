@@ -37,10 +37,10 @@ def main():
         help="include code to reports",
     )
     parser.add_argument(
-        "--plugins", type=str, nargs="*", help="whitelist of plugins"
+        "--ignore-plugin", type=str, nargs="*", help="plugins to ignore"
     )
     parser.add_argument(
-        "--ignore",
+        "--ignore-code",
         type=str,
         nargs="*",
         default=manager.ignore,
@@ -60,11 +60,13 @@ def main():
     )
 
     args = parser.parse_args()
-    load_plugins(manager, args.plugins)
+    load_plugins(manager, args.ignore_plugins)
 
     if args.paths:
         files = traverse_paths(args.paths)
-        reports = inspector(files, args.workers, args.ignore, args.annotate)
+        reports = inspector(
+            files, args.workers, args.ignore_code, args.annotate
+        )
         if reports:
             print(
                 "InspectorTiger inspected \N{right-pointing magnifying glass} "

@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - `Inspector` initalisation with a `filename` and a `ast.AST` allowed
 - Report annotation implemented if `Inspector` is initalized with `filename` and script ran with `--annotate`
 - New event type, `TREE_TRANSFORMER`, which takes `ast.Module` and returns a modified version before the actual check starts
+- Instead of whitelisting, use blacklisting in plugin loading (for consistency).
 ### Plugins
 #### Context
 - Context management improved with scope finalizing

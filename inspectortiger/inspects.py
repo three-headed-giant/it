@@ -34,12 +34,12 @@ def inspector(files, workers, ignore, annotate):
     return all_reports
 
 
-def load_plugins(manager, whitelist=None):
+def load_plugins(manager, ignore=[]):
     namespaces = manager.discover()
     for namespace, plugins in namespaces.items():
         for plugin_name, plugin in plugins.items():
-            if whitelist and plugin not in whitelist:
-                return
+            if ignore and (plugin in ignore or plugin_name in ignore):
+                continue
             try:
                 module = importlib.import_module(f"{namespace}.{plugin}")
                 for handler in dir(module):
