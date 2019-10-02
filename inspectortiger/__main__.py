@@ -60,7 +60,7 @@ def main():
     )
 
     args = parser.parse_args()
-    load_plugins(manager, args.ignore_plugins)
+    load_plugins(manager, args.ignore_plugin)
 
     if args.paths:
         files = traverse_paths(args.paths)

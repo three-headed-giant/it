@@ -1,7 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.6.0] - Unrelased
+## [0.7.0] - Unrelased
+
+
+## [0.6.1] - 2/10/2019
+### Core
+- Fixed typo that caused crash of command line tool
+
+## [0.6.0] - 2/10/2019
 ### Core
 - Handler priority system with `utils.Priority` decorator
 - New event (`utils.Events.NODE_FINALIZE`) for doing work after all handlers called and node traversed
