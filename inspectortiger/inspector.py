@@ -87,9 +87,8 @@ class Inspector(ast.NodeVisitor):
                     if affects is True:
                         affects = node
 
-                    report.annotation = ast.get_source_segment(
-                        self.source, affects
-                    ).split("\n")[0]
+                    if source := ast.get_source_segment(self.source, affects):
+                        report.annotation = source.split("\n")[0]
                 self.results[plugin].append(report)
 
         self.generic_visit(node)
@@ -100,7 +99,7 @@ class Inspector(ast.NodeVisitor):
     def handle(self):
         tree = ast.parse(self.source, self.file)
         for tree_transformer in self._event_hooks[Events.TREE_TRANSFORMER]:
-            tree = tree_transformer(tree)
+            tree = tree_transformer(tree, self._hook_db)
         self.visit(tree)
 
     def __getattr__(self, attr):

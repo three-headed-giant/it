@@ -15,7 +15,7 @@ WEAK = False
 
 
 @Inspector.on_event(Events.TREE_TRANSFORMER)
-def parentize(tree):
+def parentize(tree, db):
     for parent in ast.walk(tree):
         for children in ast.iter_child_nodes(parent):
             if WEAK:

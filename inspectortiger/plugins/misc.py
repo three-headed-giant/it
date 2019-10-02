@@ -39,7 +39,6 @@ def control_flow_inside_finally(node, db):
                 isinstance(parent, ast.For)
                 for parent in parent_to(child, node)
             ):
-                print(child, list(parent_to(child, node)))
                 return child
             else:
                 continue

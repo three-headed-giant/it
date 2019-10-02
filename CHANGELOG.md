@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 
 ## [0.7.0] - Unrelased
+### Core
+- Pass `db` reference to `TREE_TRANSFORMER`s
+
 ### Plugins
 #### Upgradeable
 - `Union[Type, None]` replacement warning for `Optional[Type]`
