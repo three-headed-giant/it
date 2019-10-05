@@ -1,6 +1,7 @@
 import ast
 import tokenize
 from collections import defaultdict
+from dis import Bytecode
 from functools import partial
 
 from inspectortiger.configmanager import logger
@@ -23,7 +24,7 @@ class Inspector(ast.NodeVisitor):
             self.source = None
             self.annotate = annotate
 
-        self._hook_db = defaultdict(dict)
+        self._hook_db = defaultdict(partial(defaultdict, dict))
         self.results = defaultdict(list)
         self.sort_hooks()
 
@@ -40,11 +41,6 @@ class Inspector(ast.NodeVisitor):
     def register(cls, *nodes):
         def wrapper(func):
             handles = set(nodes)
-            if not all(
-                isinstance(handle, type) and issubclass(handle, ast.AST)
-                for handle in handles
-            ):
-                raise TypeError("All triggers should be AST nodes!")
             if hasattr(func, "handles"):
                 func.handles.update(handles)
             else:
@@ -109,3 +105,36 @@ class Inspector(ast.NodeVisitor):
         if hasattr(ast, _attr):
             return partial(self.visitor, self._hooks[getattr(ast, _attr)])
         raise AttributeError(attr)
+
+
+@Inspector.on_event(Events.TREE_TRANSFORMER)
+@Priority.FIRST
+def linker(tree, db):
+    """A linker between AST nodes and Bytecode instructions."""
+
+    bytecode = iter(Bytecode(compile(tree, "<InspectorTiger>", "exec")))
+    current_instruction = next(bytecode)
+    last_node = None
+    for node in ast.walk(tree):
+        if not hasattr(node, "instrs"):
+            node.instrs = []
+
+        if not hasattr(node, "lineno"):
+            continue
+
+        if current_instruction.starts_line is None:
+            if last_node is None:
+                last_node = node
+            else:
+                last_node.instrs.append(current_instruction)
+                current_instruction = next(bytecode)
+
+            continue
+
+        if node.end_lineno >= current_instruction.starts_line >= node.lineno:
+            node.instrs.append(current_instruction)
+            current_instruction = next(bytecode)
+
+        last_node = node
+
+    return tree

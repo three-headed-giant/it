@@ -34,9 +34,10 @@ def yield_from(node, db):
 def super_args(node, db):
     """`super()` called with arguments (old style)."""
     if (
-        get_context(node, db) is db["context"]
-        and db["context"].context is Contexts.FUNCTION
-        and db["previous_contexts"][-1].context is Contexts.CLASS
+        get_context(node, db) is db["upgradeable"]["context"]
+        and db["upgradeable"]["context"].context is Contexts.FUNCTION
+        and db["upgradeable"]["previous_contexts"][-1].context
+        is Contexts.CLASS
         and name_check(node.func, "super")
         and node.args
     ):

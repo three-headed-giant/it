@@ -2,10 +2,10 @@
 ## Context
 Context management for AST
 
-- `db['context']` => Current context
-- `db['previous_contexts']` => Previous contexts
-- `db['next_contexts']` => Next contexts
-- `db['global_context']` => Global context
+- `db['context']['context']` => Current context
+- `db['context']['previous_contexts']` => Previous contexts
+- `db['context']['next_contexts']` => Next contexts
+- `db['context']['global_context']` => Global context
 - `get_context(node, db)` => Infer context of given `node`
 """
 from __future__ import annotations
@@ -55,7 +55,7 @@ class KPair:
 def get_context(node, db):
     possible_contexts = []
     node_kpair = KPair.from_node(node)
-    for kpair, context in db["next_contexts"].items():
+    for kpair, context in db["context"]["next_contexts"].items():
         if node_kpair.start >= kpair.start and node_kpair.end <= kpair.end:
             possible_contexts.append((kpair.distance(node_kpair), context))
 
@@ -63,33 +63,33 @@ def get_context(node, db):
     try:
         return possible_contexts[0][1]
     except IndexError:
-        return db["global_context"]
+        return db["context"]["global_context"]
 
 
 @Inspector.register(ast.Module)
 def prepare_contexts(node, db):
-    db["global_context"] = global_ctx = Context(
+    db["context"]["global_context"] = global_ctx = Context(
         "__main__", Contexts.GLOBAL, KPair(0, 0)
     )
-    db["previous_contexts"] = []
-    db["context"] = global_ctx
+    db["context"]["previous_contexts"] = []
+    db["context"]["context"] = global_ctx
     for possible_context in ast.walk(node):
         if isinstance(possible_context, tuple(CTX_TYPES)):
             kpair = KPair.from_node(possible_context)
             ctx = CTX_TYPES[type(possible_context)]
             ctx = Context(possible_context.name, ctx, kpair)
-            db["next_contexts"][ctx.kpair] = ctx
+            db["context"]["next_contexts"][ctx.kpair] = ctx
 
 
 @Inspector.register(ast.ClassDef, ast.FunctionDef)
 def change_context(node, db):
     context = get_context(node, db)
-    db["previous_contexts"].append(db["context"])
-    db["context"] = context
+    db["context"]["previous_contexts"].append(db["context"]["context"])
+    db["context"]["context"] = context
 
 
 @Inspector.on_event(Events.NODE_FINALIZE)
 @Inspector.register(ast.ClassDef, ast.FunctionDef)
 def finalize_context(node, db):
-    context = db["previous_contexts"].pop()
-    db["context"] = context
+    context = db["context"]["previous_contexts"].pop()
+    db["context"]["context"] = context

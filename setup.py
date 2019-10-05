@@ -18,6 +18,4 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     entry_points={"console_scripts": [f"{name} = {name}.__main__:main"]},
-    include_package_data=True,
-    package_data={"inspectortiger": ["*.ini"]},
 )
