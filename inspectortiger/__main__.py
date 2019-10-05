@@ -3,7 +3,7 @@ import json
 from distutils.util import strtobool
 from pathlib import Path
 
-from inspectortiger.configmanager import ConfigManager
+from inspectortiger.configmanager import ConfigManager, Plugin
 from inspectortiger.inspects import inspector, load_plugins
 
 
@@ -32,35 +32,44 @@ def main():
 
     parser.add_argument(
         "--annotate",
-        default=False,
+        default=manager.config.annotate,
         action="store_true",
         help="include code to reports",
     )
     parser.add_argument(
-        "--ignore-plugin", type=str, nargs="*", help="plugins to ignore"
+        "--ignore-plugin",
+        nargs="*",
+        default=manager.config.blacklist.plugins,
+        type=Plugin.from_simple,
+        help="plugins to ignore",
     )
     parser.add_argument(
         "--ignore-code",
         type=str,
         nargs="*",
-        default=manager.ignore,
+        default=manager.config.blacklist.codes,
         help="handlers to ignore",
     )
     parser.add_argument(
         "--workers",
         type=int,
         help="number of worker processes",
-        default=manager.workers,
+        default=manager.config.workers,
     )
     parser.add_argument(
         "--fail-exit",
         type=strtobool,
         help="on fail exit with error code",
-        default=manager.fail_exit,
+        default=manager.config.fail_exit,
+    )
+    parser.add_argument(
+        "--load-core",
+        help="load core plugins (`inspectortiger.plugins`)",
+        default=manager.config.load_core,
     )
 
     args = parser.parse_args()
-    load_plugins(manager, args.ignore_plugin)
+    load_plugins(manager, args.ignore_plugin, args.load_core)
 
     if args.paths:
         files = traverse_paths(args.paths)

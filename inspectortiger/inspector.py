@@ -89,7 +89,7 @@ class Inspector(ast.NodeVisitor):
 
                     if source := ast.get_source_segment(self.source, affects):
                         report.annotation = source.split("\n")[0]
-                self.results[plugin].append(report)
+                self.results[plugin.plugin].append(report)
 
         self.generic_visit(node)
         for node_finalizer in self._event_hooks[Events.NODE_FINALIZE]:

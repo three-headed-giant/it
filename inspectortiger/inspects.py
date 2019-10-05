@@ -1,14 +1,21 @@
-import importlib
 from collections import defaultdict
 from concurrent.futures import ProcessPoolExecutor
-from contextlib import suppress
 from dataclasses import asdict
 
+from inspectortiger.configmanager import Plugin
 from inspectortiger.inspector import Inspector
 
-
-class PluginLoadError(Exception):
-    pass
+CORE_PLUGINS = Plugin.from_config(
+    {
+        "inspectortiger.plugins": [
+            "context",
+            "parentize",
+            "misc",
+            "upgradeable",
+            "unreachable_except",
+        ]
+    }
+)
 
 
 def inspect(file):
@@ -34,19 +41,16 @@ def inspector(files, workers, ignore, annotate):
     return all_reports
 
 
-def load_plugins(manager, ignore=[]):
-    namespaces = manager.discover()
-    for namespace, plugins in namespaces.items():
-        for plugin_name, plugin in plugins.items():
-            if ignore and (plugin in ignore or plugin_name in ignore):
+def load_plugins(manager, ignore=(), load_core=True):
+    def loader(plugins):
+        for plugin in plugins:
+            print(plugin, ignore)
+            if plugin in ignore:
                 continue
-            try:
-                module = importlib.import_module(f"{namespace}.{plugin}")
-                for handler in dir(module):
-                    handler = getattr(module, handler)
-                    with suppress(AttributeError):
-                        handler.plugin = plugin
-            except ImportError:
-                raise PluginLoadError(
-                    f"Couldn't load '{plugin_name.title()}' from `{namespace}` namespace"
-                )
+            else:
+                plugin.load()
+
+    if load_core:
+        loader(CORE_PLUGINS)
+
+    loader(manager.config.plugins)
