@@ -94,6 +94,7 @@ def main():
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 
+    args = parser.parse_args()
     load_plugins(manager, args.ignore_plugin, args.load_core)
 
     if args.paths:
