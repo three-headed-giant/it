@@ -12,7 +12,7 @@ PREFIXES = {
     "community-plugins": "community plugins",
     "scripts": "internal scripts that are used to generate files like error_codes.md",
     "misc": "other",
-    "relase": "relases",
+    "release": "releases",
 }
 
 

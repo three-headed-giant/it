@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 ## [0.7.0] - Unrelased
 ### Core
 - Pass `db` reference to `TREE_TRANSFORMER`s
+- Remove old-style ini configs ([#4](https://github.com/thg-consulting/inspectortiger/issues/4))
+- Implement JSON configuration files ([#4](https://github.com/thg-consulting/inspectortiger/issues/4))
+- Refactor plugin loading system ([#4](https://github.com/thg-consulting/inspectortiger/issues/4))
 
 ### Plugins
 #### Upgradeable
