@@ -44,7 +44,6 @@ def inspector(files, workers, ignore, annotate):
 def load_plugins(manager, ignore=(), load_core=True):
     def loader(plugins):
         for plugin in plugins:
-            print(plugin, ignore)
             if plugin in ignore:
                 continue
             else:

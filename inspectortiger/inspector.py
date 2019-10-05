@@ -3,6 +3,7 @@ import tokenize
 from collections import defaultdict
 from functools import partial
 
+from inspectortiger.configmanager import logger
 from inspectortiger.reports import Report
 from inspectortiger.utils import Events, Priority
 
@@ -79,6 +80,7 @@ class Inspector(ast.NodeVisitor):
 
     def visitor(self, hooks, node):
         for hook in hooks:
+            logger.debug("Visiting {type(node).__name__}.")
             if affects := hook(node, self._hook_db):
                 code = hook.__name__.upper()
                 plugin = getattr(hook, "plugin", "unknown")

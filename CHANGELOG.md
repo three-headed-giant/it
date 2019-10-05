@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - Remove old-style ini configs ([#4](https://github.com/thg-consulting/inspectortiger/issues/4))
 - Implement JSON configuration files ([#4](https://github.com/thg-consulting/inspectortiger/issues/4))
 - Refactor plugin loading system ([#4](https://github.com/thg-consulting/inspectortiger/issues/4))
+- Implement logging system ([#7](https://github.com/thg-consulting/inspectortiger/issues/7))
 
 ### Plugins
 #### Upgradeable

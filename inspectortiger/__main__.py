@@ -1,9 +1,11 @@
 import argparse
 import json
+import logging
+import sys
 from distutils.util import strtobool
 from pathlib import Path
 
-from inspectortiger.configmanager import ConfigManager, Plugin
+from inspectortiger.configmanager import ConfigManager, Plugin, logger
 from inspectortiger.inspects import inspector, load_plugins
 
 
@@ -67,8 +69,31 @@ def main():
         help="load core plugins (`inspectortiger.plugins`)",
         default=manager.config.load_core,
     )
+    parser.add_argument(
+        "--logging-level",
+        type=int,
+        default=manager.config.logging_level,
+        help="logging level",
+    )
+    parser.add_argument(
+        "--logging-handler-level",
+        type=int,
+        default=manager.config.logging_handler_level,
+        help="stdout handler level",
+    )
 
     args = parser.parse_args()
+
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(args.logging_handler_level)
+    logger.setLevel(args.logging_level)
+
+    formatter = logging.Formatter(
+        "[Inspector Tiger] %(levelname)s - %(message)s"
+    )
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
     load_plugins(manager, args.ignore_plugin, args.load_core)
 
     if args.paths:
@@ -77,15 +102,15 @@ def main():
             files, args.workers, args.ignore_code, args.annotate
         )
         if reports:
-            print(
+            logger.info(
                 "InspectorTiger inspected \N{right-pointing magnifying glass} "
                 "and found these problems;"
             )
-            print(json.dumps(reports, indent=4))
+            logger.info("\n" + json.dumps(reports, indent=4))
             if args.fail_exit:
                 exit(1)
         else:
-            print(
+            logger.info(
                 "InspectorTiger inspected \N{right-pointing magnifying glass} "
                 "your code and it is perfect \N{white heavy check mark}"
             )

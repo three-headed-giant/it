@@ -1,5 +1,6 @@
 import importlib
 import json
+import logging
 from contextlib import suppress
 from dataclasses import dataclass, field
 from multiprocessing import cpu_count
@@ -7,6 +8,7 @@ from pathlib import Path
 from typing import List, Optional
 
 USER_CONFIG = Path("~/.inspector.rc").expanduser()
+logger = logging.getLogger("inspectortiger")
 
 
 class PluginLoadError(Exception):
@@ -51,14 +53,15 @@ class Plugin(_Plugin):
     def load(self):
         try:
             plugin = importlib.import_module(self.static_name)
+            logger.debug(
+                "{self.plugin} from {self.namespace} successfully loaded."
+            )
             for actionable in dir(plugin):
                 actionable = getattr(plugin, actionable)
                 with suppress(AttributeError):
                     actionable.plugin = self
         except ImportError:
-            raise PluginLoadError(
-                f"Couldn't load '{self.plugin}' from `{self.namespace}` namespace!"
-            )
+            logger.error("Couldn't load {self.plugin} from {self.namespace}.")
 
 
 @dataclass
@@ -81,6 +84,8 @@ class Config:
     annotate: bool = False
     fail_exit: bool = True
     load_core: bool = True
+    logging_level: int = logging.INFO
+    logging_handler_level: int = logging.INFO
 
     plugins: List[Plugin] = field(default_factory=list)
     blacklist: Blacklist = field(default_factory=Blacklist)
@@ -100,6 +105,7 @@ class ConfigManager:
     @staticmethod
     def _parse_config(path):
         if not path.exists():
+            logger.warning("Couldn't find configuration file at {path!r}.")
             return {}
         with open(path) as config:
             try:
