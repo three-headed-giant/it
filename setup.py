@@ -14,7 +14,7 @@ setup(
     packages=find_packages(),
     url="https://github.com/thg-consulting/inspectortiger",
     author="thg",
-    description="InspectorTiger is a modern python code review tool which warns you about improvable code and possible bugs.",
+    description="Modern python code review tool / framework",
     long_description=long_description,
     long_description_content_type="text/markdown",
     entry_points={"console_scripts": [f"{name} = {name}.__main__:main"]},

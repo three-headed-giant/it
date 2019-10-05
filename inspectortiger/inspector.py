@@ -122,18 +122,25 @@ def linker(tree, db):
         if not hasattr(node, "lineno"):
             continue
 
-        if current_instruction.starts_line is None:
-            if last_node is None:
-                last_node = node
-            else:
-                last_node.instrs.append(current_instruction)
+        try:
+            if current_instruction.starts_line is None:
+                if last_node is None:
+                    last_node = node
+                else:
+                    last_node.instrs.append(current_instruction)
+                    current_instruction = next(bytecode)
+
+                continue
+
+            if (
+                node.end_lineno
+                >= current_instruction.starts_line
+                >= node.lineno
+            ):
+                node.instrs.append(current_instruction)
                 current_instruction = next(bytecode)
-
-            continue
-
-        if node.end_lineno >= current_instruction.starts_line >= node.lineno:
-            node.instrs.append(current_instruction)
-            current_instruction = next(bytecode)
+        except StopIteration:
+            break
 
         last_node = node
 
