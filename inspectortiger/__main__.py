@@ -1,9 +1,11 @@
 import argparse
 import json
+import logging
+import sys
 from distutils.util import strtobool
 from pathlib import Path
 
-from inspectortiger.configmanager import ConfigManager
+from inspectortiger.configmanager import ConfigManager, Plugin, logger
 from inspectortiger.inspects import inspector, load_plugins
 
 
@@ -32,35 +34,68 @@ def main():
 
     parser.add_argument(
         "--annotate",
-        default=False,
+        default=manager.config.annotate,
         action="store_true",
         help="include code to reports",
     )
     parser.add_argument(
-        "--ignore-plugin", type=str, nargs="*", help="plugins to ignore"
+        "--ignore-plugin",
+        nargs="*",
+        default=manager.config.blacklist.plugins,
+        type=Plugin.from_simple,
+        help="plugins to ignore",
     )
     parser.add_argument(
         "--ignore-code",
         type=str,
         nargs="*",
-        default=manager.ignore,
+        default=manager.config.blacklist.codes,
         help="handlers to ignore",
     )
     parser.add_argument(
         "--workers",
         type=int,
         help="number of worker processes",
-        default=manager.workers,
+        default=manager.config.workers,
     )
     parser.add_argument(
         "--fail-exit",
         type=strtobool,
         help="on fail exit with error code",
-        default=manager.fail_exit,
+        default=manager.config.fail_exit,
+    )
+    parser.add_argument(
+        "--load-core",
+        help="load core plugins (`inspectortiger.plugins`)",
+        default=manager.config.load_core,
+    )
+    parser.add_argument(
+        "--logging-level",
+        type=int,
+        default=manager.config.logging_level,
+        help="logging level",
+    )
+    parser.add_argument(
+        "--logging-handler-level",
+        type=int,
+        default=manager.config.logging_handler_level,
+        help="stdout handler level",
     )
 
     args = parser.parse_args()
-    load_plugins(manager, args.ignore_plugin)
+
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(args.logging_handler_level)
+    logger.setLevel(args.logging_level)
+
+    formatter = logging.Formatter(
+        "[Inspector Tiger] %(levelname)s - %(message)s"
+    )
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
+    args = parser.parse_args()
+    load_plugins(manager, args.ignore_plugin, args.load_core)
 
     if args.paths:
         files = traverse_paths(args.paths)
@@ -68,15 +103,15 @@ def main():
             files, args.workers, args.ignore_code, args.annotate
         )
         if reports:
-            print(
+            logger.info(
                 "InspectorTiger inspected \N{right-pointing magnifying glass} "
                 "and found these problems;"
             )
-            print(json.dumps(reports, indent=4))
+            logger.info("\n" + json.dumps(reports, indent=4))
             if args.fail_exit:
                 exit(1)
         else:
-            print(
+            logger.info(
                 "InspectorTiger inspected \N{right-pointing magnifying glass} "
                 "your code and it is perfect \N{white heavy check mark}"
             )
