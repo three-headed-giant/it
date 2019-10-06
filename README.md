@@ -6,7 +6,7 @@
 ![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)
 ![Dependicy Free](https://img.shields.io/static/v1?label=dependicy&message=free&color=success)
 
-InspectorTiger is a modern python code review tool / framework. It comes with bunch of pre-defined handlers which warns you about improvable code and possible bugs. Beside that handlers you can write your own or use community ones.
+InspectorTiger is a modern python code review tool / framework. It comes with bunch of pre-defined handlers which warns you about improvements and possible bugs. Beside these handlers, you can write your own or use community ones.
 
 ## Example
 ```py
@@ -26,7 +26,7 @@ class Foo(SomeObjects):
         for a in x:
             yield a
 ```
-Think about this piece of code, you see some bugs or improvable code don't you? But what if there are hundreds of lines code in this form inside your big codebase. How can you find that patterns? By writing regex queries? LOL, of course not.
+Think about this piece of code, you see some bugs or improvements, don't you? But what if there were hundreds of lines code in this form inside your big codebase. How would you find these patterns? By writing regex queries? LOL, of course not.
 ```json
 $ python -m inspectortiger my_big_codebase/ # P.S: stripped file name information
 {
@@ -63,7 +63,7 @@ $ python -m inspectortiger my_big_codebase/ # P.S: stripped file name informatio
 }
 ```
 
-Buutt, i want something more specific. Like i want to find all calls to `xyz` function with 2 arguments only inside of a class inside of a class, can you implement this feature? Nop, but you can.
+Buutt, what if i want something more specific? Like what if i want to find all calls to `xyz` function with 2 arguments only inside of a class inside of a class, can you implement this feature? Nop, but you can.
 
 ```py
 xyz()
@@ -85,7 +85,7 @@ def papa():
             xyz(1, 2) # this one
 ```
 
-For writing a handler you need a python package. Let's create a `setup.py` (or `setup.cfg`);
+To write a handler, you'll need a python package. Let's create a `setup.py` (or `setup.cfg`);
 ```
 from setuptools import setup, find_packages
 
@@ -94,13 +94,13 @@ setup(
     packages=find_packages()
 )
 ```
-This would work (just for tutorial). Then we need actual package which would contain an `__init__.py` and as many modules as we want.
+This would work (just for tutorial). Then we need an actual package which would contain an `__init__.py` and as many modules as we want.
 ```
 ├── xyzintro
 │   ├── handlers.py
 │   └── __init__.py
 ```
-The only module in that example is the module that contains our handler. Let's give a look to that.
+The only module in that example is the module that contains our handler. Let's take a look to that.
 ```py
 from inspectortiger import Inspector
 ```
@@ -119,12 +119,12 @@ After import a decorator comes in,
 ```py
 @Inspector.register(ast.Call)
 ```
-Which registers our function (below that) to the `Inspector` with an AST node. When `InspectorTige` encounters with that node, it'll call our function.
+Which registers our function (below that) to the `Inspector` with an AST node. When the `InspectorTiger` encounters with that node, it'll call our function.
 ```py
 def xyzinspector(node, db):
     """Finds all `xyz()` calls with 2 arguments inside of 2-level-depth class context."""
 ```
-The first thing we need to do is find which context currently we are in, and which was the previous context. If both of them are classes, we can proceed.
+The first thing we need to do is to find what the current context is and what the previous context was. If both of these are classes, we can proceed.
 ```py
     prev = db["context"]["previous_contexts"]
     depth_one = db["context"]["context"].context is Contexts.CLASS
@@ -133,7 +133,7 @@ The first thing we need to do is find which context currently we are in, and whi
     else:
         depth_two = False
 ```
-Luckily Inspector Tiger has a core plugin for deciding our context, `inspectortiger.plugins.context`. First thing we did it is accessing the hook database (`db`) which allows hooks to share data between them. Then we got our current context (`dept_one`). We performed a check because we can be in global scope and if that is the case, `prev[-1]` will raise an error. After deciding the status of the our contexts,
+Luckily Inspector Tiger has a core plugin for deciding our context, `inspectortiger.plugins.context`. First thing we did was accessing the hook database (`db`) which allows hooks to share data between them. Then we got our current context (`depth_one`). We performed a check because we could be in the global scope and if that's the case, `prev[-1]` will raise an error. After deciding the status of the our contexts,
 ```py
     return (
         depth_one
@@ -142,10 +142,10 @@ Luckily Inspector Tiger has a core plugin for deciding our context, `inspectorti
         and len(node.args)== 2
     )
 ```
-we are ready to return a value. If the value is `True`, `Inspector` will put this investigaton code to report. If it is `False`, then inspector will pass.
+we are ready to return a value. If the value is `True`, `Inspector` will put this investigaton code to report. If it's `False`, then inspector will pass.
 
 
-Last thing we need to do is activating our plugin, witch creating/modifiying `~/.inspector.rc`;
+Last thing we need to do is to activate our plugin by creating/modifiying the `~/.inspector.rc` file;
 ```json
 {
     ...
