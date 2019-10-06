@@ -8,8 +8,9 @@ __author__ = "Batuhan Taskaya"
 
 import ast
 
+from inspectortiger.configmanager import Plugin
 from inspectortiger.inspector import Inspector
-from inspectortiger.plugins.context import CTX_TYPES, get_context
+from inspectortiger.plugins.context import get_context
 from inspectortiger.plugins.parentize import parent_to
 
 MUTABLE_TYPE = (ast.List, ast.Dict, ast.Set)
@@ -26,6 +27,7 @@ def default_mutable_arg(node, db):
 
 
 @Inspector.register(ast.Try)
+@Plugin.require("@context")
 def control_flow_inside_finally(node, db):
     """A return/break/continue that would implicitly cancel any active exception."""
 

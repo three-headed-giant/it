@@ -19,23 +19,27 @@ class Priority(IntEnum):
         return func
 
 
-def is_single_node(a, b, /):
+def mark(func):
+    func._inspection_mark = True
+
+
+def is_single_node(a, b):
     return len(a.body) == 1 and isinstance(a.body[0], b)
 
 
-def name_check(a, /, *b):
+def name_check(a, *b):
     return isinstance(a, ast.Name) and a.id in b
 
 
-def constant_check(a, /, *b):
+def constant_check(a, *b):
     return isinstance(a, ast.Constant) and a.value in b
 
 
-def biname_check(a, b, /):
+def biname_check(a, b):
     return isinstance(a, ast.Name) and isinstance(b, ast.Name) and a.id == b.id
 
 
-def tuple_check(a, b, /):
+def tuple_check(a, b):
     if not (isinstance(a, ast.Tuple) and isinstance(b, ast.Tuple)):
         return False
     if len(a.elts) != len(b.elts):
@@ -48,7 +52,7 @@ def tuple_check(a, b, /):
     return False
 
 
-def target_check(a, b, /):
+def target_check(a, b):
     if type(a) != type(b):
         return False
     if isinstance(a, ast.Name) and biname_check(a, b):

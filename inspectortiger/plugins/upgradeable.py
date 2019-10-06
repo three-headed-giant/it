@@ -8,6 +8,7 @@ __author__ = "Batuhan Taskaya"
 
 import ast
 
+from inspectortiger.configmanager import Plugin
 from inspectortiger.inspector import Inspector
 from inspectortiger.plugins.context import Contexts, get_context
 from inspectortiger.utils import (
@@ -30,18 +31,6 @@ def yield_from(node, db):
         return node.body[0].value
 
 
-@Inspector.register(ast.Call)
-def super_args(node, db):
-    """`super()` called with arguments (old style)."""
-    return (
-        get_context(node, db) is db["context"]["context"]
-        and db["context"]["context"].context is Contexts.FUNCTION
-        and db["context"]["previous_contexts"][-1].context is Contexts.CLASS
-        and name_check(node.func, "super")
-        and node.args
-    )
-
-
 @Inspector.register(ast.Subscript)
 def optional(node, db):
     """`Union[Type, None]` can be replaced with `Optional[Type]`."""
@@ -59,3 +48,16 @@ def optional(node, db):
         )
     ):
         return node.value
+
+
+@Inspector.register(ast.Call)
+@Plugin.require("@context")
+def super_args(node, db):
+    """`super()` called with arguments (old style)."""
+    return (
+        get_context(node, db) is db["context"]["context"]
+        and db["context"]["context"].context is Contexts.FUNCTION
+        and db["context"]["previous_contexts"][-1].context is Contexts.CLASS
+        and name_check(node.func, "super")
+        and node.args
+    )

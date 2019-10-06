@@ -9,6 +9,12 @@ All notable changes to this project will be documented in this file.
 - Refactor plugin loading system ([#4](https://github.com/thg-consulting/inspectortiger/issues/4))
 - Implement logging system ([#7](https://github.com/thg-consulting/inspectortiger/issues/7))
 - Remove annotation support
+- Python3.7 support!!!!
+- Buffered imports with `Inspector.buffer`
+- `@Plugin.require` decorator for defining dependencies
+- `inactive` and `python_version` fields to `Plugin` object
+- Python-version bound plugins with specifying `__py_version__`
+
 ### Plugins
 #### Upgradeable
 - `Union[Type, None]` replacement warning for `Optional[Type]`

@@ -1,6 +1,6 @@
 """
 ## Context
-Context management for AST
+Context management for AST (38+)
 
 - `db['context']['context']` => Current context
 - `db['context']['previous_contexts']` => Previous contexts
@@ -18,6 +18,7 @@ from inspectortiger.inspector import Inspector
 from inspectortiger.utils import Events
 
 __author__ = "Batuhan Taskaya"
+__py_version__ = (3, 8)
 
 
 class Contexts(Enum):

@@ -1,11 +1,13 @@
 import importlib
 import json
 import logging
-from contextlib import suppress
+import sys
 from dataclasses import dataclass, field
 from multiprocessing import cpu_count
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Tuple
+
+import inspectortiger.inspector
 
 USER_CONFIG = Path("~/.inspector.rc").expanduser()
 logger = logging.getLogger("inspectortiger")
@@ -15,24 +17,28 @@ class PluginLoadError(Exception):
     pass
 
 
-class _Plugin:
-    def __init_subclass__(cls):
-        cls._singletons = {}
+class _Plugin(type):
+    _plugins = {}
 
-    def __new__(cls, *args):
-        if not cls._singletons.get(args):
-            cls._singletons[args] = super().__new__(cls)
-        return cls._singletons[args]
+    def __call__(cls, name, namespace):
+        if name not in cls._plugins:
+            cls._plugins[name] = super().__call__(name, namespace)
+        return cls._plugins[name]
 
 
 @dataclass(unsafe_hash=True)
-class Plugin(_Plugin):
+class Plugin(metaclass=_Plugin):
     plugin: str
     namespace: str
+    inactive: bool = False
     static_name: Optional[str] = None
+    python_version: Tuple[int, ...] = ()
 
     @classmethod
     def from_simple(cls, simple):
+        if simple.startswith("@"):
+            simple = simple.replace("@", "inspectortiger.plugins.")
+
         namespace, plugin = simple.rsplit(".", 1)
         return cls(plugin, namespace)
 
@@ -43,24 +49,51 @@ class Plugin(_Plugin):
             result.extend(cls(plugin, namespace) for plugin in plugins)
         return result
 
-    def __str__(self):
-        return self.plugin
+    @classmethod
+    def require(cls, plugin, namespace=None):
+        def wrapper(func):
+            if namespace is None:
+                requirement = cls.from_simple(plugin)
+            else:
+                requirement = cls(plugin, namespace)
+
+            if not hasattr(func, "requires"):
+                func.requires = []
+            func.requires.append(requirement)
+            return func
+
+        return wrapper
 
     def __post_init__(self):
         if self.static_name is None:
             self.static_name = f"{self.namespace}.{self.plugin}"
 
+    def __str__(self):
+        return self.plugin
+
     def load(self):
-        try:
-            plugin = importlib.import_module(self.static_name)
-            for actionable in dir(plugin):
-                actionable = getattr(plugin, actionable)
-                with suppress(AttributeError):
-                    actionable.plugin = self
-        except ImportError:
-            raise PluginLoadError(
-                f"Couldn't load '{self.plugin}' from `{self.namespace}` namespace!"
-            )
+        with inspectortiger.inspector.Inspector.buffer() as buf:
+            try:
+                plugin = importlib.import_module(self.static_name)
+            except ImportError:
+                raise PluginLoadError(
+                    f"Couldn't load '{self.plugin}' from `{self.namespace}` namespace!"
+                )
+
+            if hasattr(plugin, "__py_version__"):
+                self.python_version = plugin.__py_version__
+
+            if self.python_version > sys.version_info:
+                self.inactive = True
+                logger.debug(
+                    f"`{self.plugin}` plugin from `{self.namespace}` couldn't load because of incompatible version."
+                )
+                raise inspectortiger.inspector.BufferExit
+
+        for actionable in dir(plugin):
+            actionable = getattr(plugin, actionable)
+            if hasattr(actionable, "_inspection_mark"):
+                actionable.plugin = self
 
 
 @dataclass

@@ -1,18 +1,25 @@
 import ast
 import tokenize
 from collections import defaultdict
-from dis import Bytecode
+from contextlib import contextmanager
 from functools import partial
 
 from inspectortiger.configmanager import logger
 from inspectortiger.reports import Report
-from inspectortiger.utils import Events, Priority
+from inspectortiger.utils import Events, Priority, mark
+
+
+class BufferExit(Exception):
+    pass
 
 
 class Inspector(ast.NodeVisitor):
 
     _hooks = defaultdict(list)
     _event_hooks = defaultdict(list)
+
+    _hooks_buffer = defaultdict(list)
+    _event_hooks_buffer = defaultdict(list)
 
     def __init__(self, source, *args, **kwargs):
         if isinstance(source, ast.AST):
@@ -38,6 +45,8 @@ class Inspector(ast.NodeVisitor):
     @classmethod
     def register(cls, *nodes):
         def wrapper(func):
+            mark(func)
+
             handles = set(nodes)
             if hasattr(func, "handles"):
                 func.handles.update(handles)
@@ -53,6 +62,7 @@ class Inspector(ast.NodeVisitor):
     @classmethod
     def on_event(cls, *events):
         def wrapper(func):
+            mark(func)
             if hasattr(func, "handles"):
                 for handle in func.handles:
                     cls._hooks[handle].remove(func)
@@ -62,15 +72,40 @@ class Inspector(ast.NodeVisitor):
 
         return wrapper
 
+    @classmethod
+    @contextmanager
+    def buffer(cls):
+        append = True
+        hooks, events = cls._hooks, cls._event_hooks
+        try:
+            cls._hooks, cls._event_hooks = (
+                cls._hooks_buffer,
+                cls._event_hooks_buffer,
+            )
+            yield
+        except BufferExit:
+            append = False
+        finally:
+            if append:
+                for trigger, _hooks in cls._hooks.items():
+                    hooks[trigger].extend(_hooks)
+                for trigger, _hooks in cls._event_hooks.items():
+                    events[trigger].extend(_hooks)
+
+            cls._hooks, cls._event_hooks = hooks, events
+            cls._hooks_buffer.clear()
+            cls._event_hooks_buffer.clear()
+
     def sort_hooks(self):
         def priority(hook):
             return getattr(hook, "priority", Priority.AVG)
 
-        for hooks in self._hooks.values():
+        for hooks in (*self._hooks.values(), *self._event_hooks.values()):
+            for hook in hooks:
+                if hasattr(hook, "requires"):
+                    if any(require.inactive for require in hook.requires):
+                        hooks.remove(hook)
             hooks.sort(key=priority)
-
-        for event_hooks in self._event_hooks.values():
-            event_hooks.sort(key=priority)
 
     def visitor(self, hooks, node):
         for hook in hooks:

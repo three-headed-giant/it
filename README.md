@@ -3,7 +3,7 @@
 ![codecov.io](http://codecov.io/github/thg-consulting/inspectortiger/coverage.svg?branch=master)
 ![PyPI version](https://badge.fury.io/py/inspectortiger.svg)
 ![black](https://img.shields.io/badge/code%20style-black-000000.svg)
-![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)
+![Python 3.7+](https://img.shields.io/badge/python-3.8+-blue.svg)
 ![Dependicy Free](https://img.shields.io/static/v1?label=dependicy&message=free&color=success)
 
 InspectorTiger is a modern python code review tool / framework. It comes with bunch of pre-defined handlers which warns you about improvements and possible bugs. Beside these handlers, you can write your own or use community ones.
