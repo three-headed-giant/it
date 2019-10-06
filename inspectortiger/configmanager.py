@@ -80,7 +80,6 @@ class Blacklist:
 @dataclass
 class Config:
     workers: int = cpu_count()
-    annotate: bool = False
     fail_exit: bool = True
     load_core: bool = True
     logging_level: int = logging.INFO

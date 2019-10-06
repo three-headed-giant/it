@@ -24,7 +24,7 @@ def inspect(file):
     return inspector.results
 
 
-def inspector(files, workers, ignore, annotate):
+def inspector(files, workers, ignore):
     all_reports = defaultdict(list)
     with ProcessPoolExecutor(max_workers=workers) as executor:
         for inspection in executor.map(inspect, set(files)):
@@ -33,9 +33,6 @@ def inspector(files, workers, ignore, annotate):
                     if report.code in ignore:
                         continue
                     report = asdict(report)
-                    if not annotate:
-                        del report["annotation"]
-
                     all_reports[plugin].append(report)
 
     return all_reports

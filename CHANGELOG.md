@@ -8,8 +8,7 @@ All notable changes to this project will be documented in this file.
 - Implement JSON configuration files ([#4](https://github.com/thg-consulting/inspectortiger/issues/4))
 - Refactor plugin loading system ([#4](https://github.com/thg-consulting/inspectortiger/issues/4))
 - Implement logging system ([#7](https://github.com/thg-consulting/inspectortiger/issues/7))
-- Inital bytecode support with linker ([#8](https://github.com/thg-consulting/inspectortiger/issues/8))
-
+- Remove annotation support
 ### Plugins
 #### Upgradeable
 - `Union[Type, None]` replacement warning for `Optional[Type]`

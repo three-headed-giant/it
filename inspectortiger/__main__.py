@@ -33,12 +33,6 @@ def main():
     )
 
     parser.add_argument(
-        "--annotate",
-        default=manager.config.annotate,
-        action="store_true",
-        help="include code to reports",
-    )
-    parser.add_argument(
         "--ignore-plugin",
         nargs="*",
         default=manager.config.blacklist.plugins,
@@ -99,9 +93,7 @@ def main():
 
     if args.paths:
         files = traverse_paths(args.paths)
-        reports = inspector(
-            files, args.workers, args.ignore_code, args.annotate
-        )
+        reports = inspector(files, args.workers, args.ignore_code)
         if reports:
             logger.info(
                 "InspectorTiger inspected \N{right-pointing magnifying glass} "
