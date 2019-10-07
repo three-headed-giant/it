@@ -1,4 +1,5 @@
 import ast
+import sys
 
 import pytest
 
@@ -45,6 +46,9 @@ def test_name_check():
     assert not name_check(name, "var")
 
 
+@pytest.mark.skipif(
+    sys.version_info < (3, 8), reason="requires python3.8 or higher"
+)
 @pytest.mark.parametrize("constant", (1, '"a"', 1.7, True, None, False))
 def test_constant_check(constant):
     node = ast.parse(str(constant), "<ast>", "eval").body

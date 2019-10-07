@@ -26,7 +26,7 @@ def check():
         commit = file.read().strip().split("\n")[0]
 
     if commit.startswith("Merge"):
-        return
+        exit(0)
     prefix, _, message = commit.rpartition(":")
     if not prefix:
         print("No prefix specified!")
@@ -43,7 +43,8 @@ if __name__ == "__main__":
     try:
         check()
     except SystemExit as e:
-        print(
-            "Please read docs/contributing.md for more details about commit style."
-        )
+        if e.code != 0:
+            print(
+                "Please read docs/contributing.md for more details about commit style."
+            )
         raise
