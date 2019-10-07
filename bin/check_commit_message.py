@@ -25,6 +25,8 @@ def check():
     with open(args.file) as file:
         commit = file.read().strip().split("\n")[0]
 
+    if commit.startswith("Merge"):
+        return
     prefix, _, message = commit.rpartition(":")
     if not prefix:
         print("No prefix specified!")
