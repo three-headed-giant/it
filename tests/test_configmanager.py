@@ -22,14 +22,19 @@ def test_plugin_init():
     package = Plugin("b", "a")
     assert package.plugin == "b" and package.namespace == "a"
     assert package.static_name == "a.b"
+    assert str(package) == "b"
+
     sub_package = Plugin("c", "a.b")
     assert sub_package.plugin == "c" and sub_package.namespace == "a.b"
     assert sub_package.static_name == "a.b.c"
+    assert str(sub_package) == "c"
+
     sub_sub_package = Plugin("d", "a.b.c")
     assert (
         sub_sub_package.plugin == "d" and sub_sub_package.namespace == "a.b.c"
     )
     assert sub_sub_package.static_name == "a.b.c.d"
+    assert str(sub_sub_package) == "d"
 
 
 def test_plugin_from_simple():
@@ -57,3 +62,17 @@ def test_plugin_from_config():
     multiple_namespace_plugins = Plugin.from_config(dict(a=["b"], c=["d.e"]))
     assert multiple_namespace_plugins[0] is Plugin("b", "a")
     assert multiple_namespace_plugins[1] is Plugin("e", "c.d")
+
+
+def test_plugin_require():
+    dummy = lambda: None
+
+    Plugin.require("b", "a")(dummy)
+    assert hasattr(dummy, "requires")
+    assert isinstance(dummy.requires, list)
+    assert len(dummy.requires) == 1
+    assert Plugin("b", "a") in dummy.requires
+
+    Plugin.require("a.b.c")(dummy)
+    assert len(dummy.requires) == 2
+    assert Plugin("c", "a.b") in dummy.requires
