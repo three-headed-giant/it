@@ -9,6 +9,7 @@ from typing import List, Optional, Tuple
 
 import inspectortiger.inspector
 
+_PSEUDO_FIELDS = {"cls", "__class__"}
 USER_CONFIG = Path("~/.inspector.rc").expanduser()
 logger = logging.getLogger("inspectortiger")
 
@@ -20,9 +21,19 @@ class PluginLoadError(ImportError):
 class _Plugin(type):
     _plugins = {}
 
-    def __call__(cls, *args):
+    def __call__(
+        cls,
+        plugin,
+        namespace,
+        inactive=False,
+        static_name=None,
+        python_version=(),
+    ):
+        args = tuple(
+            (k, v) for k, v in locals().items() if k not in _PSEUDO_FIELDS
+        )
         if args not in cls._plugins:
-            cls._plugins[args] = super().__call__(*args)
+            cls._plugins[args] = super().__call__(**dict(args))
         return cls._plugins[args]
 
 
@@ -68,7 +79,7 @@ class Plugin(metaclass=_Plugin):
 
     def __post_init__(self):
         if self.static_name is None:
-            self.static_name = f"{self.namespace}.{self.plugin}"
+            self.static_name = f"{self.namespace}.{self.plugin}"  # TODO: Allow modules without namespace
 
     def __str__(self):
         return self.plugin
@@ -94,7 +105,9 @@ class Plugin(metaclass=_Plugin):
 
         for actionable in dir(plugin):
             actionable = getattr(plugin, actionable)
-            if hasattr(actionable, "_inspection_mark"):
+            if hasattr(
+                actionable, "_inspection_mark"
+            ):  # TODO: ismarked(callable)
                 actionable.plugin = self
 
 

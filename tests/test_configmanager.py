@@ -1,3 +1,8 @@
+import sys
+from types import ModuleType
+
+import pytest
+
 from inspectortiger.configmanager import (
     Blacklist,
     Config,
@@ -6,10 +11,13 @@ from inspectortiger.configmanager import (
     PluginLoadError,
     _Plugin,
 )
+from inspectortiger.utils import mark
 
 
 def test_plugin_metaclass():
-    MyPlugin = _Plugin("My Plugin", (), {"__init__": lambda *args: None})
+    MyPlugin = _Plugin(
+        "My Plugin", (), {"__init__": lambda *args, **kwargs: None}
+    )
     assert MyPlugin(1, 2) is MyPlugin(1, 2)
     assert MyPlugin(1, 3) is not MyPlugin(1, 4)
 
@@ -76,3 +84,41 @@ def test_plugin_require():
     Plugin.require("a.b.c")(dummy)
     assert len(dummy.requires) == 2
     assert Plugin("c", "a.b") in dummy.requires
+
+
+def test_plugin_load(mocker):
+    plugin = Plugin("a", "b")
+    import_module = mocker.patch("importlib.import_module")
+    plugin.load()
+    import_module.assert_called_with(plugin.static_name)
+
+    import_module.side_effect = ImportError
+    with pytest.raises(PluginLoadError):
+        plugin.load()
+
+    import_module.reset_mock(side_effect=True)
+    import_module.return_value = ModuleType("my_module")
+    plugin.load()
+
+
+def test_plugin_load_py_version(mocker):
+    class Module(ModuleType):
+        __py_version__ = (1, 0)
+
+    sys.modules["my_fake_module"] = module = Module("my_module")
+    plugin = Plugin("my_fake_module", "", static_name="my_fake_module")
+    pyv = sys.version_info
+
+    plugin.load()
+    assert plugin.python_version == module.__py_version__
+    assert plugin.inactive is False
+
+    module.__py_version__ = (pyv.major, pyv.minor + 1)
+    plugin.load()
+    assert plugin.python_version == module.__py_version__
+    assert plugin.inactive
+
+    module.some_actionable = actionable = lambda: dummy
+    mark(actionable)
+    plugin.load()
+    assert actionable.plugin is plugin
