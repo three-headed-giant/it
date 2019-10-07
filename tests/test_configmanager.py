@@ -122,3 +122,50 @@ def test_plugin_load_py_version(mocker):
     mark(actionable)
     plugin.load()
     assert actionable.plugin is plugin
+
+
+def test_blacklist():
+    blacklist = Blacklist(
+        ["a.b.c.d", Plugin("b", "a"), "a.b.c"], ["X", "Y", "Z"]
+    )
+    assert Plugin.from_simple("a.b.c.d") in blacklist.plugins
+    assert Plugin("b", "a") in blacklist.plugins
+    assert Plugin.from_simple("a.b.c") in blacklist.plugins
+    assert all((item in blacklist.codes) for item in {"X", "Y", "Z"})
+
+
+def test_config():
+    config = Config(plugins=dict(a=["b", "c.d"]))
+    assert config.plugins[0] is Plugin("b", "a")
+    assert config.plugins[1] is Plugin("d", "a.c")
+
+    config = Config(
+        blacklist=dict(plugins=["a.b.c.d", Plugin("b", "a"), "a.b.c"])
+    )
+    assert len(config.blacklist.plugins) == 3
+    assert all(
+        isinstance(plugin, Plugin) for plugin in config.blacklist.plugins
+    )
+
+
+@pytest.mark.parametrize(
+    "cfg",
+    [
+        {"workers": 0xFF},
+        {"logging_level": 50, "fail_exit": False},
+        {"plugins": dict(a=["b", "c.d"])},
+        {
+            "plugins": dict(a=["b", "c.d"]),
+            "blacklist": dict(plugins=["a.b.c.d", Plugin("b", "a"), "a.b.c"]),
+        },
+    ],
+)
+def test_configmanager(mocker, cfg):
+    parser = mocker.patch(
+        "inspectortiger.configmanager.ConfigManager._parse_config"
+    )
+    parser.return_value = {}
+    assert ConfigManager().config == Config()
+
+    parser.return_value = cfg
+    assert ConfigManager().config == Config(**cfg)
