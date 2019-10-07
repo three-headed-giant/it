@@ -13,17 +13,17 @@ USER_CONFIG = Path("~/.inspector.rc").expanduser()
 logger = logging.getLogger("inspectortiger")
 
 
-class PluginLoadError(Exception):
+class PluginLoadError(ImportError):
     pass
 
 
 class _Plugin(type):
     _plugins = {}
 
-    def __call__(cls, name, namespace):
-        if name not in cls._plugins:
-            cls._plugins[name] = super().__call__(name, namespace)
-        return cls._plugins[name]
+    def __call__(cls, *args):
+        if args not in cls._plugins:
+            cls._plugins[args] = super().__call__(*args)
+        return cls._plugins[args]
 
 
 @dataclass(unsafe_hash=True)
@@ -46,7 +46,9 @@ class Plugin(metaclass=_Plugin):
     def from_config(cls, config):
         result = []
         for namespace, plugins in config.items():
-            result.extend(cls(plugin, namespace) for plugin in plugins)
+            result.extend(
+                cls.from_simple(f"{namespace}.{plugin}") for plugin in plugins
+            )
         return result
 
     @classmethod
