@@ -1,12 +1,34 @@
 import ast
 
+import pytest
+
 from inspectortiger.utils import (
+    Priority,
     biname_check,
+    constant_check,
     is_single_node,
+    mark,
     name_check,
     target_check,
     tuple_check,
 )
+
+
+def test_priority():
+    dummy = lambda: None
+    first = Priority.FIRST
+    first(dummy)
+    assert hasattr(dummy, "priority")
+    assert dummy.priority is first
+    Priority.LAST(dummy)
+    assert dummy.priority is Priority.LAST
+
+
+def test_mark():
+    dummy = lambda: None
+    mark(dummy)
+    assert hasattr(dummy, "_inspection_mark")
+    assert dummy._inspection_mark
 
 
 def test_is_single_node():
@@ -21,6 +43,16 @@ def test_name_check():
     assert name_check(name.body, "tar", "car", "var")
     assert not name_check(name.body, "car")
     assert not name_check(name, "var")
+
+
+@pytest.mark.parametrize("constant", (1, '"a"', 1.7, True, None, False))
+def test_constant_check(constant):
+    node = ast.parse(str(constant), "<ast>", "eval").body
+    constant = ast.literal_eval(str(constant))
+    assert constant_check(node, constant)
+    assert constant_check(node, 3, 5, "xxx", constant)
+    assert not constant_check(node, 3, 5)
+    assert not constant_check(ast.Pass(), 3, 5)
 
 
 def test_biname_check():
