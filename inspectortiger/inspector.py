@@ -2,7 +2,7 @@ import ast
 import tokenize
 from collections import defaultdict
 from contextlib import contextmanager, suppress
-from functools import partial
+from functools import lru_cache, partial
 
 from inspectortiger.config_manager import logger
 from inspectortiger.reports import Report
@@ -136,6 +136,7 @@ class Inspector(ast.NodeVisitor):
             tree = tree_transformer(tree, self._hook_db)
         self.visit(tree)
 
+    @lru_cache(128)
     def __getattr__(self, attr):
         _attr = attr[len("visit_") :]
         if hasattr(ast, _attr) and _version_node(_attr):

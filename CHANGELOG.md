@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file.
 - `configmanager` module renamed as `config_manager`
 - Debug mode with `--debug`
 - Use [`conast`](https://github.com/thg-consulting/conAST) if available
+- Cache `__getattr__` calls
 
 ### Plugins
 #### Upgradeable
