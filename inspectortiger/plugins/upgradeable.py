@@ -8,7 +8,7 @@ __author__ = "Batuhan Taskaya"
 
 import ast
 
-from inspectortiger.configmanager import Plugin
+from inspectortiger.config_manager import Plugin
 from inspectortiger.inspector import Inspector
 from inspectortiger.plugins.context import Contexts, get_context
 from inspectortiger.utils import (

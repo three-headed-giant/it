@@ -2,19 +2,11 @@ from collections import defaultdict
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import asdict
 
-from inspectortiger.configmanager import Plugin
+from inspectortiger.config_manager import Plugin
 from inspectortiger.inspector import Inspector
 
 CORE_PLUGINS = Plugin.from_config(
-    {
-        "inspectortiger.plugins": [
-            "context",
-            "parentize",
-            "misc",
-            "upgradeable",
-            "unreachable_except",
-        ]
-    }
+    {"inspectortiger.plugins": ["context", "parentize", "misc", "upgradeable"]}
 )
 
 

@@ -3,7 +3,7 @@ from dataclasses import asdict
 
 import pytest
 
-from inspectortiger.configmanager import Plugin
+from inspectortiger.config_manager import Plugin
 from inspectortiger.inspector import Inspector
 from inspectortiger.inspects import inspect, inspector, load_plugins
 from inspectortiger.reports import Report

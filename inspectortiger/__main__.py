@@ -4,7 +4,7 @@ import sys
 from distutils.util import strtobool
 from pathlib import Path
 
-from inspectortiger.configmanager import ConfigManager, Plugin, logger
+from inspectortiger.config_manager import ConfigManager, Plugin, logger
 from inspectortiger.inspects import inspector, load_plugins
 from inspectortiger.reports import _prepare_result
 

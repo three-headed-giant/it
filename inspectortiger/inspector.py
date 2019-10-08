@@ -4,7 +4,7 @@ from collections import defaultdict
 from contextlib import contextmanager, suppress
 from functools import partial
 
-from inspectortiger.configmanager import logger
+from inspectortiger.config_manager import logger
 from inspectortiger.reports import Report
 from inspectortiger.utils import Events, Priority, mark
 

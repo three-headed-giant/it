@@ -3,7 +3,7 @@ import ast
 import pytest
 
 from inspectortiger import Inspector
-from inspectortiger.configmanager import Plugin
+from inspectortiger.config_manager import Plugin
 from inspectortiger.inspector import BufferExit
 
 

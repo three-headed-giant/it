@@ -3,7 +3,7 @@ from types import ModuleType
 
 import pytest
 
-from inspectortiger.configmanager import (
+from inspectortiger.config_manager import (
     Blacklist,
     Config,
     ConfigManager,
@@ -162,7 +162,7 @@ def test_config():
 )
 def test_configmanager(mocker, cfg):
     parser = mocker.patch(
-        "inspectortiger.configmanager.ConfigManager._parse_config"
+        "inspectortiger.config_manager.ConfigManager._parse_config"
     )
     parser.return_value = {}
     assert ConfigManager().config == Config()

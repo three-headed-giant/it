@@ -15,10 +15,13 @@ All notable changes to this project will be documented in this file.
 - `inactive` and `python_version` fields to `Plugin` object
 - Python-version bound plugins with specifying `__py_version__`
 - Outputs are in a simple human readable form instead of JSON
+- `configmanager` module renamed as `config_manager`
 
 ### Plugins
 #### Upgradeable
 - `Union[Type, None]` replacement warning for `Optional[Type]`
+#### Misc
+- `unreachable-except` moved inside Misc
 
 ## [0.6.1] - 2/10/2019
 ### Core
