@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 - `@Plugin.require` decorator for defining dependencies
 - `inactive` and `python_version` fields to `Plugin` object
 - Python-version bound plugins with specifying `__py_version__`
+- Outputs are in a simple human readable form instead of JSON
 
 ### Plugins
 #### Upgradeable
