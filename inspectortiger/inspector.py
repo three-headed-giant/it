@@ -113,6 +113,8 @@ class Inspector(ast.NodeVisitor):
             if hook(node, self._hook_db):
                 code = hook.__name__.upper()
                 plugin = getattr(hook, "plugin", "unknown")
+                if not hasattr(node, "lineno"):
+                    node.lineno = 0
                 report = Report(code, node.lineno, str(self.file))
                 self.results[plugin.plugin].append(report)
 

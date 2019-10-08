@@ -7,4 +7,3 @@ class Report:
     code: str
     lineno: int
     filename: str
-    annotation: Optional[str] = None
