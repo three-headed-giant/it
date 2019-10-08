@@ -169,3 +169,14 @@ def test_configmanager(mocker, cfg):
 
     parser.return_value = cfg
     assert ConfigManager().config == Config(**cfg)
+
+
+def test_configmanager_parse(tmp_path):
+    config = tmp_path / "cfg.json"
+    assert ConfigManager._parse_config(config) == {}
+    config.write_text("{'a': invaliDJSON}")
+    assert ConfigManager._parse_config(config) == {}
+
+    other_config = tmp_path / "other_cfg.json"
+    other_config.write_text('{"valid": "json"}')
+    assert ConfigManager._parse_config(other_config) == {"valid": "json"}
