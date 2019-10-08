@@ -1,6 +1,7 @@
 import ast
 import sys
 from enum import Enum, IntEnum, auto
+from functools import lru_cache
 
 _CONSTANT_TYPES = {"Num", "Str", "Bytes", "NameConstant" "Ellipsis"}
 
@@ -26,6 +27,7 @@ def mark(func):
     func._inspection_mark = True
 
 
+@lru_cache
 def _version_node(node):
     version = sys.version_info
     if version >= (3, 8) and node in _CONSTANT_TYPES:
