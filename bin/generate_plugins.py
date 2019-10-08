@@ -3,6 +3,7 @@ import argparse
 from importlib import import_module
 from itertools import chain
 from pathlib import Path
+from textwrap import dedent
 
 import inspectortiger.plugins
 from inspectortiger import Inspector
@@ -39,9 +40,21 @@ def generate():
         for handler in handlers:
             if handler.__name__ not in handled and handler.__doc__:
                 handled.add(handler.__name__)
-                out.write(
-                    f"- `{handler.__name__.upper()}` => {handler.__doc__}\n"
-                )
+
+                parts = handler.__doc__.split("\n")
+                state = False
+                for n, part in enumerate(parts.copy()):
+                    if "```" in part:
+                        state = True
+                    if state:
+                        parts.pop(n)
+                        parts.insert(n, part[4:])
+                    if "py" not in part:
+                        state = False
+
+                result = "\n".join(parts)
+                out.write(f"### {handler.__name__.upper()}\n")
+                out.write(f"{result}\n")
 
 
 if __name__ == "__main__":

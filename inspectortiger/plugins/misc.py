@@ -20,7 +20,12 @@ MUTABLE_TYPE = (ast.List, ast.Dict, ast.Set)
 
 @Inspector.register(ast.FunctionDef)
 def default_mutable_arg(node, db):
-    """Default argument is something mutable."""
+    """Default argument is something mutable.
+
+    ```py
+    def foo(x = []): ...
+    ```
+    """
 
     if any(
         isinstance(default, MUTABLE_TYPE) for default in node.args.defaults
@@ -31,7 +36,16 @@ def default_mutable_arg(node, db):
 @Inspector.register(ast.Try)
 @Plugin.require("@context")
 def control_flow_inside_finally(node, db):
-    """A return/break/continue that would implicitly cancel any active exception."""
+    """A return/break/continue that would implicitly cancel any active exception.
+
+    ```py
+    def foo():
+        try:
+            foo()
+        finally:
+            return
+    ```
+    """
 
     for subnode in node.finalbody:
         for child in ast.walk(subnode):
@@ -72,7 +86,17 @@ def exception_defs(node, db):
 
 @Inspector.register(ast.Try)
 def unreachable_except(node, db):
-    """Except statement is unreachable due to a more broad except."""
+    """Except statement is unreachable due to a more broad except.
+
+    ```py
+    try:
+        raise ValueError
+    except Exception:
+        pass
+    except ValueError:
+        pass
+    ```
+    """
 
     handlers = [
         handler.type.id

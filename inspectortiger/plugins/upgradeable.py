@@ -21,7 +21,17 @@ from inspectortiger.utils import (
 
 @Inspector.register(ast.For)
 def yield_from(node, db):
-    """Yield can be replaced with yield from."""
+    """Yield can be replaced with yield from.
+
+    ```py
+    for x in y:
+        yield x
+    ```
+    to
+    ```py
+    yield from y
+    ```
+    """
 
     if (
         is_single_node(node, ast.Expr)
@@ -33,7 +43,17 @@ def yield_from(node, db):
 
 @Inspector.register(ast.Subscript)
 def optional(node, db):
-    """`Union[Type, None]` can be replaced with `Optional[Type]`."""
+    """`Union[Type, None]` can be replaced with `Optional[Type]`.
+
+    ```py
+    def foo(x: Union[str, None]): ...
+    ```
+    to
+    ```py
+    def foo(x: Optional[str]): ...
+    ```
+    """
+
     if (
         name_check(node.value, "Union")
         and isinstance(node.slice.value, ast.Tuple)
@@ -53,7 +73,17 @@ def optional(node, db):
 @Inspector.register(ast.Call)
 @Plugin.require("@context")
 def super_args(node, db):
-    """`super()` called with arguments (old style)."""
+    """old style `super()` call (with arguments).
+
+    ```py
+    super(MyClass, self)
+    ```
+    to
+    ```py
+    super()
+    ```
+    """
+
     return (
         get_context(node, db) is db["context"]["context"]
         and db["context"]["context"].context is Contexts.FUNCTION
