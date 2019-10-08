@@ -8,6 +8,12 @@ from inspectortiger.config_manager import logger
 from inspectortiger.reports import Report
 from inspectortiger.utils import Events, Priority, _version_node, mark
 
+with suppress(ImportError):
+    import conast
+
+    ast.iter_fields = conast.iter_fields
+    ast.iter_child_nodes = conast.iter_child_nodes
+
 
 class BufferExit(Exception):
     pass

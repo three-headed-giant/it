@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 - Outputs are in a simple human readable form instead of JSON
 - `configmanager` module renamed as `config_manager`
 - Debug mode with `--debug`
+- Use [`conast`](https://github.com/thg-consulting/conAST) if available
 
 ### Plugins
 #### Upgradeable
