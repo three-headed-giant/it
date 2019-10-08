@@ -53,6 +53,9 @@ class KPair:
         ) ** 0.5
 
 
+GLOBAL_CTX = Context("__main__", Contexts.GLOBAL, KPair(0, 0))
+
+
 def get_context(node, db):
     possible_contexts = []
     node_kpair = KPair.from_node(node)
@@ -69,9 +72,7 @@ def get_context(node, db):
 
 @Inspector.register(ast.Module)
 def prepare_contexts(node, db):
-    db["context"]["global_context"] = global_ctx = Context(
-        "__main__", Contexts.GLOBAL, KPair(0, 0)
-    )
+    db["context"]["global_context"] = global_ctx = GLOBAL_CTX
     db["context"]["previous_contexts"] = []
     db["context"]["context"] = global_ctx
     for possible_context in ast.walk(node):
