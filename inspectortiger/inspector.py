@@ -11,8 +11,9 @@ from inspectortiger.utils import Events, Priority, _version_node, mark
 with suppress(ImportError):
     import conast
 
-    ast.iter_fields = conast.iter_fields
-    ast.iter_child_nodes = conast.iter_child_nodes
+    ast.iter_fields = conast.fields
+    ast.iter_child_nodes = conast.child_nodes
+    ast.walk = conast.walk
 
 
 class BufferExit(Exception):
