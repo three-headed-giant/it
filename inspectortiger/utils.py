@@ -27,7 +27,7 @@ def mark(func):
     func._inspection_mark = True
 
 
-@lru_cache
+@lru_cache(128)
 def _version_node(node):
     version = sys.version_info
     if version >= (3, 8) and node in _CONSTANT_TYPES:
