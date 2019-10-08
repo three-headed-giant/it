@@ -1,7 +1,7 @@
 import ast
 import tokenize
 from collections import defaultdict
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from functools import partial
 
 from inspectortiger.configmanager import logger
@@ -65,7 +65,8 @@ class Inspector(ast.NodeVisitor):
             mark(func)
             if hasattr(func, "handles"):
                 for handle in func.handles:
-                    cls._hooks[handle].remove(func)
+                    with suppress(ValueError):
+                        cls._hooks[handle].remove(func)
             for event in events:
                 cls._event_hooks[event].append(func)
             return func
@@ -88,6 +89,7 @@ class Inspector(ast.NodeVisitor):
         finally:
             if append:
                 for trigger, _hooks in cls._hooks.items():
+                    print(_hooks)
                     hooks[trigger].extend(_hooks)
                 for trigger, _hooks in cls._event_hooks.items():
                     events[trigger].extend(_hooks)

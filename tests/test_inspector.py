@@ -1,3 +1,5 @@
+import ast
+
 import pytest
 
 from inspectortiger import Inspector
@@ -47,3 +49,29 @@ def test_inspector_on_event(clear, dummy):
     Inspector.register(4, 5)(dummy)
     Inspector.on_event(6, 7, 8)(dummy)
     assert Inspector._hooks == {4: [], 5: []}
+
+
+def test_inspector_buffer(clear, dummy):
+    with Inspector.buffer():
+        Inspector.register(1)(dummy)
+        Inspector.on_event(2, 3)(dummy)
+        raise BufferExit
+
+    assert Inspector._hooks == Inspector._event_hooks == {}
+
+    with Inspector.buffer():
+        Inspector.register(4)(dummy)
+
+    assert dummy in Inspector._hooks[4]
+
+
+def test_inspector_getattr(clear, dummy):
+    Inspector.register(ast.Name)(dummy)
+
+    inspector = Inspector(ast.Module())
+    visitor = inspector.visit_Name
+    assert visitor.func == inspector.visitor
+    assert dummy in visitor.args[0]
+
+    with pytest.raises(AttributeError):
+        inspector.duhkjhkjdsabc
