@@ -85,7 +85,7 @@ class Plugin(metaclass=_Plugin):
         return self.plugin
 
     def load(self):
-        with inspectortiger.inspector.Inspector.buffer() as buf:
+        with inspectortiger.inspector.Inspector.buffer():
             try:
                 plugin = importlib.import_module(self.static_name)
             except ImportError:

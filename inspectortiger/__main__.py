@@ -1,5 +1,4 @@
 import argparse
-import json
 import logging
 import sys
 from distutils.util import strtobool
@@ -7,6 +6,7 @@ from pathlib import Path
 
 from inspectortiger.configmanager import ConfigManager, Plugin, logger
 from inspectortiger.inspects import inspector, load_plugins
+from inspectortiger.reports import _prepare_result
 
 
 def traverse_paths(paths):
@@ -99,7 +99,7 @@ def main():
                 "InspectorTiger inspected \N{right-pointing magnifying glass} "
                 "and found these problems;"
             )
-            logger.info("\n" + json.dumps(reports, indent=4))
+            logger.info("\n" + _prepare_result(reports))
             if args.fail_exit:
                 exit(1)
         else:
