@@ -75,6 +75,12 @@ def main():
         default=manager.config.logging_handler_level,
         help="stdout handler level",
     )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        default=False,
+        help="debug mode (serial)",
+    )
 
     args = parser.parse_args()
 
@@ -93,7 +99,7 @@ def main():
 
     if args.paths:
         files = traverse_paths(args.paths)
-        reports = inspector(files, args.workers, args.ignore_code)
+        reports = inspector(files, args.workers, args.ignore_code, args.debug)
         if reports:
             logger.info(
                 "InspectorTiger inspected \N{right-pointing magnifying glass} "

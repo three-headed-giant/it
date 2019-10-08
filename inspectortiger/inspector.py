@@ -131,11 +131,7 @@ class Inspector(ast.NodeVisitor):
         self.visit(tree)
 
     def __getattr__(self, attr):
-        if len(attr) > len("visit_"):
-            _attr = attr[len("visit_") :]
-        else:
-            _attr = attr
-
+        _attr = attr[len("visit_") :]
         if hasattr(ast, _attr) and _version_node(_attr):
             return partial(self.visitor, self._hooks[getattr(ast, _attr)])
         raise AttributeError(attr)
