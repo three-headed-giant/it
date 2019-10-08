@@ -25,6 +25,9 @@ class Foo(SomeObjects):
 
         for a in x:
             yield a
+
+        for a in range(len(x)):
+            print(x[a])
 ```
 Think about this piece of code, you see some bugs or improvements, don't you? But what if there were hundreds of lines code in this form inside your big codebase. How would you find these patterns? By writing regex queries? LOL, of course not.
 ```console
@@ -32,14 +35,14 @@ $ inspectortiger t.py
 [Inspector Tiger] INFO - InspectorTiger inspected 🔎 and found these problems;
 [Inspector Tiger] INFO -
 [misc]
-  - t.py:2    => DEFAULT_MUTABLE_ARG
-  - t.py:5    => CONTROL_FLOW_INSIDE_FINALLY
+  - ../t.py:2    => DEFAULT_MUTABLE_ARG
+  - ../t.py:5    => CONTROL_FLOW_INSIDE_FINALLY
+  - ../t.py:5    => UNREACHABLE_EXCEPT
 [upgradeable]
-  - t.py:2    => OPTIONAL
-  - t.py:6    => SUPER_ARGS
-  - t.py:14   => YIELD_FROM
-[unreachable_except]
-  - t.py:5    => UNREACHABLE_EXCEPT
+  - ../t.py:2    => OPTIONAL
+  - ../t.py:6    => SUPER_ARGS
+  - ../t.py:14   => YIELD_FROM
+  - ../t.py:17   => BUILTIN_ENUMERATE
 ```
 
 Buutt, what if i want something more specific? Like what if i want to find all calls to `xyz` function with 2 arguments only inside of a class inside of a class, can you implement this feature? Nop, but you can.

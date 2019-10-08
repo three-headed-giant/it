@@ -89,7 +89,6 @@ class Inspector(ast.NodeVisitor):
         finally:
             if append:
                 for trigger, _hooks in cls._hooks.items():
-                    print(_hooks)
                     hooks[trigger].extend(_hooks)
                 for trigger, _hooks in cls._event_hooks.items():
                     events[trigger].extend(_hooks)

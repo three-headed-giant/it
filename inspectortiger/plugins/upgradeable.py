@@ -12,6 +12,7 @@ from inspectortiger.config_manager import Plugin
 from inspectortiger.inspector import Inspector
 from inspectortiger.plugins.context import Contexts, get_context
 from inspectortiger.utils import (
+    biname_check,
     constant_check,
     is_single_node,
     name_check,
@@ -21,7 +22,7 @@ from inspectortiger.utils import (
 
 @Inspector.register(ast.For)
 def yield_from(node, db):
-    """Yield can be replaced with yield from.
+    """`yield` can be replaced with `yield from`.
 
     ```py
     for x in y:
@@ -73,7 +74,7 @@ def optional(node, db):
 @Inspector.register(ast.Call)
 @Plugin.require("@context")
 def super_args(node, db):
-    """old style `super()` call (with arguments).
+    """`super(MyClass, self)` can be replaced with `super()`
 
     ```py
     super(MyClass, self)
@@ -91,3 +92,38 @@ def super_args(node, db):
         and name_check(node.func, "super")
         and node.args
     )
+
+
+@Inspector.register(ast.For)
+def builtin_enumerate(node, db):
+    """`range(len(iterable))` can be replaced with `enumerate(iterable)`
+
+    ```py
+    for index in range(len(iterable)):
+        print(index, iterable[index])
+    ```
+    to
+    ```py
+    for index, item in enumerate(iterable):
+        print(index, item)
+    ```
+    """
+
+    if (
+        isinstance(node.iter, ast.Call)
+        and name_check(node.iter.func, "range")
+        and len(node.iter.args) == 1
+        and isinstance(node.iter.args[0], ast.Call)
+        and name_check(node.iter.args[0].func, "len")
+        and len(node.iter.args[0].args) == 1
+    ):
+        target = node.target
+        iterable = node.iter.args[0].args[0]
+        for subnode in ast.walk(node):
+            if (
+                isinstance(subnode, ast.Subscript)
+                and isinstance(subnode.slice, ast.Index)
+                and biname_check(subnode.value, iterable)
+                and biname_check(subnode.slice.value, target)
+            ):
+                return node.iter

@@ -31,7 +31,7 @@ try:
 ```
     
 ### YIELD_FROM
-Yield can be replaced with yield from.
+`yield` can be replaced with `yield from`.
 
 ```py
 for x in y:
@@ -40,6 +40,19 @@ for x in y:
     to
 ```py
 yield from y
+```
+    
+### BUILTIN_ENUMERATE
+`range(len(iterable))` can be replaced with `enumerate(iterable)`
+
+```py
+for index in range(len(iterable)):
+        print(index, iterable[index])
+```
+    to
+```py
+for index, item in enumerate(iterable):
+        print(index, item)
 ```
     
 ### OPTIONAL
@@ -54,7 +67,7 @@ def foo(x: Optional[str]): ...
 ```
     
 ### SUPER_ARGS
-old style `super()` call (with arguments).
+`super(MyClass, self)` can be replaced with `super()`
 
 ```py
 super(MyClass, self)

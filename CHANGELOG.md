@@ -20,6 +20,7 @@ All notable changes to this project will be documented in this file.
 ### Plugins
 #### Upgradeable
 - `Union[Type, None]` replacement warning for `Optional[Type]`
+- `enumerate` handler for `for x in range(len(a)): a[x]`
 #### Misc
 - `unreachable-except` moved inside Misc
 
