@@ -27,40 +27,19 @@ class Foo(SomeObjects):
             yield a
 ```
 Think about this piece of code, you see some bugs or improvements, don't you? But what if there were hundreds of lines code in this form inside your big codebase. How would you find these patterns? By writing regex queries? LOL, of course not.
-```json
-$ python -m inspectortiger my_big_codebase/ # P.S: stripped file name information
-{
-    "misc": [
-        {
-            "code": "DEFAULT_MUTABLE_ARG",
-            "lineno": 2,
-        },
-        {
-            "code": "CONTROL_FLOW_INSIDE_FINALLY",
-            "lineno": 5,
-        }
-    ],
-    "upgradeable": [
-        {
-            "code": "OPTIONAL",
-            "lineno": 2,
-        },
-        {
-            "code": "SUPER_ARGS",
-            "lineno": 6,
-        },
-        {
-            "code": "YIELD_FROM",
-            "lineno": 14,
-        }
-    ],
-    "unreachable_except": [
-        {
-            "code": "UNREACHABLE_EXCEPT",
-            "lineno": 5,
-        }
-    ]
-}
+```console
+$ inspectortiger t.py
+[Inspector Tiger] INFO - InspectorTiger inspected 🔎 and found these problems;
+[Inspector Tiger] INFO -
+[misc]
+  - t.py:2    => DEFAULT_MUTABLE_ARG
+  - t.py:5    => CONTROL_FLOW_INSIDE_FINALLY
+[upgradeable]
+  - t.py:2    => OPTIONAL
+  - t.py:6    => SUPER_ARGS
+  - t.py:14   => YIELD_FROM
+[unreachable_except]
+  - t.py:5    => UNREACHABLE_EXCEPT
 ```
 
 Buutt, what if i want something more specific? Like what if i want to find all calls to `xyz` function with 2 arguments only inside of a class inside of a class, can you implement this feature? Nop, but you can.
