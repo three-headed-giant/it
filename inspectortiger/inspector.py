@@ -6,7 +6,7 @@ from functools import partial
 
 from inspectortiger.config_manager import logger
 from inspectortiger.reports import Report
-from inspectortiger.utils import Events, Priority, mark
+from inspectortiger.utils import Events, Priority, _version_node, mark
 
 
 class BufferExit(Exception):
@@ -131,7 +131,11 @@ class Inspector(ast.NodeVisitor):
         self.visit(tree)
 
     def __getattr__(self, attr):
-        _attr = attr[len("visit_") :]
-        if hasattr(ast, _attr):
+        if len(attr) > len("visit_"):
+            _attr = attr[len("visit_") :]
+        else:
+            _attr = attr
+
+        if hasattr(ast, _attr) and _version_node(_attr):
             return partial(self.visitor, self._hooks[getattr(ast, _attr)])
         raise AttributeError(attr)
