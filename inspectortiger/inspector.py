@@ -3,6 +3,7 @@ import tokenize
 from collections import defaultdict
 from contextlib import contextmanager, suppress
 from functools import lru_cache, partial
+from types import MethodType
 
 from inspectortiger.config_manager import logger
 from inspectortiger.reports import Report
@@ -14,6 +15,7 @@ with suppress(ImportError):
     ast.iter_fields = conast.fields
     ast.iter_child_nodes = conast.child_nodes
     ast.walk = conast.walk
+    ast.NodeVisitor = conast.NodeVisitor
 
 
 class BufferExit(Exception):
