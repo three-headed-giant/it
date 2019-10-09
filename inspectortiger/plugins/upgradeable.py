@@ -132,16 +132,16 @@ def builtin_enumerate(node, db):
 
 @Inspector.register(ast.Call)
 def list_comp(node, db):
-    """`list(map(callable, iterable))` or `list(callable(x) for x in y)` 
+    """`list(map(complex_callable, iterable))` or `list(callable(x) for x in y)` 
     can be replaced with can be replaced with `[callable(item) for item in iterable]`
     
     ```py
-    operands = list(map(b16, tokens))
+    operands = list(map(itemgetter(0), mode_items))
     other_operands = list(b8(x) for x in y)
     ```
     to
     ```py
-    operands = [b16(token) for token in tokens]
+    operands = [token[0] for token in tokens]
     other_operands = [b8(x) for x in y]
     ```
     """
@@ -153,6 +153,9 @@ def list_comp(node, db):
                 isinstance(node.args[0], ast.Call)
                 and name_check(node.args[0].func, "map")
                 and len(node.args[0].args) == 2
+                and not isinstance(
+                    node.args[0].args[0], (ast.Name, ast.Attribute)
+                )
             )
             or isinstance(node.args[0], ast.GeneratorExp)
         )
