@@ -28,7 +28,11 @@ def test_inspect(tmp_path, clear_inspector):
     assert inspect(some_file) == {}
     register_dummy()
     assert inspect(some_file) == {
-        "dummy": [Report(code="MY_ERROR", lineno=0, filename=str(some_file))]
+        "dummy": [
+            Report(
+                code="MY_ERROR", column=0, lineno=0, filename=str(some_file)
+            )
+        ]
     }
 
 
@@ -46,7 +50,7 @@ def test_inspector(tmp_path, clear_inspector):
 
     assert inspector(files, 2, set()) == {
         "dummy": [
-            asdict(Report("MY_ERROR", 0, str(file))) for file in set(files)
+            asdict(Report("MY_ERROR", 0, 0, str(file))) for file in set(files)
         ]
     }
     assert inspector(files, 2, set()) == inspector(set(files), 2, set())

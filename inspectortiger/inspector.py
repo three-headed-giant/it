@@ -125,7 +125,11 @@ class Inspector(ast.NodeVisitor):
                 plugin = getattr(hook, "plugin", "unknown")
                 if not hasattr(node, "lineno"):
                     node.lineno = 0
-                report = Report(code, node.lineno, str(self.file))
+                    node.col_offset = 0
+
+                report = Report(
+                    code, node.col_offset, node.lineno, str(self.file)
+                )
                 self.results[plugin.plugin].append(report)
 
         self.generic_visit(node)
