@@ -23,6 +23,19 @@ class Priority(IntEnum):
         return func
 
 
+def traverse_paths(paths):
+    files = []
+    for path in paths:
+        if not path.exists():
+            raise FileNotFoundError(path)
+
+        if path.is_file():
+            files.append(path)
+        else:
+            files.extend(path.glob("**/*.py"))
+    return files
+
+
 def mark(func):
     func._inspection_mark = True
 

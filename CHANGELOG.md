@@ -19,6 +19,8 @@ All notable changes to this project will be documented in this file.
 - Debug mode with `--debug`
 - Use [`conast`](https://github.com/thg-consulting/conAST) if available
 - Cache `__getattr__` calls
+- Column offset to reports
+- Move `traverse_path` to `utils`
 
 ### Plugins
 #### Upgradeable

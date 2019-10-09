@@ -7,19 +7,7 @@ from pathlib import Path
 from inspectortiger.config_manager import ConfigManager, Plugin, logger
 from inspectortiger.inspects import inspector, load_plugins
 from inspectortiger.reports import _prepare_result
-
-
-def traverse_paths(paths):
-    files = []
-    for path in paths:
-        if not path.exists():
-            raise FileNotFoundError(path)
-
-        if path.is_file():
-            files.append(path)
-        else:
-            files.extend(path.glob("**/*.py"))
-    return files
+from inspectortiger.utils import traverse_paths
 
 
 def main():
