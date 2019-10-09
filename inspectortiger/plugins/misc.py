@@ -8,6 +8,7 @@ Common gotchas
 __author__ = "Batuhan Taskaya"
 
 import ast
+import inspect
 
 from inspectortiger.config_manager import Plugin
 from inspectortiger.inspector import Inspector
@@ -62,14 +63,21 @@ def control_flow_inside_finally(node, db):
                 continue
 
 
-def traverse_exception(base, exceptions=None, level=0):
+def traverse_exception(base, exceptions=None):
     exceptions = exceptions or {}
-    exceptions[base.__name__] = level
-    level += 1
+
+    if base.__name__ not in exceptions:
+        exceptions[base.__name__] = ()
+
     for exc in base.__subclasses__():
-        exceptions[exc.__name__] = level
-        traverse_exception(exc, exceptions, level)
-    return exceptions
+        exceptions[exc.__name__] = tuple(
+            base.__name__
+            for base in inspect.getmro(exc)
+            if issubclass(base, BaseException)
+        )
+        traverse_exception(exc, exceptions)
+
+    return exceptions.copy()
 
 
 EXC_TREE = traverse_exception(BaseException)
@@ -78,10 +86,12 @@ ALL_EXCS = EXC_TREE.keys()
 
 @Inspector.register(ast.ClassDef)
 def exception_defs(node, db):
-    exc_bases = [base.id for base in node.bases if name_check(base, *ALL_EXCS)]
+    exc_bases = tuple(
+        EXC_TREE[base.id] for base in node.bases if name_check(base, *ALL_EXCS)
+    )
     if exc_bases:
-        severity = min(EXC_TREE[exc] for exc in exc_bases)
-        db["unreachable_except"]["user_exceptions"][node.name] = severity
+        EXC_TREE[node.name] = exc_bases
+        db["unreachable_except"]["user_exceptions"][node.name] = exc_bases
 
 
 @Inspector.register(ast.Try)
@@ -103,14 +113,14 @@ def unreachable_except(node, db):
         for handler in node.handlers
         if isinstance(handler.type, ast.Name)
     ]
-    current_level = float("inf")
+
+    seen = set()
     for handler in handlers:
-        level = EXC_TREE.get(handler)
-        level = level or db["unreachable_except"]["user_exceptions"].get(
-            handler
-        )
-        if level is None:
+        bases = EXC_TREE.get(handler)
+        if bases is None:
             return False
-        if level > current_level:
+
+        if any(base in seen for base in bases):
             return True
-        current_level = level
+        else:
+            seen.add(handler)
