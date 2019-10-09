@@ -26,6 +26,7 @@ All notable changes to this project will be documented in this file.
 #### Upgradeable
 - `Union[Type, None]` replacement warning for `Optional[Type]`
 - `enumerate` handler for `for x in range(len(a)): a[x]`
+- `list_comp` handler for `list(map(callable, iterable))` and `list(callable(iteration) for iteration in iterable)`
 #### Misc
 - `unreachable-except` moved inside Misc
 

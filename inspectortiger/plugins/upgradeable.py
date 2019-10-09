@@ -127,3 +127,32 @@ def builtin_enumerate(node, db):
                 and biname_check(subnode.slice.value, target)
             ):
                 return node.iter
+
+
+@Inspector.register(ast.Call)
+def list_comp(node, db):
+    """`list(map(callable, iterable))` or `list(callable(x) for x in y)` 
+    can be replaced with can be replaced with `[callable(item) for item in iterable]`
+    
+    ```py
+    operands = list(map(b16, tokens))
+    other_operands = list(b8(x) for x in y)
+    ```
+    to
+    ```py
+    operands = [b16(token) for token in tokens]
+    other_operands = [b8(x) for x in y]
+    ```
+    """
+    return (
+        name_check(node.func, "list")
+        and len(node.args) == 1
+        and (
+            (
+                isinstance(node.args[0], ast.Call)
+                and name_check(node.args[0].func, "map")
+                and len(node.args[0].args) == 2
+            )
+            or isinstance(node.args[0], ast.GeneratorExp)
+        )
+    )

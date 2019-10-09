@@ -3,7 +3,7 @@ import sys
 from enum import Enum, IntEnum, auto
 from functools import lru_cache
 
-_CONSTANT_TYPES = {"Num", "Str", "Bytes", "NameConstant" "Ellipsis"}
+_CONSTANT_TYPES = {"Num", "Str", "Bytes", "NameConstant", "Ellipsis"}
 
 
 class Events(Enum):

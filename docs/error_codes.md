@@ -77,5 +77,19 @@ super(MyClass, self)
 super()
 ```
     
+### LIST_COMP
+`list(map(callable, iterable))` or `list(callable(x) for x in y)` 
+    can be replaced with can be replaced with `[callable(item) for item in iterable]`
+    
+```py
+operands = list(map(b16, tokens))
+    other_operands = list(b8(x) for x in y)
+```
+    to
+```py
+operands = [b16(token) for token in tokens]
+    other_operands = [b8(x) for x in y]
+```
+    
 ### UNUSED_IMPORT
 A module/name is imported but not used.
