@@ -27,7 +27,7 @@ class Foo(SomeObjects):
             yield a
 
         for a in range(len(x)):
-            print(x[a])
+            print(a, "=>", x[a])
 ```
 Think about this piece of code, you see some bugs or improvements, don't you? But what if there were hundreds of lines code in this form inside your big codebase. How would you find these patterns? By writing regex queries? LOL, of course not.
 ```console
