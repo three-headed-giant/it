@@ -122,6 +122,7 @@ def builtin_enumerate(node, db):
         for subnode in ast.walk(node):
             if (
                 isinstance(subnode, ast.Subscript)
+                and isinstance(subnode.ctx, ast.Load)
                 and isinstance(subnode.slice, ast.Index)
                 and biname_check(subnode.value, iterable)
                 and biname_check(subnode.slice.value, target)
