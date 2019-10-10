@@ -3,6 +3,9 @@ import sys
 from enum import Enum, IntEnum, auto
 from functools import lru_cache
 
+PY38_PLUS = sys.version_info >= (3, 8)
+PY38_MINUS = not PY38_PLUS
+
 _CONSTANT_TYPES = {"Num", "Str", "Bytes", "NameConstant", "Ellipsis"}
 
 
@@ -42,8 +45,7 @@ def mark(func):
 
 @lru_cache(128)
 def _version_node(node):
-    version = sys.version_info
-    if version >= (3, 8) and node in _CONSTANT_TYPES:
+    if PY38_PLUS and node in _CONSTANT_TYPES:
         return False
     return True
 
@@ -57,7 +59,19 @@ def name_check(a, *b):
 
 
 def constant_check(a, *b):
-    return isinstance(a, ast.Constant) and a.value in b
+    if PY38_PLUS and isinstance(a, ast.Constant):
+        constant_value = a.value
+    elif PY38_MINUS and isinstance(a, (ast.Str, ast.Bytes)):
+        constant_value = a.s
+    elif PY38_MINUS and isinstance(a, ast.Num):
+        constant_value = a.n
+    elif PY38_MINUS and isinstance(a, ast.Ellipsis):
+        constant_value = Ellipsis
+    elif PY38_MINUS and isinstance(a, ast.NameConstant):
+        constant_value = a.value
+    else:
+        return False
+    return constant_value in b
 
 
 def biname_check(a, b):

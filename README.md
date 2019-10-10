@@ -10,6 +10,7 @@ InspectorTiger is a modern python code review tool / framework. It comes with bu
 
 ## Example
 ```py
+MY_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 class Foo(SomeObjects):
     def bar(self, x = [], y: Union[int, None] = None):
         x.append(1)
@@ -23,11 +24,12 @@ class Foo(SomeObjects):
             finally:
                 continue
 
-        for a in x:
+        my_iterable = list(token[0] for token in tokens)
+        for a in my_iterable:
             yield a
-
-        for a in range(len(x)):
-            print(a, "=>", x[a])
+    
+        for a in range(len(MY_ALPHABET)):
+            print(a, "=>", MY_ALPHABET[a])
 ```
 Think about this piece of code, you see some bugs or improvements, don't you? But what if there were hundreds of lines code in this form inside your big codebase. How would you find these patterns? By writing regex queries? LOL, of course not.
 ```console
@@ -41,8 +43,10 @@ $ inspectortiger ../t.py
 [upgradeable]
   - ../t.py:2:29    => OPTIONAL
   - ../t.py:6:16    => SUPER_ARGS
-  - ../t.py:14:8    => YIELD_FROM
-  - ../t.py:17:8    => BUILTIN_ENUMERATE
+  - ../t.py:14:22   => USE_COMPREHENSION
+  - ../t.py:15:8    => YIELD_FROM
+  - ../t.py:18:28   => ALPHABET_CONSTANT
+  - ../t.py:19:8    => BUILTIN_ENUMERATE
 ```
 
 Buutt, what if i want something more specific? Like what if i want to find all calls to `xyz` function with 2 arguments only inside of a class inside of a class, can you implement this feature? Nop, but you can.

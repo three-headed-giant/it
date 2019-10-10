@@ -27,6 +27,7 @@ All notable changes to this project will be documented in this file.
 - `Union[Type, None]` replacement warning for `Optional[Type]`
 - `enumerate` handler for `for x in range(len(a)): a[x]`
 - `use_comprehension` handler
+- `alphabet_constant` handler
 #### Misc
 - `unreachable-except` moved inside Misc
 

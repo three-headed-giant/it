@@ -7,6 +7,7 @@ Improvable (for 3.8+) syntaxes
 __author__ = "Batuhan Taskaya"
 
 import ast
+import string
 
 from inspectortiger.config_manager import Plugin
 from inspectortiger.inspector import Inspector
@@ -158,3 +159,39 @@ def use_comprehension(node, db):
             isinstance(node.args[0].elt, ast.Tuple)
             and len(node.args[0].elt.elts) == 2
         )
+
+
+@Inspector.register(ast.Assign)
+def alphabet_constant(node, db):
+    """A constant literal with the value of ASCII alphabet (`x = "ABC....Z"`) can be replaced 
+    with `string.ascii_letters`/`string.ascii_uppercase`/`string.ascii_lowercase`
+    
+    ```py
+    GUESS_MY_NAME = "abcde...WXYZ"
+    UPPERCASE_ALPH = "ABCD...WXYZ"
+    LOWERCASE_ALPH = "abcd...wxyz"
+    
+    def game(char):
+        return char in GUESS_MY_NAME
+    ```
+    to
+    ```py
+    import string
+    UPPERCASE_ALPH = string.ascii_uppercase
+    LOWERCASE_ALPH = string.ascii_lowercase
+    
+    def game(char):
+        return char in string.ascii_letters
+    ```
+    """
+    return (
+        len(node.targets) == 1
+        and isinstance(node.targets[0], ast.Name)
+        and node.targets[0].id.isupper()
+        and constant_check(
+            node.value,
+            string.ascii_letters,
+            string.ascii_uppercase,
+            string.ascii_lowercase,
+        )
+    )
