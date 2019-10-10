@@ -131,32 +131,30 @@ def builtin_enumerate(node, db):
 
 
 @Inspector.register(ast.Call)
-def list_comp(node, db):
-    """`list(map(complex_callable, iterable))` or `list(callable(x) for x in y)` 
-    can be replaced with can be replaced with `[callable(item) for item in iterable]`
+def use_comprehension(node, db):
+    """`list`/`dict`/`set` calls with a generator expression
+    can be replaced with comprehensions.
     
     ```py
-    operands = list(map(itemgetter(0), mode_items))
-    other_operands = list(b8(x) for x in y)
+    operands = list(b8(token) for token in tokens)
+    patterns = dict((token.name, b8(token)) for token in tokens)
+    unique_operands = set(b8(token) for token in tokens)
     ```
     to
     ```py
-    operands = [token[0] for token in tokens]
-    other_operands = [b8(x) for x in y]
+    operands = [b8(token) for token in tokens]
+    patterns = {token.name: b8(token) for token in tokens}
+    unique_operands = {b8(token) for token in tokens}
     ```
     """
-    return (
-        name_check(node.func, "list")
+    if (
+        name_check(node.func, "list", "set", "dict")
         and len(node.args) == 1
-        and (
-            (
-                isinstance(node.args[0], ast.Call)
-                and name_check(node.args[0].func, "map")
-                and len(node.args[0].args) == 2
-                and not isinstance(
-                    node.args[0].args[0], (ast.Name, ast.Attribute)
-                )
-            )
-            or isinstance(node.args[0], ast.GeneratorExp)
+        and isinstance(node.args[0], ast.GeneratorExp)
+    ):
+        if not name_check(node.func, "dict"):
+            return True
+        return (
+            isinstance(node.args[0].elt, ast.Tuple)
+            and len(node.args[0].elt.elts) == 2
         )
-    )
