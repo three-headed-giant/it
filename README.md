@@ -77,7 +77,7 @@ def papa():
 ```
 
 To write a handler, you'll need a python package. Let's create a `setup.py` (or `setup.cfg`);
-```
+```py
 from setuptools import setup, find_packages
 
 setup(
@@ -85,7 +85,7 @@ setup(
     packages=find_packages()
 )
 ```
-This would work (just for tutorial). Then we need an actual package which would contain an `__init__.py` and as many modules as we want.
+This would work (just for tutorial). Then we need an actual package which would contain a `__init__.py` and as many modules as we want.
 ```
 ├── xyzintro
 │   ├── handlers.py
