@@ -1,6 +1,6 @@
 """
 ## Upgradeable
-Improvable (for 3.8+) syntaxes
+Improvable (for 3.7+) syntaxes
 
 """
 
@@ -176,6 +176,7 @@ def map_use_comprehension(node, db):
     unique_operands = {token.unique_version for token in tokens}
     ```
     """
+
     return (
         name_check(node.func, "list", "set")
         and len(node.args) == 1

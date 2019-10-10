@@ -22,7 +22,7 @@ Common gotchas
 - `parent_to(child, node)` => yields all parents of child until it reaches `node`
 
 ## Upgradeable
-Improvable (for 3.8+) syntaxes
+Improvable (for 3.7+) syntaxes
 
 
 ### Unimport
