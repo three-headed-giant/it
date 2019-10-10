@@ -10,9 +10,11 @@ InspectorTiger is a modern python code review tool / framework. It comes with bu
 
 ## Example
 ```py
-MY_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+
 class Foo(SomeObjects):
-    def bar(self, x = [], y: Union[int, None] = None):
+    def bar(self, x=[], y: Union[int, None] = None):
         x.append(1)
         for _ in range(3):
             try:
@@ -27,26 +29,29 @@ class Foo(SomeObjects):
         my_iterable = list(token[0] for token in tokens)
         for a in my_iterable:
             yield a
-    
-        for a in range(len(MY_ALPHABET)):
-            print(a, "=>", MY_ALPHABET[a])
+
+        my_other_iterable = list(map(itemgetter(0), tokens))
+        for a in range(len(my_other_iterable)):
+            print(a, "=>", my_other_iterable[a])
+
 ```
 Think about this piece of code, you see some bugs or improvements, don't you? But what if there were hundreds of lines code in this form inside your big codebase. How would you find these patterns? By writing regex queries? LOL, of course not.
 ```console
 $ inspectortiger ../t.py
 [Inspector Tiger] INFO - InspectorTiger inspected 🔎 and found these problems;
 [Inspector Tiger] INFO - 
-[misc]
-  - ../t.py:2:4     => DEFAULT_MUTABLE_ARG
-  - ../t.py:5:12    => CONTROL_FLOW_INSIDE_FINALLY
-  - ../t.py:5:12    => UNREACHABLE_EXCEPT
 [upgradeable]
-  - ../t.py:2:29    => OPTIONAL
-  - ../t.py:6:16    => SUPER_ARGS
-  - ../t.py:14:22   => USE_COMPREHENSION
-  - ../t.py:15:8    => YIELD_FROM
-  - ../t.py:18:28   => ALPHABET_CONSTANT
-  - ../t.py:19:8    => BUILTIN_ENUMERATE
+  - ../t.py:1:0     => ALPHABET_CONSTANT
+  - ../t.py:4:29    => OPTIONAL
+  - ../t.py:8:16    => SUPER_ARGS
+  - ../t.py:16:22   => USE_COMPREHENSION
+  - ../t.py:17:8    => YIELD_FROM
+  - ../t.py:20:28   => MAP_USE_COMPREHENSION
+  - ../t.py:21:8    => BUILTIN_ENUMERATE
+[misc]
+  - ../t.py:4:4     => DEFAULT_MUTABLE_ARG
+  - ../t.py:7:12    => CONTROL_FLOW_INSIDE_FINALLY
+  - ../t.py:7:12    => UNREACHABLE_EXCEPT
 ```
 
 Buutt, what if i want something more specific? Like what if i want to find all calls to `xyz` function with 2 arguments only inside of a class inside of a class, can you implement this feature? Nop, but you can.

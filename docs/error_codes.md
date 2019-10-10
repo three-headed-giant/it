@@ -77,18 +77,56 @@ super(MyClass, self)
 super()
 ```
     
-### LIST_COMP
-`list(map(callable, iterable))` or `list(callable(x) for x in y)` 
-    can be replaced with can be replaced with `[callable(item) for item in iterable]`
+### USE_COMPREHENSION
+`list`/`dict`/`set` calls with a generator expression
+    can be replaced with comprehensions.
     
 ```py
-operands = list(map(b16, tokens))
-    other_operands = list(b8(x) for x in y)
+operands = list(b8(token) for token in tokens)
+    patterns = dict((token.name, b8(token)) for token in tokens)
+    unique_operands = set(b8(token) for token in tokens)
 ```
     to
 ```py
-operands = [b16(token) for token in tokens]
-    other_operands = [b8(x) for x in y]
+operands = [b8(token) for token in tokens]
+    patterns = {token.name: b8(token) for token in tokens}
+    unique_operands = {b8(token) for token in tokens}
+```
+    
+### MAP_USE_COMPREHENSION
+A map (to a complex callable) can be replaced with 
+    `list` or `set` comprehensions.
+    
+```py
+operands = list(map(itemgetter(0), tokens))
+    unique_operands = set(map(attrgetter('unique_version'), tokens))
+```
+    to
+```py
+operands = [token[0] for token in tokens]
+    unique_operands = {token.unique_version for token in tokens}
+```
+    
+### ALPHABET_CONSTANT
+A constant literal with the value of ASCII alphabet (`x = "ABC....Z"`) can be replaced 
+    with `string.ascii_letters`/`string.ascii_uppercase`/`string.ascii_lowercase`
+    
+```py
+GUESS_MY_NAME = "abcde...WXYZ"
+    UPPERCASE_ALPH = "ABCD...WXYZ"
+    LOWERCASE_ALPH = "abcd...wxyz"
+    
+    def game(char):
+        return char in GUESS_MY_NAME
+```
+    to
+```py
+import string
+    UPPERCASE_ALPH = string.ascii_uppercase
+    LOWERCASE_ALPH = string.ascii_lowercase
+    
+    def game(char):
+        return char in string.ascii_letters
 ```
     
 ### UNUSED_IMPORT

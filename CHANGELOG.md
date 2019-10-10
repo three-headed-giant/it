@@ -28,6 +28,7 @@ All notable changes to this project will be documented in this file.
 - `enumerate` handler for `for x in range(len(a)): a[x]`
 - `use_comprehension` handler
 - `alphabet_constant` handler
+- `map_use_comprehension` handler
 #### Misc
 - `unreachable-except` moved inside Misc
 

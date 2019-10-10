@@ -161,6 +161,31 @@ def use_comprehension(node, db):
         )
 
 
+@Inspector.register(ast.Call)
+def map_use_comprehension(node, db):
+    """A map (to a complex callable) can be replaced with 
+    `list` or `set` comprehensions.
+    
+    ```py
+    operands = list(map(itemgetter(0), tokens))
+    unique_operands = set(map(attrgetter('unique_version'), tokens))
+    ```
+    to
+    ```py
+    operands = [token[0] for token in tokens]
+    unique_operands = {token.unique_version for token in tokens}
+    ```
+    """
+    return (
+        name_check(node.func, "list", "set")
+        and len(node.args) == 1
+        and isinstance(node.args[0], ast.Call)
+        and name_check(node.args[0].func, "map")
+        and len(node.args[0].args) == 2
+        and not isinstance(node.args[0].args[0], (ast.Name, ast.Attribute))
+    )
+
+
 @Inspector.register(ast.Assign)
 def alphabet_constant(node, db):
     """A constant literal with the value of ASCII alphabet (`x = "ABC....Z"`) can be replaced 

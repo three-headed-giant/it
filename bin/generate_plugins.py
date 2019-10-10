@@ -6,10 +6,10 @@ from itertools import chain
 from pathlib import Path
 from textwrap import dedent
 
-import inspectortiger.plugins
-from inspectortiger import Inspector
-
 sys.path.insert(0, "../inspectortiger")  # i dont like this either
+if True:  # https://github.com/timothycrosley/isort/issues/468
+    import inspectortiger.plugins
+    from inspectortiger import Inspector
 
 
 BASE = Path(inspectortiger.plugins.__file__).parent
