@@ -1,7 +1,8 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.7.0] - Unrelased
+## [0.8.0] - Unreleased
+## [0.7.0] - 10/10/2019
 ### Core
 - Pass `db` reference to `TREE_TRANSFORMER`s
 - Remove old-style ini configs ([#4](https://github.com/thg-consulting/inspectortiger/issues/4))
