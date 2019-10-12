@@ -151,7 +151,7 @@ class ConfigManager:
     @staticmethod
     def _parse_config(path):
         if not path.exists():
-            logger.warning("Couldn't find configuration file at {path!r}.")
+            logger.warning(f"Couldn't find configuration file at {path!r}.")
             return {}
         with open(path) as config:
             try:
