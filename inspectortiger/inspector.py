@@ -142,6 +142,7 @@ class Inspector(ast.NodeVisitor):
         for tree_transformer in self._event_hooks[Events.TREE_TRANSFORMER]:
             tree = tree_transformer(tree, self._hook_db)
         self.visit(tree)
+        return self.results
 
     @lru_cache(128)
     def __getattr__(self, attr):

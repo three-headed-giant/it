@@ -15,22 +15,16 @@ def inspect(file):
     try:
         logger.debug("Inspecting {}...")
         inspector = Inspector(file)
-        inspector.handle()
-        results = inspector.results
+        results = inspector.handle()
     except SyntaxError:
         logger.exception(f"Couldn't parse {file}")
     return results
 
 
-def inspector(files, workers, ignore, debug=False):
+def _obtain(ignore, *inspections):
     all_reports = defaultdict(list)
 
-    if debug:
-        executor = map
-    else:
-        executor = ProcessPoolExecutor(workers).map
-
-    for inspection in executor(inspect, set(files)):
+    for inspection in inspections:
         for plugin, reports in inspection.items():
             for report in reports:
                 if report.code not in ignore:
@@ -39,15 +33,29 @@ def inspector(files, workers, ignore, debug=False):
     return all_reports
 
 
+def inspector(files, workers, ignore, debug=False):
+    if debug:
+        executor = map
+    else:
+        executor = ProcessPoolExecutor(workers).map
+
+    return _obtain(ignore, *executor(inspect, set(files)))
+
+
+def _load_plugins(plugins, ignore=()):
+    for plugin in plugins:
+        if plugin in ignore:
+            continue
+        else:
+            plugin.load()
+
+
+def start_core_session(ignore=()):
+    _load_plugins(CORE_PLUGINS, ignore)
+
+
 def load_plugins(manager, ignore=(), load_core=True):
-    def loader(plugins):
-        for plugin in plugins:
-            if plugin in ignore:
-                continue
-            else:
-                plugin.load()
-
     if load_core:
-        loader(CORE_PLUGINS)
+        start_core_session(ignore)
 
-    loader(manager.config.plugins)
+    _load_plugins(manager.config.plugins, ignore)
