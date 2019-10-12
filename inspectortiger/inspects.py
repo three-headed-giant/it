@@ -13,7 +13,7 @@ CORE_PLUGINS = Plugin.from_config(
 def inspect(file):
     results = {}
     try:
-        print("Inspecting", file, "...")
+        logger.debug("Inspecting {}...")
         inspector = Inspector(file)
         inspector.handle()
         results = inspector.results
