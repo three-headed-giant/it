@@ -8,7 +8,6 @@
 
 InspectorTiger is a modern python code review tool / framework. It comes with bunch of pre-defined handlers which warns you about improvements and possible bugs. Beside these handlers, you can write your own or use community ones.
 
-## Example
 ```py
 ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -53,6 +52,9 @@ $ inspectortiger ../t.py
   - ../t.py:7:12    => CONTROL_FLOW_INSIDE_FINALLY
   - ../t.py:7:12    => UNREACHABLE_EXCEPT
 ```
+
+## Tutorials
+- [Inspecting python with Inspector Tiger](https://dev.to/btaskaya/inspecting-python-with-inspector-tiger-3hfb)
 
 ## API
 Also you can use free API (inspector.herokuapp.com) to try our functions out
