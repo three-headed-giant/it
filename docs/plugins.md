@@ -29,3 +29,7 @@ Common gotchas
 `unimport` integration
 
 - `db["community"]["unimport"]["unimport"]` => A list of imports that are not used
+
+### Django
+`django` integration
+

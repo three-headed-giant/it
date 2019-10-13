@@ -27,8 +27,11 @@ def generate():
 
         plugin = plugin.relative_to(BASE)
         plugin = str(plugin)[: -len(plugin.suffix)].replace("/", ".")
-        plugin = import_module(f"inspectortiger.plugins.{plugin}")
-        plugins.append(plugin)
+        try:
+            plugin = import_module(f"inspectortiger.plugins.{plugin}")
+            plugins.append(plugin)
+        except ImportError:
+            print("Couldn't load", plugin)
 
     with open(args.output / "plugins.md", "w") as out:
         out.write("# Plugins\n")
