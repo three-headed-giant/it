@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 
 ## [0.8.0] - Unreleased
+- Project-local config files
+- Project-local plugins with `?` prefix
+- `inspectortiger.server` package for Inspector Web API
+
 ## [0.7.0] - 10/10/2019
 ### Core
 - Pass `db` reference to `TREE_TRANSFORMER`s

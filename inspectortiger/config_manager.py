@@ -48,10 +48,12 @@ class Plugin(metaclass=_Plugin):
 
     @classmethod
     def from_simple(cls, simple):
-        if simple.startswith("@"):
-            simple = simple.replace("@", "inspectortiger.plugins.")
+        try:
+            namespace, plugin = simple.rsplit(".", 1)
+        except ValueError:
+            namespace, *plugin = simple
 
-        namespace, plugin = simple.rsplit(".", 1)
+        plugin = "".join(plugin)
         return cls(plugin, namespace)
 
     @classmethod
@@ -79,8 +81,10 @@ class Plugin(metaclass=_Plugin):
         return wrapper
 
     def __post_init__(self):
+        self.namespace = self.expand(self.namespace)
+
         if self.static_name is None:
-            self.static_name = f"{self.namespace}.{self.plugin}"  # TODO: Allow modules without namespace
+            self.static_name = f"{self.namespace}{self.plugin}"
 
     def __str__(self):
         return self.plugin
@@ -110,6 +114,21 @@ class Plugin(metaclass=_Plugin):
                 actionable, "_inspection_mark"
             ):  # TODO: ismarked(callable)
                 actionable.plugin = self
+
+    @staticmethod
+    def expand(namespace):
+        # prefixes
+        # @ => inspectortiger.plugins
+        # ? => local plugin
+
+        if namespace == "@":
+            return "inspectortiger.plugins."
+        elif namespace.startswith("@"):
+            return namespace.replace("@", "inspectortiger.plugins.") + "."
+        elif namespace == "?":
+            return ""
+        else:
+            return namespace + "."
 
 
 @dataclass
