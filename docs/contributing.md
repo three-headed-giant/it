@@ -26,6 +26,12 @@ $ git fetch upstream
 $ git rebase upstream/master
 ```
 
+### Install pre-commit hooks
+```
+$ pre-commit install
+$ pre-commit install --hook-type prepare-commit-msg
+```
+
 ## Code
 > "A foolish consistency is the hobgoblin of little minds"
 
