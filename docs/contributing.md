@@ -35,7 +35,7 @@ $ pre-commit install --hook-type prepare-commit-msg
 ## Code
 > "A foolish consistency is the hobgoblin of little minds"
 
-Try to follow PEP8 & PEP20 but don't hesitate about following a style that is presented in this project but not complies with PEP8. If you are adding a new handler and you aren't sure about which plugin it fits, just open a about what that plugin does.
+Try to follow PEP8 & PEP20 but don't hesitate about following a style that is presented in this project but not complies with PEP8. If you are adding a new handler and you aren't sure about which plugin it fits, open an issue before sending PR.
 
 ### Commit Messages
 
