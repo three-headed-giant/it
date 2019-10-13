@@ -81,10 +81,12 @@ class Plugin(metaclass=_Plugin):
         return wrapper
 
     def __post_init__(self):
-        self.namespace = self.expand(self.namespace)
+
+        nsx = self.expand(self.namespace)
+        self.namespace = nsx[:-1]
 
         if self.static_name is None:
-            self.static_name = f"{self.namespace}{self.plugin}"
+            self.static_name = f"{nsx}{self.plugin}"
 
     def __str__(self):
         return self.plugin
@@ -122,13 +124,13 @@ class Plugin(metaclass=_Plugin):
         # ? => local plugin
 
         if namespace == "@":
-            return "inspectortiger.plugins."
+            namespace = "inspectortiger.plugins"
         elif namespace.startswith("@"):
-            return namespace.replace("@", "inspectortiger.plugins.") + "."
+            namespace = namespace.replace("@", "inspectortiger.plugins.")
         elif namespace == "?":
             return ""
-        else:
-            return namespace + "."
+
+        return namespace + "."
 
 
 @dataclass
