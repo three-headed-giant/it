@@ -8,9 +8,10 @@ from pathlib import Path
 from typing import List, Optional, Tuple
 
 import inspectortiger.inspector
+from inspectortiger.utils import _PSEUDO_FIELDS
 
-_PSEUDO_FIELDS = {"cls", "__class__"}
 USER_CONFIG = Path("~/.inspector.rc").expanduser()
+PROJECT_CONFIG = Path(".inspector.rc")
 logger = logging.getLogger("inspectortiger")
 
 
@@ -146,12 +147,14 @@ class Config:
 
 class ConfigManager:
     def __init__(self):
-        self.config = Config(**self._parse_config(USER_CONFIG))
+        cfg = self._parse_config(USER_CONFIG)
+        cfg.update(self._parse_config(PROJECT_CONFIG))
+        self.config = Config(**cfg)
 
     @staticmethod
     def _parse_config(path):
         if not path.exists():
-            logger.warning(f"Couldn't find configuration file at {path!r}.")
+            logger.debug(f"Couldn't find configuration file at {path!s}.")
             return {}
         with open(path) as config:
             try:

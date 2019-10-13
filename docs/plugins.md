@@ -11,6 +11,10 @@ Context management for AST (38+)
 - `db['context']['global_context']` => Global context
 - `get_context(node, db)` => Infer context of given `node`
 
+## Upgradeable
+Improvable (for 3.7+) syntaxes
+
+
 ## Misc
 Common gotchas
 
@@ -20,10 +24,6 @@ Common gotchas
 `parent` field to each node
 
 - `parent_to(child, node)` => yields all parents of child until it reaches `node`
-
-## Upgradeable
-Improvable (for 3.7+) syntaxes
-
 
 ### Unimport
 `unimport` integration

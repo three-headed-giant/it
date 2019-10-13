@@ -7,6 +7,7 @@ PY38_PLUS = sys.version_info >= (3, 8)
 PY38_MINUS = not PY38_PLUS
 
 _CONSTANT_TYPES = {"Num", "Str", "Bytes", "NameConstant", "Ellipsis"}
+_PSEUDO_FIELDS = {"cls", "__class__"}
 
 
 class Events(Enum):
