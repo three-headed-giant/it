@@ -3,8 +3,8 @@ import ast
 import pytest
 
 from inspectortiger import Inspector
-from inspectortiger.config_manager import Plugin
 from inspectortiger.inspector import BufferExit
+from inspectortiger.plugin import Plugin
 
 
 @pytest.fixture

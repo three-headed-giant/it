@@ -9,8 +9,8 @@ __author__ = "Batuhan Taskaya"
 import ast
 import string
 
-from inspectortiger.config_manager import Plugin
 from inspectortiger.inspector import Inspector
+from inspectortiger.plugin import Plugin
 from inspectortiger.plugins.context import Contexts, get_context
 from inspectortiger.utils import (
     biname_check,

@@ -1,21 +1,16 @@
 import argparse
-import logging
 import sys
 from distutils.util import strtobool
 from pathlib import Path
 
-from inspectortiger.config_manager import ConfigManager, Plugin, logger
-from inspectortiger.inspects import inspector, load_plugins
+from inspectortiger.plugin import Plugin
 from inspectortiger.reports import _prepare_result
-from inspectortiger.utils import traverse_paths
+from inspectortiger.session import Session
+from inspectortiger.utils import logger, prepare_logger, traverse_paths
 
 
-def main():
-    files = []
-    manager = ConfigManager()
-
+def prepare_parser(session):
     parser = argparse.ArgumentParser(description="InspectorTiger")
-
     parser.add_argument(
         "paths", metavar="p", type=Path, nargs="*", help="paths to check"
     )
@@ -23,7 +18,7 @@ def main():
     parser.add_argument(
         "--ignore-plugin",
         nargs="*",
-        default=manager.config.blacklist.plugins,
+        default=session.config.blacklist.plugins,
         type=Plugin.from_simple,
         help="plugins to ignore",
     )
@@ -31,78 +26,69 @@ def main():
         "--ignore-code",
         type=str,
         nargs="*",
-        default=manager.config.blacklist.codes,
+        default=session.config.blacklist.codes,
         help="handlers to ignore",
     )
     parser.add_argument(
         "--workers",
         type=int,
         help="number of worker processes",
-        default=manager.config.workers,
+        default=session.config.workers,
     )
     parser.add_argument(
         "--fail-exit",
         type=strtobool,
         help="on fail exit with error code",
-        default=manager.config.fail_exit,
+        default=session.config.fail_exit,
     )
     parser.add_argument(
         "--load-core",
         help="load core plugins (`inspectortiger.plugins`)",
-        default=manager.config.load_core,
+        default=session.config.load_core,
     )
     parser.add_argument(
         "--logging-level",
         type=int,
-        default=manager.config.logging_level,
+        default=session.config.logging_level,
         help="logging level",
     )
     parser.add_argument(
         "--logging-handler-level",
         type=int,
-        default=manager.config.logging_handler_level,
+        default=session.config.logging_handler_level,
         help="stdout handler level",
     )
-    parser.add_argument(
-        "--debug",
-        action="store_true",
-        default=False,
-        help="debug mode (serial)",
+    return parser
+
+
+def main():
+    files = []
+    session = Session()
+    configuration = prepare_parser(session).parse_args()
+    prepare_logger(
+        configuration.logging_level, configuration.logging_handler_level
     )
 
-    args = parser.parse_args()
+    session.config.update(**vars(configuration))
+    session.start()
 
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setLevel(args.logging_handler_level)
-    logger.setLevel(args.logging_level)
-
-    formatter = logging.Formatter(
-        "[Inspector Tiger] %(levelname)s - %(message)s"
-    )
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-
-    args = parser.parse_args()
-    load_plugins(manager, args.ignore_plugin, args.load_core)
-
-    if args.paths:
-        files = traverse_paths(args.paths)
-        reports = inspector(files, args.workers, args.ignore_code, args.debug)
+    if configuration.paths:
+        files = traverse_paths(configuration.paths)
+        reports = session.bulk_inspection(*files)
         if reports:
             logger.info(
                 "InspectorTiger inspected \N{right-pointing magnifying glass} "
                 "and found these problems;"
             )
             logger.info("\n" + _prepare_result(reports))
-            if args.fail_exit:
-                exit(1)
+            exit(int(session.config.fail_exit))
         else:
             logger.info(
                 "InspectorTiger inspected \N{right-pointing magnifying glass} "
                 "your code and it is perfect \N{white heavy check mark}"
             )
     else:
-        print("Nothing to do!")
+        logger.info("Nothing to do!")
 
 
 if __name__ == "__main__":

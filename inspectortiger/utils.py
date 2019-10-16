@@ -1,10 +1,16 @@
 import ast
+import logging
 import sys
 from enum import Enum, IntEnum, auto
 from functools import lru_cache
+from pathlib import Path
 
 PY38_PLUS = sys.version_info >= (3, 8)
 PY38_MINUS = not PY38_PLUS
+
+USER_CONFIG = Path("~/.inspector.rc").expanduser()
+PROJECT_CONFIG = Path(".inspector.rc")
+logger = logging.getLogger("inspectortiger")
 
 _CONSTANT_TYPES = {"Num", "Str", "Bytes", "NameConstant", "Ellipsis"}
 _PSEUDO_FIELDS = {"cls", "__class__"}
@@ -25,6 +31,28 @@ class Priority(IntEnum):
     def __call__(self, func):
         func.priority = self
         return func
+
+
+class Group(Enum):
+    CODE = auto()
+    PLUGIN = auto()
+    COLUMN = auto()
+    LINENO = auto()
+    FILENAME = auto()
+
+
+def prepare_logger(
+    logging_handler_level=logging.INFO, logging_level=logging.INFO
+):
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(logging_handler_level)
+    logger.setLevel(logging_level)
+
+    formatter = logging.Formatter(
+        "[Inspector Tiger] %(levelname)s - %(message)s"
+    )
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
 
 
 def traverse_paths(paths):

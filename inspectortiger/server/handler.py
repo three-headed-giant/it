@@ -1,12 +1,10 @@
 import ast
 import json
-import logging
 from http.server import BaseHTTPRequestHandler
 
 from inspectortiger.inspector import Inspector
-from inspectortiger.inspects import _obtain, start_core_session
-
-logger = logging.getLogger("inspectortiger.server")
+from inspectortiger.session import Session
+from inspectortiger.utils import Group, logger
 
 
 class InspectorServer(BaseHTTPRequestHandler):
@@ -35,10 +33,14 @@ class InspectorServer(BaseHTTPRequestHandler):
                 message=f"Couldn't parse the source code. {exc!r}",
             )
 
-        start_core_session()
-        inspector = Inspector(source)
-        reports = inspector.handle()
-        return self.respond(status="success", result=_obtain((), reports))
+        session = Session()
+        session.start()
+
+        inspection = session.single_inspection(source)
+        return self.respond(
+            status="success",
+            result=dict(session.group_by(inspection, group=Group.LINENO)),
+        )
 
     def _respond(self, code):
         self.send_response(code)

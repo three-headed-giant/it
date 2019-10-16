@@ -1,7 +1,8 @@
 import argparse
 import socketserver
 
-from inspectortiger.server import InspectorServer, logger
+from inspectortiger.server import InspectorServer
+from inspectortiger.utils import logger, prepare_logger
 
 
 class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
@@ -28,6 +29,7 @@ if __name__ == "__main__":
     )
 
     server = parser.parse_args()
+    prepare_logger()
     if server.threaded:
         runner = ThreadedTCPServer
     else:

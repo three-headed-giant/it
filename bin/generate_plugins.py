@@ -1,16 +1,12 @@
 #!/usr/bin/env python
 import argparse
-import sys
 from importlib import import_module
 from itertools import chain
 from pathlib import Path
 from textwrap import dedent
 
-sys.path.insert(0, "../inspectortiger")  # i dont like this either
-if True:  # https://github.com/timothycrosley/isort/issues/468
-    import inspectortiger.plugins
-    from inspectortiger import Inspector
-
+import inspectortiger.plugins
+from inspectortiger import Inspector
 
 BASE = Path(inspectortiger.plugins.__file__).parent
 

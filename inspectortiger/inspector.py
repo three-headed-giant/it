@@ -3,11 +3,9 @@ import tokenize
 from collections import defaultdict
 from contextlib import contextmanager, suppress
 from functools import lru_cache, partial
-from types import MethodType
 
-from inspectortiger.config_manager import logger
 from inspectortiger.reports import Report
-from inspectortiger.utils import Events, Priority, _version_node, mark
+from inspectortiger.utils import Events, Priority, _version_node, logger, mark
 
 with suppress(ImportError):
     import conast

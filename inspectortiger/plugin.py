@@ -1,18 +1,10 @@
 import importlib
-import json
-import logging
 import sys
-from dataclasses import dataclass, field
-from multiprocessing import cpu_count
-from pathlib import Path
-from typing import List, Optional, Tuple
+from dataclasses import dataclass
+from typing import Optional, Tuple
 
 import inspectortiger.inspector
 from inspectortiger.utils import _PSEUDO_FIELDS
-
-USER_CONFIG = Path("~/.inspector.rc").expanduser()
-PROJECT_CONFIG = Path(".inspector.rc")
-logger = logging.getLogger("inspectortiger")
 
 
 class PluginLoadError(ImportError):
@@ -131,55 +123,3 @@ class Plugin(metaclass=_Plugin):
             return ""
 
         return namespace + "."
-
-
-@dataclass
-class Blacklist:
-    plugins: List[Plugin] = field(default_factory=list)
-    codes: List[str] = field(default_factory=list)
-
-    def __post_init__(self):
-        plugins = self.plugins.copy()
-        for n, plugin in enumerate(self.plugins):
-            if isinstance(plugin, str):
-                plugins.pop(n)
-                plugins.insert(n, Plugin.from_simple(plugin))
-        self.plugins = plugins
-
-
-@dataclass
-class Config:
-    workers: int = cpu_count()
-    fail_exit: bool = True
-    load_core: bool = True
-    logging_level: int = logging.INFO
-    logging_handler_level: int = logging.INFO
-
-    plugins: List[Plugin] = field(default_factory=list)
-    blacklist: Blacklist = field(default_factory=Blacklist)
-
-    def __post_init__(self):
-        if isinstance(self.plugins, dict):
-            self.plugins = Plugin.from_config(self.plugins)
-
-        if isinstance(self.blacklist, dict):
-            self.blacklist = Blacklist(**self.blacklist)
-
-
-class ConfigManager:
-    def __init__(self):
-        cfg = self._parse_config(USER_CONFIG)
-        cfg.update(self._parse_config(PROJECT_CONFIG))
-        self.config = Config(**cfg)
-
-    @staticmethod
-    def _parse_config(path):
-        if not path.exists():
-            logger.debug(f"Couldn't find configuration file at {path!s}.")
-            return {}
-        with open(path) as config:
-            try:
-                config = json.load(config)
-            except json.JSONDecodeError:
-                config = {}
-        return config
