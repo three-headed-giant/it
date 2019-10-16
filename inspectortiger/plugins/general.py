@@ -1,8 +1,8 @@
 """
-## Misc
+## General
 Common gotchas
 
-- `db['unreachable_except']['user_exceptions']` => A mapping of user-defined exceptions with name:tree_value
+- `db['general']['user_exceptions']` => A mapping of user-defined exceptions with name:tree_value
 """
 
 __author__ = "Batuhan Taskaya"
@@ -91,7 +91,7 @@ def exception_defs(node, db):
     )
     if exc_bases:
         EXC_TREE[node.name] = exc_bases
-        db["unreachable_except"]["user_exceptions"][node.name] = exc_bases
+        db["general"]["user_exceptions"][node.name] = exc_bases
 
 
 @Inspector.register(ast.Try)

@@ -1,5 +1,5 @@
 """
-## Upgradeable
+## Upgrade
 Improvable (for 3.7+) syntaxes
 
 """

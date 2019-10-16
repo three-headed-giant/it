@@ -39,18 +39,18 @@ Think about this piece of code, you see some bugs or improvements, don't you? Bu
 $ inspectortiger ../t.py
 [Inspector Tiger] INFO - InspectorTiger inspected 🔎 and found these problems;
 [Inspector Tiger] INFO - 
-[upgradeable]
+[upgrade]
   - ../t.py:1:0     => ALPHABET_CONSTANT
-  - ../t.py:4:29    => OPTIONAL
-  - ../t.py:8:16    => SUPER_ARGS
-  - ../t.py:16:22   => USE_COMPREHENSION
-  - ../t.py:17:8    => YIELD_FROM
-  - ../t.py:20:28   => MAP_USE_COMPREHENSION
-  - ../t.py:21:8    => BUILTIN_ENUMERATE
-[misc]
-  - ../t.py:4:4     => DEFAULT_MUTABLE_ARG
-  - ../t.py:7:12    => CONTROL_FLOW_INSIDE_FINALLY
-  - ../t.py:7:12    => UNREACHABLE_EXCEPT
+  - ../t.py:5:27    => OPTIONAL
+  - ../t.py:9:16    => SUPER_ARGS
+  - ../t.py:17:22   => USE_COMPREHENSION
+  - ../t.py:18:8    => YIELD_FROM
+  - ../t.py:21:28   => MAP_USE_COMPREHENSION
+  - ../t.py:22:8    => BUILTIN_ENUMERATE
+[general]
+  - ../t.py:5:4     => DEFAULT_MUTABLE_ARG
+  - ../t.py:8:12    => CONTROL_FLOW_INSIDE_FINALLY
+  - ../t.py:8:12    => UNREACHABLE_EXCEPT
 ```
 
 ## Tutorials

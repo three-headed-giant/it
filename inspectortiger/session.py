@@ -8,7 +8,7 @@ from inspectortiger.plugin import Plugin
 from inspectortiger.utils import Group, logger
 
 CORE_PLUGINS = Plugin.from_config(
-    {"inspectortiger.plugins": ["context", "parentize", "misc", "upgradeable"]}
+    {"inspectortiger.plugins": ["context", "parentize", "general", "upgrade"]}
 )
 
 

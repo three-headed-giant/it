@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 - Project-local config files
 - Project-local plugins with `?` prefix
 - `inspectortiger.server` package for Inspector Web API
+- Refactorment of internal/public run API (prev aka inspects module)  ([#18](https://github.com/thg-consulting/inspectortiger/issues/18))
+- Design of new `Session` API ([#18](https://github.com/thg-consulting/inspectortiger/issues/18))
+- Renaming of `upgradeable` (hard to say) and `misc` (doesn't look important) to `upgrade` & `general`
 
 ## [0.7.0] - 10/10/2019
 ### Core
