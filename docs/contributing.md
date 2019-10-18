@@ -37,6 +37,8 @@ $ pre-commit install --hook-type prepare-commit-msg
 
 Try to follow PEP8 & PEP20 but don't hesitate about following a style that is presented in this project but not complies with PEP8. If you are adding a new handler and you aren't sure about which plugin it fits, open an issue before sending PR.
 
+By the way, after adding a new feature or fixing a bug please report your change to `CHANGELOG.md` (if possible, link the github issue).
+
 ### Commit Messages
 
 We use `prefix: a short desc` template for our commit messages. Prefixes;
