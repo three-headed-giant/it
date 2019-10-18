@@ -53,6 +53,7 @@ We use `prefix: a short desc` template for our commit messages. Prefixes;
 | community-plugins | community plugins                                                      |
 | scripts           | internal scripts that are used to generate files like error_codes.md   |
 | misc              | other                                                                  |
+| utils             | utils                                                                  |
 
 ### Styling
 We use `black` & `isort` and a bunch of `pre-commit` hooks. You dont need to do anything, `pre-commit` handles all.

@@ -46,17 +46,28 @@ def test_name_check():
     assert not name_check(name, "var")
 
 
-@pytest.mark.skipif(
-    sys.version_info < (3, 8), reason="requires python3.8 or higher"
-)
 @pytest.mark.parametrize("constant", (1, '"a"', 1.7, True, None, False))
 def test_constant_check(constant):
     node = ast.parse(str(constant), "<ast>", "eval").body
-    constant = ast.literal_eval(str(constant))
+    constant = ast.literal_eval(node)
     assert constant_check(node, constant)
     assert constant_check(node, 3, 5, "xxx", constant)
     assert not constant_check(node, 3, 5)
     assert not constant_check(ast.Pass(), 3, 5)
+
+
+_EDGE_CONSTANTS = {"1", "0", "True", "False", "1.0", "0.0"}
+
+
+@pytest.mark.parametrize("constant", _EDGE_CONSTANTS)
+def test_constant_check_edge(constant):
+    node = ast.parse(str(constant), "<ast>", "eval").body
+    constant = ast.literal_eval(node)
+    not_same_constants = _EDGE_CONSTANTS - {str(constant)}
+    for not_same_constant in not_same_constants:
+        not_same_constant = ast.literal_eval(not_same_constant)
+        assert not constant_check(node, not_same_constant)
+    assert constant_check(node, constant)
 
 
 def test_biname_check():

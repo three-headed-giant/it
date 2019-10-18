@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - Refactorment of internal/public run API (prev aka inspects module)  ([#18](https://github.com/thg-consulting/inspectortiger/issues/18))
 - Design of new `Session` API ([#18](https://github.com/thg-consulting/inspectortiger/issues/18))
 - Renaming of `upgradeable` (hard to say) and `misc` (doesn't look important) to `upgrade` & `general`
+- Constant check with `True/False/1/0/1.0/0.0` fixed ([#20](https://github.com/thg-consulting/inspectortiger/issues/20))
 
 ## [0.7.0] - 10/10/2019
 ### Core

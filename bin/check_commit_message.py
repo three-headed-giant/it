@@ -13,6 +13,7 @@ PREFIXES = {
     "scripts": "internal scripts that are used to generate files like error_codes.md",
     "server": "HTTP server implementation",
     "misc": "other",
+    "utils": "utils",
     "release": "releases",
 }
 

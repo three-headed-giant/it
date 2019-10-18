@@ -100,7 +100,9 @@ def constant_check(a, *b):
         constant_value = a.value
     else:
         return False
-    return constant_value in b
+
+    possible_types = {(type(x), x) for x in b}
+    return (type(constant_value), constant_value) in possible_types
 
 
 def biname_check(a, b):
