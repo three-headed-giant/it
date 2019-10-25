@@ -1,0 +1,18 @@
+{
+    "commit_msg": {
+        "allow_merge": true,
+        "prefixes": [
+            "doc",
+            "core",
+            "misc",
+            "tests",
+            "utils",
+            "server",
+            "scripts",
+            "release",
+            "plugins",
+            "command-line",
+            "community-plugins"
+        ]
+    }
+}

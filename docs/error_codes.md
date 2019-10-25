@@ -7,6 +7,29 @@ Default argument is something mutable.
 def foo(x = []): ...
 ```
     
+### CONTROL_FLOW_INSIDE_FINALLY
+A return/break/continue that would implicitly cancel any active exception.
+
+```py
+def foo():
+        try:
+            foo()
+        finally:
+            return
+```
+    
+### UNREACHABLE_EXCEPT
+Except statement is unreachable due to a more broad except.
+
+```py
+try:
+        raise ValueError
+    except Exception:
+        pass
+    except ValueError:
+        pass
+```
+    
 ### YIELD_FROM
 `yield` can be replaced with `yield from`.
 
@@ -104,29 +127,6 @@ import string
     
     def game(char):
         return char in string.ascii_letters
-```
-    
-### CONTROL_FLOW_INSIDE_FINALLY
-A return/break/continue that would implicitly cancel any active exception.
-
-```py
-def foo():
-        try:
-            foo()
-        finally:
-            return
-```
-    
-### UNREACHABLE_EXCEPT
-Except statement is unreachable due to a more broad except.
-
-```py
-try:
-        raise ValueError
-    except Exception:
-        pass
-    except ValueError:
-        pass
 ```
     
 ### UNUSED_IMPORT

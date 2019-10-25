@@ -11,10 +11,6 @@ Context management for AST (38+)
 - `db['context']['global_context']` => Global context
 - `get_context(node, db)` => Infer context of given `node`
 
-## Upgrade
-Improvable (for 3.7+) syntaxes
-
-
 ## General
 Common gotchas
 
@@ -25,11 +21,15 @@ Common gotchas
 
 - `parent_to(child, node)` => yields all parents of child until it reaches `node`
 
-### Unimport
-`unimport` integration
+## Upgrade
+Improvable (for 3.7+) syntaxes
 
-- `db["community"]["unimport"]["unimport"]` => A list of imports that are not used
 
 ### Django
 `django` integration
 
+
+### Unimport
+`unimport` integration
+
+- `db["community"]["unimport"]["unimport"]` => A list of imports that are not used

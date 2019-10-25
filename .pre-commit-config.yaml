@@ -2,12 +2,12 @@
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
 -   repo: https://github.com/python/black
-    rev: ae5588cf073be10b51dc48ad2fc513e11c4f3e03
+    rev: 19.3b0
     hooks:
     -   id: black
         args: [-l 79]
 -   repo: https://github.com/asottile/seed-isort-config
-    rev: v1.9.2
+    rev: v1.9.3
     hooks:
     -   id: seed-isort-config
 -   repo: https://github.com/pre-commit/mirrors-isort
@@ -15,10 +15,15 @@ repos:
     hooks:
     -   id: isort
 -   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.720
+    rev: v0.740
     hooks:
     -   id: mypy
         stages: [manual]
+-   repo: https://github.com/thg-consulting/whithercanada
+    rev: 1dc71abeafc8bfdeb80b1ed820d408c12e06c04a
+    hooks:
+    -   id: check_commit_message
+        stages: [prepare-commit-msg]
 -   repo: local
     hooks:
     -   id: docs
@@ -26,10 +31,4 @@ repos:
         pass_filenames: false
         entry: 'bin/generate_plugins.py'
         args: [--output=docs/]
-        language: script
-
-    -   id: commit-check
-        name: Check commit message
-        stages: [commit-msg, prepare-commit-msg]
-        entry: 'bin/check_commit_message.py'
         language: script
