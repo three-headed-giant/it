@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Optional, Tuple
 
 import inspectortiger.inspector
-from inspectortiger.utils import _PSEUDO_FIELDS
+from inspectortiger.utils import _PSEUDO_FIELDS, logger
 
 
 class PluginLoadError(ImportError):
