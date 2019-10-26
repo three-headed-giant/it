@@ -59,6 +59,12 @@ def prepare_parser(session):
         help="stdout handler level",
     )
     parser.add_argument(
+        "--serial",
+        action="store_true",
+        default=False,
+        help="dont use process pool executor",
+    )
+    parser.add_argument(
         "--show-plugins",
         action="store_true",
         default=False,

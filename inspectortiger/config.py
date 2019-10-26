@@ -27,6 +27,7 @@ class Blacklist:
 
 @dataclass
 class Config:
+    serial: bool = False
     workers: int = cpu_count()
     fail_exit: bool = True
     load_core: bool = True

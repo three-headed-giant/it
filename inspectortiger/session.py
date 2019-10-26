@@ -42,7 +42,10 @@ class Session:
             return inspector.handle()
 
     def bulk_inspection(self, *files):
-        mapper = ProcessPoolExecutor(self.config.workers).map
+        if self.config.serial:
+            mapper = map
+        else:
+            mapper = ProcessPoolExecutor(self.config.workers).map
         return self.merge_inspections(mapper(self.single_inspection, files))
 
     def group_by(self, inspection, group):
