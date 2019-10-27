@@ -221,3 +221,26 @@ def alphabet_constant(node, db):
             string.ascii_lowercase,
         )
     )
+
+
+@Inspector.register(ast.Try)
+def suppress(node, db):
+    """A try statement with one except which only passes can be replaced with `contextlib.suppress`
+    
+    ```py
+    try:
+        do_something()
+        do_other_thing()
+    except SomeError:
+        pass
+    ```
+    to
+    ```py
+    with suppress(SomeError):
+        do_something()
+        do_other_thing()
+    ```
+    """
+    return len(node.handlers) == 1 and is_single_node(
+        node.handlers[0], ast.Pass
+    )

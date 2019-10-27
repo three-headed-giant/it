@@ -30,6 +30,23 @@ try:
         pass
 ```
     
+### SUPPRESS
+A try statement with one except which only passes can be replaced with `contextlib.suppress`
+    
+```py
+try:
+        do_something()
+        do_other_thing()
+    except SomeError:
+        pass
+```
+    to
+```py
+with suppress(SomeError):
+        do_something()
+        do_other_thing()
+```
+    
 ### YIELD_FROM
 `yield` can be replaced with `yield from`.
 

@@ -15,8 +15,8 @@ All notable changes to this project will be documented in this file.
 - `Plugin.apply` for marking handlers with belonged plugins without buffering.
 - `Session.load_plugin` for loading a single plugin (`load_plugins` for multiple)
 - `Session.plugins` for list of loaded active plugins.
-- `contextlib.suppress(SomeException)` instead of `try: something` `except SomeException: pass`
 - CORS support for server
+- `contextlib.suppress(SomeException)` instead of `try: something` `except SomeException: pass` ([#21](https://github.com/thg-consulting/inspectortiger/issues/21))
 
 ## [0.7.0] - 10/10/2019
 ### Core

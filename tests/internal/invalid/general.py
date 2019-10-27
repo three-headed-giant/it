@@ -3,7 +3,11 @@ ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 class Foo(SomeObjects):
     def bar(self, x=[], y: Union[int, None] = None):
-        x.append(1)
+        try:
+            x.append(1)
+        except AttributeError:
+            pass
+
         for _ in range(3):
             try:
                 super(bla, bla).foo_baz()
