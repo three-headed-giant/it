@@ -1,6 +1,7 @@
 from collections import defaultdict
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import asdict, dataclass, field
+from typing import Set
 
 from inspectortiger.config import Config
 from inspectortiger.inspector import Inspector
@@ -15,16 +16,21 @@ CORE_PLUGINS = Plugin.from_config(
 @dataclass
 class Session:
     config: Config = field(default_factory=Config)
+    plugins: Set[Plugin] = field(default_factory=set)
 
     def start(self):
         if self.config.load_core:
             self.load_plugins(*CORE_PLUGINS)
         self.load_plugins(*self.config.plugins)
 
+    def load_plugin(self, plugin):
+        if plugin not in self.config.blacklist.plugins:
+            plugin.load()
+            self.plugins.add(plugin)
+
     def load_plugins(self, *plugins):
         for plugin in plugins:
-            if not plugin in self.config.blacklist.plugins:
-                plugin.load()
+            self.load_plugin(plugin)
 
     def single_inspection(self, file):
         try:
@@ -36,7 +42,10 @@ class Session:
             return inspector.handle()
 
     def bulk_inspection(self, *files):
-        mapper = ProcessPoolExecutor(self.config.workers).map
+        if self.config.serial:
+            mapper = map
+        else:
+            mapper = ProcessPoolExecutor(self.config.workers).map
         return self.merge_inspections(mapper(self.single_inspection, files))
 
     def group_by(self, inspection, group):

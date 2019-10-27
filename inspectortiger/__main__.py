@@ -58,6 +58,18 @@ def prepare_parser(session):
         default=session.config.logging_handler_level,
         help="stdout handler level",
     )
+    parser.add_argument(
+        "--serial",
+        action="store_true",
+        default=False,
+        help="dont use process pool executor",
+    )
+    parser.add_argument(
+        "--show-plugins",
+        action="store_true",
+        default=False,
+        help="print all active plugins before start",
+    )
     return parser
 
 
@@ -71,6 +83,11 @@ def main():
 
     session.config.update(**vars(configuration))
     session.start()
+
+    if configuration.show_plugins:
+        logger.info(
+            f"Active plugins: {', '.join(plugin.static_name for plugin in session.plugins if not plugin.inactive)}"
+        )
 
     if configuration.paths:
         files = traverse_paths(configuration.paths)

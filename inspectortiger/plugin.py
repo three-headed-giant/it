@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Optional, Tuple
 
 import inspectortiger.inspector
-from inspectortiger.utils import _PSEUDO_FIELDS
+from inspectortiger.utils import _PSEUDO_FIELDS, logger
 
 
 class PluginLoadError(ImportError):
@@ -22,6 +22,7 @@ class _Plugin(type):
         static_name=None,
         python_version=(),
     ):
+        namespace = cls.expand(namespace)
         args = tuple(
             (k, v) for k, v in locals().items() if k not in _PSEUDO_FIELDS
         )
@@ -74,26 +75,20 @@ class Plugin(metaclass=_Plugin):
 
     def __post_init__(self):
 
-        nsx = self.expand(self.namespace)
-        self.namespace = nsx[:-1]
+        namespace = self.expand(self.namespace)
+        self.namespace = namespace
 
         if self.static_name is None:
-            self.static_name = f"{nsx}{self.plugin}"
+            self.static_name = f"{namespace}.{self.plugin}"
 
     def __str__(self):
         return self.plugin
 
     def load(self):
         with inspectortiger.inspector.Inspector.buffer():
-            try:
-                plugin = importlib.import_module(self.static_name)
-            except ImportError:
-                raise PluginLoadError(
-                    f"Couldn't load '{self.plugin}' from `{self.namespace}` namespace!"
-                )
-
-            if hasattr(plugin, "__py_version__"):
-                self.python_version = plugin.__py_version__
+            module = self.direct_load()
+            if hasattr(module, "__py_version__"):
+                self.python_version = module.__py_version__
 
             if self.python_version > sys.version_info:
                 self.inactive = True
@@ -102,8 +97,21 @@ class Plugin(metaclass=_Plugin):
                 )
                 raise inspectortiger.inspector.BufferExit
 
-        for actionable in dir(plugin):
-            actionable = getattr(plugin, actionable)
+        self.apply(module)
+
+    def direct_load(self):
+        try:
+            module = importlib.import_module(self.static_name)
+        except ImportError:
+            raise PluginLoadError(
+                f"Couldn't load '{self.plugin}' from `{self.namespace}` namespace!"
+            )
+        else:
+            return module
+
+    def apply(self, module):
+        for actionable in dir(module):
+            actionable = getattr(module, actionable)
             if hasattr(
                 actionable, "_inspection_mark"
             ):  # TODO: ismarked(callable)
@@ -116,10 +124,10 @@ class Plugin(metaclass=_Plugin):
         # ? => local plugin
 
         if namespace == "@":
-            namespace = "inspectortiger.plugins"
+            return "inspectortiger.plugins"
         elif namespace.startswith("@"):
-            namespace = namespace.replace("@", "inspectortiger.plugins.")
+            return namespace.replace("@", "inspectortiger.plugins.")
         elif namespace == "?":
             return ""
-
-        return namespace + "."
+        else:
+            return namespace
