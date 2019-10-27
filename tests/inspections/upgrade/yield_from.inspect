@@ -1,0 +1,38 @@
+"""
+```py
+for x in y:
+    yield x
+```
+
+to
+
+```py
+yield from y
+```
+"""
+
+{
+    'require_function': True
+}
+
+with positive:
+    for x in y:
+        yield x
+
+    for x, y in z:
+        yield (x, y)
+
+
+with negative:
+    for x in y:
+        yield x + 1
+
+    for x in y:
+        print(x)
+        yield x
+    
+    for x in y:
+        yield x, 1
+
+    for x, y in z:
+        yield x
