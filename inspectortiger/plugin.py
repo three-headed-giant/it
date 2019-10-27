@@ -22,6 +22,7 @@ class _Plugin(type):
         static_name=None,
         python_version=(),
     ):
+        namespace = cls.expand(namespace)
         args = tuple(
             (k, v) for k, v in locals().items() if k not in _PSEUDO_FIELDS
         )
@@ -74,11 +75,11 @@ class Plugin(metaclass=_Plugin):
 
     def __post_init__(self):
 
-        nsx = self.expand(self.namespace)
-        self.namespace = nsx[:-1]
+        namespace = self.expand(self.namespace)
+        self.namespace = namespace
 
         if self.static_name is None:
-            self.static_name = f"{nsx}{self.plugin}"
+            self.static_name = f"{namespace}.{self.plugin}"
 
     def __str__(self):
         return self.plugin
@@ -116,10 +117,10 @@ class Plugin(metaclass=_Plugin):
         # ? => local plugin
 
         if namespace == "@":
-            namespace = "inspectortiger.plugins"
+            return "inspectortiger.plugins"
         elif namespace.startswith("@"):
-            namespace = namespace.replace("@", "inspectortiger.plugins.")
+            return namespace.replace("@", "inspectortiger.plugins")
         elif namespace == "?":
             return ""
-
-        return namespace + "."
+        else:
+            return namespace
