@@ -29,8 +29,15 @@ from argparse import ArgumentParser
 from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
+from itertools import chain
 from pathlib import Path
 from typing import Any, Dict, List, NewType
+
+import inspectortiger.plugins
+from inspectortiger.inspector import Inspector
+from inspectortiger.session import Session
+
+BASE = Path(inspectortiger.plugins.__file__).parent
 
 Handler = NewType("Handler", ast.AST)
 
@@ -91,7 +98,22 @@ class InspectFileParser(ast.NodeVisitor):
 
 
 def runner(origin):
-    files = InspectFileParser.discover(origin)
+    session = Session()
+    session.config.update(load_core=True, plugins={})
+
+    session.start()
+    available_handlers = chain.from_iterable(Inspector._hooks.values())
+    available_handlers = {
+        handler.__name__: handler for handler in available_handlers
+    }
+
+    inspections = InspectFileParser.discover(origin)
+    for inspection in inspections:
+        if inspection.name not in available_handlers:
+            print(
+                f"Skipping unknown plugin: {inspection.name} (from {inspection.path!s})"
+            )
+            continue
 
 
 def main(argv=None):
