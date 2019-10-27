@@ -30,7 +30,7 @@ import string
 from argparse import ArgumentParser
 from collections import defaultdict
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import Enum, auto
 from itertools import chain
 from pathlib import Path
 from typing import Any, Dict, List, NewType
@@ -38,6 +38,7 @@ from typing import Any, Dict, List, NewType
 import inspectortiger.plugins
 from inspectortiger.inspector import Inspector
 from inspectortiger.session import Session
+from inspectortiger.utils import Group
 
 BASE = Path(inspectortiger.plugins.__file__).parent
 
@@ -45,8 +46,18 @@ Handler = NewType("Handler", ast.AST)
 
 
 class HandlerFlag(Enum):
-    POSITIVE = 0
-    NEGATIVE = 1
+    POSITIVE = auto()
+    NEGATIVE = auto()
+
+    def verify_result(self, inspection, result):
+        runner = getattr(self, f"_{self.name.lower()}_verifier")
+        return runner(inspection, result)
+
+    def _positive_verifier(self, inspection, result):
+        return len(result) == 1 and inspection.name.upper() in result
+
+    def _negative_verifier(self, inspection, result):
+        return len(result) == 0
 
 
 @dataclass
@@ -95,7 +106,7 @@ class InspectFileParser(ast.NodeVisitor):
             self.result.configuration = ast.literal_eval(node)
 
     def visit_With(self, node):
-        flag = getattr(HandlerFlag, node.items[0].context_expr.id.upper())
+        flag = HandlerFlag[node.items[0].context_expr.id.upper()]
         self.result.inspection_handlers[flag].append(node.body)
 
 
@@ -125,23 +136,16 @@ def prepare_function(body):
 
 def group_cases(cases, handles, config):
     if config.get("require_function"):
-        buffering = False
-        new_cases, buffer_cases = [], []
+        body_buffer, new_cases = [], []
         for case in cases:
-            if buffering and isinstance(case, handles):
-                buffering = True
-                new_cases.append(prepare_function(buffer_cases))
-                buffer_cases.clear()
-                buffer_cases.append(case)
+            if isinstance(case, handles) and body_buffer:
+                new_cases.append(prepare_function(body_buffer.copy()))
+                body_buffer.clear()
 
-            elif (not buffering) and isinstance(case, handles):
-                buffering = True
-                buffer_cases.append(case)
-
-            elif buffering:
-                buffer_cases.append(case)
+            body_buffer.append(case)
+        else:
+            new_cases.append(prepare_function(body_buffer.copy()))
         cases = new_cases
-
     return cases
 
 
@@ -165,12 +169,20 @@ def runner(origin):
 
         handler = available_handlers[inspection.name]
         handles = tuple(handler.handles)[0]  # TODO: support multiple handles
+
         for flag, test_cases in inspection.inspection_handlers.items():
-            inspection.inspection_handlers[flag] = group_cases(
+            inspection.inspection_handlers[
+                flag
+            ] = new_test_cases = group_cases(
                 chain.from_iterable(test_cases),
                 handles,
                 inspection.configuration,
             )
+
+            for test_case in new_test_cases:
+                result = session.single_inspection(test_case, strict=True)
+                result = dict(session.group_by(result, Group.CODE))
+                result = flag.verify_result(inspection, result)
 
 
 def main(argv=None):
