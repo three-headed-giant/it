@@ -119,7 +119,7 @@ class Plugin(metaclass=_Plugin):
         if namespace == "@":
             return "inspectortiger.plugins"
         elif namespace.startswith("@"):
-            return namespace.replace("@", "inspectortiger.plugins")
+            return namespace.replace("@", "inspectortiger.plugins.")
         elif namespace == "?":
             return ""
         else:
