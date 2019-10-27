@@ -22,15 +22,15 @@ class InspectorServer(BaseHTTPRequestHandler):
 
         source = body.get("source")
         if source is None:
+            logger.exception("Missing body item")
             return self.fail("Request body should contain a source field!")
 
         try:
             source = ast.parse(source)
         except (SyntaxError, TypeError) as exc:
             logger.exception("Couldn't parse source")
-            return self.respond(
-                status="fail",
-                message=f"Couldn't parse the source code. {exc!r}",
+            return self.fail(
+                message=f"Couldn't parse the source code. {exc!r}"
             )
 
         session = Session()
