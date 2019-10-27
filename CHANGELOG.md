@@ -9,6 +9,12 @@ All notable changes to this project will be documented in this file.
 - Design of new `Session` API ([#18](https://github.com/thg-consulting/inspectortiger/issues/18))
 - Renaming of `upgradeable` (hard to say) and `misc` (doesn't look important) to `upgrade` & `general`
 - Constant check with `True/False/1/0/1.0/0.0` fixed ([#20](https://github.com/thg-consulting/inspectortiger/issues/20))
+- `--serial` for running hooks by serial.
+- `--show-plugins` for showing active running plugins.
+- `Plugin.direct_load` for directly loading plugins without buffering.
+- `Plugin.apply` for marking handlers with belonged plugins without buffering.
+- `Session.load_plugin` for loading a single plugin (`load_plugins` for multiple)
+- `Session.plugins` for list of loaded active plugins.
 
 ## [0.7.0] - 10/10/2019
 ### Core
