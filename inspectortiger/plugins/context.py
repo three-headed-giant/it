@@ -13,6 +13,7 @@ from __future__ import annotations
 import ast
 from dataclasses import dataclass
 from enum import Enum, auto
+from functools import wraps
 
 from inspectortiger.inspector import Inspector
 from inspectortiger.utils import Events
@@ -56,6 +57,17 @@ class KPair:
 GLOBAL_CTX = Context("__main__", Contexts.GLOBAL, KPair(0, 0))
 
 
+def _verify_module(func):
+    @wraps(func)
+    def wrapper(node, db):
+        if isinstance(db["context"].get("previous_contexts"), list):
+            return func(node, db)
+        return None
+
+    return wrapper
+
+
+@_verify_module
 def get_context(node, db):
     possible_contexts = []
     node_kpair = KPair.from_node(node)
@@ -72,6 +84,7 @@ def get_context(node, db):
 
 @Inspector.register(ast.Module)
 def prepare_contexts(node, db):
+    db["context"]["__module"] = True
     db["context"]["global_context"] = global_ctx = GLOBAL_CTX
     db["context"]["previous_contexts"] = []
     db["context"]["context"] = global_ctx
@@ -84,6 +97,7 @@ def prepare_contexts(node, db):
 
 
 @Inspector.register(ast.ClassDef, ast.FunctionDef)
+@_verify_module
 def change_context(node, db):
     context = get_context(node, db)
     db["context"]["previous_contexts"].append(db["context"]["context"])
@@ -92,6 +106,7 @@ def change_context(node, db):
 
 @Inspector.on_event(Events.NODE_FINALIZE)
 @Inspector.register(ast.ClassDef, ast.FunctionDef)
+@_verify_module
 def finalize_context(node, db):
     context = db["context"]["previous_contexts"].pop()
     db["context"]["context"] = context
