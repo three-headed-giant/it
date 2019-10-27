@@ -25,6 +25,8 @@ An example;
 """
 import argparse
 import ast
+import random
+import string
 from argparse import ArgumentParser
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -97,6 +99,52 @@ class InspectFileParser(ast.NodeVisitor):
         self.result.inspection_handlers[flag].append(node.body)
 
 
+def _name_faker():
+    test_id = "".join(random.sample(string.ascii_letters, 8))
+    return "__inspection_test_" + test_id
+
+
+def prepare_function(body):
+    function = ast.FunctionDef(
+        name=_name_faker(),
+        args=ast.arguments(
+            posonlyargs=[],
+            args=[],
+            vararg=None,
+            kwonlyargs=[],
+            kw_defaults=[],
+            kwarg=None,
+            defaults=[],
+        ),
+        body=body,
+        decorator_list=[],
+    )
+    ast.fix_missing_locations(function)
+    return function
+
+
+def group_cases(cases, handles, config):
+    if config.get("require_function"):
+        buffering = False
+        new_cases, buffer_cases = [], []
+        for case in cases:
+            if buffering and isinstance(case, handles):
+                buffering = True
+                new_cases.append(prepare_function(buffer_cases))
+                buffer_cases.clear()
+                buffer_cases.append(case)
+
+            elif (not buffering) and isinstance(case, handles):
+                buffering = True
+                buffer_cases.append(case)
+
+            elif buffering:
+                buffer_cases.append(case)
+        cases = new_cases
+
+    return cases
+
+
 def runner(origin):
     session = Session()
     session.config.update(load_core=True, plugins={})
@@ -114,6 +162,15 @@ def runner(origin):
                 f"Skipping unknown plugin: {inspection.name} (from {inspection.path!s})"
             )
             continue
+
+        handler = available_handlers[inspection.name]
+        handles = tuple(handler.handles)[0]  # TODO: support multiple handles
+        for flag, test_cases in inspection.inspection_handlers.items():
+            inspection.inspection_handlers[flag] = group_cases(
+                chain.from_iterable(test_cases),
+                handles,
+                inspection.configuration,
+            )
 
 
 def main(argv=None):
