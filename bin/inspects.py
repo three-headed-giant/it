@@ -61,6 +61,15 @@ class HandlerFlag(Enum):
 
 
 @dataclass
+class Result:
+    """Result of a test run"""
+
+    flag: HandlerFlag
+    result: bool
+    test_case: Handler
+
+
+@dataclass
 class InspectFile:
     """Represents metadata for a inspected file"""
 
@@ -159,6 +168,7 @@ def runner(origin):
         handler.__name__: handler for handler in available_handlers
     }
 
+    results = defaultdict(list)
     inspections = InspectFileParser.discover(origin)
     for inspection in inspections:
         if inspection.name not in available_handlers:
@@ -171,18 +181,26 @@ def runner(origin):
         handles = tuple(handler.handles)[0]  # TODO: support multiple handles
 
         for flag, test_cases in inspection.inspection_handlers.items():
+            test_cases = tuple(chain.from_iterable(test_cases))
             inspection.inspection_handlers[
                 flag
             ] = new_test_cases = group_cases(
-                chain.from_iterable(test_cases),
-                handles,
-                inspection.configuration,
+                test_cases, handles, inspection.configuration
             )
 
-            for test_case in new_test_cases:
+            for index, test_case in enumerate(new_test_cases):
                 result = session.single_inspection(test_case, strict=True)
                 result = dict(session.group_by(result, Group.CODE))
                 result = flag.verify_result(inspection, result)
+                results[inspection.name].append(
+                    Result(flag, result, test_cases[index])
+                )
+
+    for test, results in results.items():
+        print(test, " =>> ", end=" ")
+        for result in results:
+            print(str(result.result)[0], end="")
+        print("|")
 
 
 def main(argv=None):
