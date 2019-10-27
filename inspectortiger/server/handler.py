@@ -47,6 +47,7 @@ class InspectorServer(BaseHTTPRequestHandler):
         self.end_headers()
 
     def respond(self, code=200, **data):
+        self._respond(code)
         self.wfile.write(json.dumps(data).encode())
 
     def fail(self, message, code=400):
