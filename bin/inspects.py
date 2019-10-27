@@ -26,10 +26,11 @@ An example;
 import argparse
 import ast
 from argparse import ArgumentParser
+from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, NewType
+from typing import Any, Dict, List, NewType
 
 Handler = NewType("Handler", ast.AST)
 
@@ -47,8 +48,8 @@ class InspectFile:
     path: Path
     documentation: str = ""
     configuration: Dict[str, Any] = field(default_factory=dict)
-    inspection_handlers: Dict[HandlerFlag, Handler] = field(
-        default_factory=dict
+    inspection_handlers: Dict[HandlerFlag, List[Handler]] = field(
+        default_factory=lambda: defaultdict(list)
     )
 
 
@@ -83,6 +84,10 @@ class InspectFileParser(ast.NodeVisitor):
             self.generic_visit(node)
         else:
             self.result.configuration = ast.literal_eval(node)
+
+    def visit_With(self, node):
+        flag = getattr(HandlerFlag, node.items[0].context_expr.id.upper())
+        self.result.inspection_handlers[flag].append(node.body)
 
 
 def runner(origin):
