@@ -32,12 +32,15 @@ class Session:
         for plugin in plugins:
             self.load_plugin(plugin)
 
-    def single_inspection(self, file):
+    def single_inspection(self, file, strict=False):
         try:
             inspector = Inspector(file)
         except SyntaxError:
-            logger.exception(f"Couldn't parse {file}")
-            return {}
+            if strict:
+                raise
+            else:
+                logger.exception(f"Couldn't parse {file}")
+                return {}
         else:
             return inspector.handle()
 
