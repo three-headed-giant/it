@@ -9,11 +9,12 @@ from inspectortiger.utils import Group, logger
 
 class InspectorServer(BaseHTTPRequestHandler):
     def do_GET(self, *args, **kwargs):
-        self._respond(200)
+        self.respond(200, message="use post method")
 
     def do_POST(self, *args, **kwargs):
         content_length = int(self.headers.get("Content-Length", "-1"))
         body = self.rfile.read(content_length)
+        logger.info("Got this: {}")
         try:
             body = json.loads(body.decode())
         except json.JSONDecodeError:
@@ -52,3 +53,11 @@ class InspectorServer(BaseHTTPRequestHandler):
 
     def fail(self, message, code=400):
         self.respond(code=code, status="fail", message=message)
+
+    def end_headers(self):
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET")
+        self.send_header(
+            "Cache-Control", "no-store, no-cache, must-revalidate"
+        )
+        return super().end_headers()
