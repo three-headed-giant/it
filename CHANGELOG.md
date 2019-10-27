@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 - `inspectortiger.server` package for Inspector Web API
 - Refactorment of internal/public run API (prev aka inspects module)  ([#18](https://github.com/thg-consulting/inspectortiger/issues/18))
 - Design of new `Session` API ([#18](https://github.com/thg-consulting/inspectortiger/issues/18))
-- Renaming of `upgradeable` (hard to say) and `misc` (doesn't look important) to `upgrade` & `general`
+- Renaming of `Upgrade` (hard to say) and `General` (doesn't look important) to `upgrade` & `general`
 - Constant check with `True/False/1/0/1.0/0.0` fixed ([#20](https://github.com/thg-consulting/inspectortiger/issues/20))
 - `--serial` for running hooks by serial.
 - `--show-plugins` for showing active running plugins.
@@ -15,6 +15,8 @@ All notable changes to this project will be documented in this file.
 - `Plugin.apply` for marking handlers with belonged plugins without buffering.
 - `Session.load_plugin` for loading a single plugin (`load_plugins` for multiple)
 - `Session.plugins` for list of loaded active plugins.
+- `contextlib.suppress(SomeException)` instead of `try: something` `except SomeException: pass`
+- CORS support for server
 
 ## [0.7.0] - 10/10/2019
 ### Core
@@ -36,23 +38,17 @@ All notable changes to this project will be documented in this file.
 - Cache `__getattr__` calls
 - Column offset to reports
 - Move `traverse_path` to `utils`
-
-### Plugins
-#### Upgradeable
 - `Union[Type, None]` replacement warning for `Optional[Type]`
 - `enumerate` handler for `for x in range(len(a)): a[x]`
 - `use_comprehension` handler
 - `alphabet_constant` handler
 - `map_use_comprehension` handler
-#### Misc
-- `unreachable-except` moved inside Misc
+- `unreachable-except` moved inside General
 
 ## [0.6.1] - 2/10/2019
-### Core
 - Fixed typo that caused crash of command line tool
 
 ## [0.6.0] - 2/10/2019
-### Core
 - Handler priority system with `utils.Priority` decorator
 - New event (`utils.Events.NODE_FINALIZE`) for doing work after all handlers called and node traversed
 - Instead of reportme, reports are now in JSON format ([#2](https://github.com/thg-consulting/inspectortiger/issues/2))
@@ -66,15 +62,8 @@ All notable changes to this project will be documented in this file.
 - Report annotation implemented if `Inspector` is initalized with `filename` and script ran with `--annotate`
 - New event type, `TREE_TRANSFORMER`, which takes `ast.Module` and returns a modified version before the actual check starts
 - Instead of whitelisting, use blacklisting in plugin loading (for consistency).
-### Plugins
-#### Context
 - Context management improved with scope finalizing
-#### Upgradeable
 - Implemented a handler for old `super` usage with arguments
-#### Misc
 - Implemented [PEP 601](https://www.python.org/dev/peps/pep-0601/)
-#### Parentize
 - New plugin for adding references to child nodes about their parent nodes
-#### Community
-##### Unimport
 - Unimport plugin is updated for `unimport@v0.1`
