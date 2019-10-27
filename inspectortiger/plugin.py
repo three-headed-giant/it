@@ -86,15 +86,9 @@ class Plugin(metaclass=_Plugin):
 
     def load(self):
         with inspectortiger.inspector.Inspector.buffer():
-            try:
-                plugin = importlib.import_module(self.static_name)
-            except ImportError:
-                raise PluginLoadError(
-                    f"Couldn't load '{self.plugin}' from `{self.namespace}` namespace!"
-                )
-
-            if hasattr(plugin, "__py_version__"):
-                self.python_version = plugin.__py_version__
+            module = self.direct_load()
+            if hasattr(module, "__py_version__"):
+                self.python_version = module.__py_version__
 
             if self.python_version > sys.version_info:
                 self.inactive = True
@@ -103,8 +97,21 @@ class Plugin(metaclass=_Plugin):
                 )
                 raise inspectortiger.inspector.BufferExit
 
-        for actionable in dir(plugin):
-            actionable = getattr(plugin, actionable)
+        self.apply(module)
+
+    def direct_load(self):
+        try:
+            module = importlib.import_module(self.static_name)
+        except ImportError:
+            raise PluginLoadError(
+                f"Couldn't load '{self.plugin}' from `{self.namespace}` namespace!"
+            )
+        else:
+            return module
+
+    def apply(self, module):
+        for actionable in dir(module):
+            actionable = getattr(module, actionable)
             if hasattr(
                 actionable, "_inspection_mark"
             ):  # TODO: ismarked(callable)
