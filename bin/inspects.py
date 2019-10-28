@@ -1,28 +1,5 @@
-"""
-A python based DSL for InspectorTiger's testing
+"""A python based DSL for InspectorTiger's testing."""
 
-Every inspect file starts with a module-level doc-string.
-Continues with a dictionary that specify requirements for 
-the tests below that. The tests must be under a context manager.
-
-Supported managers;
-    - positive (true-positive)
-    - negative (false-negative)
-
-
-An example;
-    '''Foo bar baz.
-       with multi line'''
-    
-    {'require_function': True} # execution of statements below 
-    # context manager should happen inside of a individual function
-    
-    with positive:
-        inspector.tiger.should.find.this()
-    with negative:
-        inspector.tiger.should.not.find.this()
-
-"""
 import argparse
 import ast
 import random
@@ -41,6 +18,7 @@ from inspectortiger.session import Session
 from inspectortiger.utils import Group
 
 BASE = Path(inspectortiger.plugins.__file__).parent
+DEFAULT_CONFIG = {"require_function": True}
 
 Handler = NewType("Handler", ast.AST)
 
@@ -76,7 +54,7 @@ class InspectFile:
     name: str
     path: Path
     documentation: str = ""
-    configuration: Dict[str, Any] = field(default_factory=dict)
+    configuration: Dict[str, Any] = field(default_factory=DEFAULT_CONFIG.copy)
     inspection_handlers: Dict[HandlerFlag, List[Handler]] = field(
         default_factory=lambda: defaultdict(list)
     )
@@ -143,18 +121,9 @@ def prepare_function(body):
     return function
 
 
-def group_cases(cases, handles, config):
+def group_cases(cases, config):
     if config.get("require_function"):
-        body_buffer, new_cases = [], []
-        for case in cases:
-            if isinstance(case, handles) and body_buffer:
-                new_cases.append(prepare_function(body_buffer.copy()))
-                body_buffer.clear()
-
-            body_buffer.append(case)
-        else:
-            new_cases.append(prepare_function(body_buffer.copy()))
-        cases = new_cases
+        cases = [prepare_function(case) for case in cases]
     return cases
 
 
@@ -177,15 +146,12 @@ def runner(origin):
             )
             continue
 
-        handler = available_handlers[inspection.name]
-        handles = tuple(handler.handles)[0]  # TODO: support multiple handles
-
         for flag, test_cases in inspection.inspection_handlers.items():
             test_cases = tuple(chain.from_iterable(test_cases))
             inspection.inspection_handlers[
                 flag
             ] = new_test_cases = group_cases(
-                test_cases, handles, inspection.configuration
+                test_cases, inspection.configuration
             )
 
             for index, test_case in enumerate(new_test_cases):
