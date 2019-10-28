@@ -172,6 +172,7 @@ def runner(origin, show_errors=False):
 
     results = defaultdict(list)
     inspections = InspectFileParser.discover(origin)
+    print(f"Collected {len(inspections)} inspections...")
     for inspection in inspections:
         if inspection.name not in available_handlers:
             print(
