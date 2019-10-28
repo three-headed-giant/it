@@ -4,6 +4,7 @@ import argparse
 import ast
 import random
 import string
+import textwrap
 from argparse import ArgumentParser
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -17,6 +18,21 @@ from inspectortiger.inspector import Inspector
 from inspectortiger.session import Session
 from inspectortiger.utils import Group
 
+try:
+    import astor
+except:
+    HAS_ASTOR = False
+else:
+    HAS_ASTOR = True
+
+    def get_source(node):
+        source = astor.to_source(node)
+        source = "\n".join(line for line in source.split("\n") if line)
+        return source
+
+
+AVG = 20
+AVG_RESULT = 40
 BASE = Path(inspectortiger.plugins.__file__).parent
 DEFAULT_CONFIG = {"require_function": True}
 
@@ -54,7 +70,7 @@ class InspectFile:
     name: str
     path: Path
     documentation: str = ""
-    configuration: Dict[str, Any] = field(default_factory=DEFAULT_CONFIG.copy)
+    configuration: Dict[str, Any] = field(default_factory=dict)
     inspection_handlers: Dict[HandlerFlag, List[Handler]] = field(
         default_factory=lambda: defaultdict(list)
     )
@@ -77,6 +93,8 @@ class InspectFileParser(ast.NodeVisitor):
         for inspect_file in origin.glob("**/*.inspect"):
             parser = cls(inspect_file)
             parser.visit(ast.parse(inspect_file.read_text()))
+            if not parser.result.configuration:
+                parser.result.configuration = DEFAULT_CONFIG.copy()
             results.append(parser.result)
         return results
 
@@ -121,13 +139,21 @@ def prepare_function(body):
     return function
 
 
+def prepare_module(body):
+    module = ast.Module(body=body)
+    ast.fix_missing_locations(module)
+    return module
+
+
 def group_cases(cases, config):
     if config.get("require_function"):
         cases = [prepare_function(case) for case in cases]
+    if config.get("require_module"):
+        cases = [prepare_module(case) for case in cases]
     return cases
 
 
-def runner(origin):
+def runner(origin, show_errors=False):
     session = Session()
     session.config.update(load_core=True, plugins={})
 
@@ -163,17 +189,39 @@ def runner(origin):
                 )
 
     for test, results in results.items():
-        print(test, " =>> ", end=" ")
+        fails = []
+        padding = AVG_RESULT - len(results)
+
+        print(test, " =>> ", end=" ", sep=abs(AVG - len(test)) * " ")
+
         for result in results:
+            if not result.result:
+                fails.append(result)
             print(str(result.result)[0], end="")
-        print("|")
+
+        if fails:
+            print(padding * " ", "[FAILED]")
+            if show_errors:
+                for result in fails:
+                    print("FAIL ==>")
+                    print(f"    Flag: {result.flag}")
+                    print(
+                        f"    Result: {dict(session.single_inspection(result.test_case))}"
+                    )
+                    print(
+                        textwrap.indent(get_source(result.test_case), " " * 4)
+                    )
+                    print()
+        else:
+            print(padding * " ", "[SUCCEED]", sep="")
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description="inspect file runner")
-    parser.add_argument("path", type=Path)
+    parser.add_argument("origin", type=Path)
+    parser.add_argument("--show-errors", action="store_true", default=False)
     configuration = parser.parse_args()
-    return runner(configuration.path)
+    return runner(**vars(configuration))
 
 
 if __name__ == "__main__":

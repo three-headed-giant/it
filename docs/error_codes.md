@@ -49,16 +49,6 @@ with suppress(SomeError):
     
 ### YIELD_FROM
 `yield` can be replaced with `yield from`.
-
-```py
-for x in y:
-        yield x
-```
-    to
-```py
-yield from y
-```
-    
 ### BUILTIN_ENUMERATE
 `range(len(iterable))` can be replaced with `enumerate(iterable)`
 

@@ -23,17 +23,7 @@ from inspectortiger.utils import (
 
 @Inspector.register(ast.For)
 def yield_from(node, db):
-    """`yield` can be replaced with `yield from`.
-
-    ```py
-    for x in y:
-        yield x
-    ```
-    to
-    ```py
-    yield from y
-    ```
-    """
+    """`yield` can be replaced with `yield from`."""
 
     if (
         is_single_node(node, ast.Expr)
