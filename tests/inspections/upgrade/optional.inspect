@@ -1,0 +1,21 @@
+"""
+captures:
+    Union[(Type), None]
+"""
+
+with positive:
+    Union[Type, None]
+    foo: Union[FooType, None]
+    foo: Union[BarType, None] = bar
+
+    def baz(foo: Union[BazType, None]):
+        ...
+
+
+with negative:
+    Union[Type, Type]
+    foo: Union[FooType, BarType]
+    foo: Union[BarType, FooType] = bar
+
+    def baz(foo: Union[BazType, BarType]):
+        ...

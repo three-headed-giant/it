@@ -1,0 +1,40 @@
+"""
+captures:
+    class (ClassSignature):
+        def (function_signature):
+            super((args))
+"""
+{"require_function": False, "require_module": True}
+
+with positive:
+
+    class Foo(Base):
+        def bar(self):
+            super(Foo, self)
+
+    class Foo(Base):
+        def bar(self):
+            super(Foo, self).bar()
+
+
+with negative:
+    super()
+    super(arg, arg)
+
+    def foo():
+        super()
+        super(arg, arg)
+
+    def foo():
+        def bar():
+            super()
+            super(arg, arg)
+
+    class Foo(Base):
+        super()
+        super(arg, arg)
+
+    class Foo(Base):
+        class Bar(Base):
+            super()
+            super(arg, arg)

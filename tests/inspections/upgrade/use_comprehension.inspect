@@ -1,0 +1,15 @@
+"""
+captures:
+    type => {list, dict, set}
+    (type)((target) for (target) in (iterable))
+"""
+
+with positive:
+    set(foo(bar) for bar in baz)
+    list(foo(bar) for bar in baz)
+    dict((bar.name, foo(bar)) for bar in baz)
+
+with negative:
+    CustomType(foo(bar) for bar in baz)
+    list((foo(bar) for bar in baz), foo=True)
+    dict((bar.name, foo(bar), extended_argument) for bar in baz)

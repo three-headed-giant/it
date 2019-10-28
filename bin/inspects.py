@@ -20,8 +20,15 @@ from inspectortiger.utils import Group
 
 try:
     import astor
-except:
+except ImportError:
     HAS_ASTOR = False
+
+    def get_source(node):
+        print(
+            ">>> Please install astor to see source code"
+        )  # TODO: refactor with ast.get_source_segment
+
+
 else:
     HAS_ASTOR = True
 
@@ -31,7 +38,7 @@ else:
         return source
 
 
-AVG = 20
+AVG = 24
 AVG_RESULT = 40
 BASE = Path(inspectortiger.plugins.__file__).parent
 DEFAULT_CONFIG = {"require_function": True}
@@ -214,6 +221,8 @@ def runner(origin, show_errors=False):
                     print()
         else:
             print(padding * " ", "[SUCCEED]", sep="")
+
+        exit(bool(fails))
 
 
 def main(argv=None):

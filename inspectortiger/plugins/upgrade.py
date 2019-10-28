@@ -35,16 +35,7 @@ def yield_from(node, db):
 
 @Inspector.register(ast.Subscript)
 def optional(node, db):
-    """`Union[Type, None]` can be replaced with `Optional[Type]`.
-
-    ```py
-    def foo(x: Union[str, None]): ...
-    ```
-    to
-    ```py
-    def foo(x: Optional[str]): ...
-    ```
-    """
+    """`Union[Type, None]` can be replaced with `Optional[Type]`."""
 
     if (
         name_check(node.value, "Union")
@@ -65,16 +56,7 @@ def optional(node, db):
 @Inspector.register(ast.Call)
 @Plugin.require("@context")
 def super_args(node, db):
-    """`super(MyClass, self)` can be replaced with `super()`
-
-    ```py
-    super(MyClass, self)
-    ```
-    to
-    ```py
-    super()
-    ```
-    """
+    """`super(MyClass, self)` can be replaced with `super()`"""
 
     return (
         get_context(node, db) is db["context"]["context"]
@@ -87,18 +69,7 @@ def super_args(node, db):
 
 @Inspector.register(ast.For)
 def builtin_enumerate(node, db):
-    """`range(len(iterable))` can be replaced with `enumerate(iterable)`
-
-    ```py
-    for index in range(len(iterable)):
-        print(index, iterable[index])
-    ```
-    to
-    ```py
-    for index, item in enumerate(iterable):
-        print(index, item)
-    ```
-    """
+    """`range(len(iterable))` can be replaced with `enumerate(iterable)`"""
 
     if (
         isinstance(node.iter, ast.Call)
@@ -124,23 +95,12 @@ def builtin_enumerate(node, db):
 @Inspector.register(ast.Call)
 def use_comprehension(node, db):
     """`list`/`dict`/`set` calls with a generator expression
-    can be replaced with comprehensions.
-    
-    ```py
-    operands = list(b8(token) for token in tokens)
-    patterns = dict((token.name, b8(token)) for token in tokens)
-    unique_operands = set(b8(token) for token in tokens)
-    ```
-    to
-    ```py
-    operands = [b8(token) for token in tokens]
-    patterns = {token.name: b8(token) for token in tokens}
-    unique_operands = {b8(token) for token in tokens}
-    ```
-    """
+    can be replaced with comprehensions."""
+
     if (
         name_check(node.func, "list", "set", "dict")
         and len(node.args) == 1
+        and len(node.keywords) == 0
         and isinstance(node.args[0], ast.GeneratorExp)
     ):
         if not name_check(node.func, "dict"):
@@ -154,18 +114,7 @@ def use_comprehension(node, db):
 @Inspector.register(ast.Call)
 def map_use_comprehension(node, db):
     """A map (to a complex callable) can be replaced with 
-    `list` or `set` comprehensions.
-    
-    ```py
-    operands = list(map(itemgetter(0), tokens))
-    unique_operands = set(map(attrgetter('unique_version'), tokens))
-    ```
-    to
-    ```py
-    operands = [token[0] for token in tokens]
-    unique_operands = {token.unique_version for token in tokens}
-    ```
-    """
+    `list` or `set` comprehensions."""
 
     return (
         name_check(node.func, "list", "set")
@@ -200,6 +149,7 @@ def alphabet_constant(node, db):
         return char in string.ascii_letters
     ```
     """
+
     return (
         len(node.targets) == 1
         and isinstance(node.targets[0], ast.Name)
@@ -215,22 +165,9 @@ def alphabet_constant(node, db):
 
 @Inspector.register(ast.Try)
 def suppress(node, db):
-    """A try statement with one except which only passes can be replaced with `contextlib.suppress`
-    
-    ```py
-    try:
-        do_something()
-        do_other_thing()
-    except SomeError:
-        pass
-    ```
-    to
-    ```py
-    with suppress(SomeError):
-        do_something()
-        do_other_thing()
-    ```
-    """
+    """A try statement with one except which only passes can be 
+    replaced with `contextlib.suppress`"""
+
     return len(node.handlers) == 1 and is_single_node(
         node.handlers[0], ast.Pass
     )

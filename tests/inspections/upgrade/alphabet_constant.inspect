@@ -1,0 +1,18 @@
+"""
+captures:
+    (NAME) = ascii_letters|ascii_lowercase|ascii_uppercase 
+"""
+
+with positive:
+    FOO = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    BAR = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    BAZ = "abcdefghijklmnopqrstuvwxyz"
+
+with negative:
+    foo = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    bar = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    baz = "abcdefghijklmnopqrstuvwxyz"
+
+    foo = "abcdefghijklmnopqrstuvDEFGHIJKLMNOPQRSTUVWXYZ"
+    bar = "ABCDEFGHIJKLMNOPQVWXYZ"
+    baz = "abcdefghijopqrstuvwxyz"

@@ -1,0 +1,12 @@
+"""
+captures:
+    for (target) in range(len((iterable))):
+        print((target), (iterable)[(target)])
+"""
+with positive:
+    for index in range(len(iterable)):
+        print(index, iterable[index])
+
+with negative:
+    for index in range(len(iterable)):
+        print(index)

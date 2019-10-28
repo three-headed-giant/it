@@ -1,0 +1,35 @@
+"""
+captures:
+    try:
+        (expressions)
+    except (ExceptionClass):
+        pass
+"""
+
+with positive:
+    try:
+        foo
+        bar()
+        baz = foo.bar()
+    except FooError:
+        pass
+
+with negative:
+    try:
+        bar()
+    except FooError:
+        baz()
+
+    try:
+        bar()
+    except FooError:
+        baz()
+    else:
+        foo()
+
+    try:
+        bar()
+    except FooError:
+        baz()
+    finally:
+        foo()

@@ -1,19 +1,8 @@
 """
-```py
-for x in y:
-    yield x
-```
-
-to
-
-```py
-yield from y
-```
+captures:
+    for (target) in y:
+        yield (target)
 """
-
-{
-    'require_function': True
-}
 
 with positive:
     for x in y:
@@ -30,7 +19,7 @@ with negative:
     for x in y:
         print(x)
         yield x
-    
+
     for x in y:
         yield x, 1
 

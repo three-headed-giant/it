@@ -1,0 +1,13 @@
+"""
+captures:
+    type => {list, set}
+    (type)(map(compound function, iterable))
+"""
+
+with positive:
+    list(map(bar(0), foo))
+    set(map(bar.baz(0), foo))
+
+with negative:
+    list(map(bar, foo))
+    set(map(bar.baz, foo))
