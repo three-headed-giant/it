@@ -24,12 +24,3 @@ Improvable (for 3.7+) syntaxes
 Common gotchas
 
 - `db['general']['user_exceptions']` => A mapping of user-defined exceptions with name:tree_value
-
-### Django
-`django` integration
-
-
-### Unimport
-`unimport` integration
-
-- `db["community"]["unimport"]["unimport"]` => A list of imports that are not used

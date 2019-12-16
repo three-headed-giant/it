@@ -69,5 +69,3 @@ try:
         pass
 ```
     
-### UNUSED_IMPORT
-A module/name is imported but not used.
