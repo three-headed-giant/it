@@ -32,32 +32,12 @@ jobs:
       run: |
         python${{ matrix.python }} -m pytest --cov --cov-report=xml
 
+    - name: Hook Tests
+      run: |
+        python${{ matrix.python }} bin/inspects.py tests/inspections --show-errors
+
     - name: Upload
       uses: codecov/codecov-action@v1.0.2
       with:
         token: ${{secrets.codecov}}
-    
-  hooks:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v1
-    
-    - name: Setup python
-      run: |
-        sudo add-apt-repository ppa:deadsnakes/nightly
-        sudo apt-get update
-        sudo apt-get install -y --no-install-recommends python3.8-dev python3.8-distutils
 
-    - name: Setup testing deps
-      run: |
-        python3.8 -m pip install setuptools
-        python3.8 -m pip install astor
-
-    - name: Build
-      run: |
-        python3.8 -m pip install -e .
-
-    - name: Test
-      run: |
-        python3.8 bin/inspects.py tests/inspections --show-errors
