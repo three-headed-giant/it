@@ -19,23 +19,11 @@ from inspectortiger.session import Session
 from inspectortiger.utils import Group
 
 try:
+    get_source = ast.unparse
+except AttributeError:
     import astor
-except ImportError:
-    HAS_ASTOR = False
 
-    def get_source(node):
-        print(
-            ">>> Please install astor to see source code"
-        )  # TODO: refactor with ast.get_source_segment
-
-
-else:
-    HAS_ASTOR = True
-
-    def get_source(node):
-        source = astor.to_source(node)
-        source = "\n".join(line for line in source.split("\n") if line)
-        return source
+    get_source = astor.to_source
 
 
 AVG = 24

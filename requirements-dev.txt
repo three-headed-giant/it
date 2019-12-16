@@ -1,3 +1,4 @@
+astor
 pytest
 pytest-mock
 pytest-cov

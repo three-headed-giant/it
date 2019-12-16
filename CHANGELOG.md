@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file.
 - CORS support for server
 - `contextlib.suppress(SomeException)` instead of `try: something` `except SomeException: pass` ([#21](https://github.com/thg-consulting/inspectortiger/issues/21))
 - Remove community plugin support because lack of maintenance
+- Tests now uses `ast.unparse` if available
 
 ## [0.7.0] - 10/10/2019
 ### Core
