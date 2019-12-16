@@ -11,11 +11,6 @@ Context management for AST (38+)
 - `db['context']['global_context']` => Global context
 - `get_context(node, db)` => Infer context of given `node`
 
-## General
-Common gotchas
-
-- `db['general']['user_exceptions']` => A mapping of user-defined exceptions with name:tree_value
-
 ## Parentize
 `parent` field to each node
 
@@ -24,6 +19,11 @@ Common gotchas
 ## Upgrade
 Improvable (for 3.7+) syntaxes
 
+
+## General
+Common gotchas
+
+- `db['general']['user_exceptions']` => A mapping of user-defined exceptions with name:tree_value
 
 ### Django
 `django` integration

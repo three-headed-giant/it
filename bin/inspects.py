@@ -160,6 +160,16 @@ def group_cases(cases, config):
     return cases
 
 
+def print_fails_verbose(session, fails):
+    for result in fails:
+        print("FAIL ==>")
+        print(f"    Flag: {result.flag}")
+        print(
+            f"    Result: {dict(session.single_inspection(result.test_case))}"
+        )
+        print(textwrap.indent(get_source(result.test_case), " " * 4), "\n")
+
+
 def runner(origin, show_errors=False):
     session = Session()
     session.config.update(load_core=True, plugins={})
@@ -196,6 +206,7 @@ def runner(origin, show_errors=False):
                     Result(flag, result, test_cases[index])
                 )
 
+    fail = False
     for test, results in results.items():
         fails = []
         padding = AVG_RESULT - len(results)
@@ -208,22 +219,14 @@ def runner(origin, show_errors=False):
             print(str(result.result)[0], end="")
 
         if fails:
+            fail = True
             print(padding * " ", "[FAILED]")
             if show_errors:
-                for result in fails:
-                    print("FAIL ==>")
-                    print(f"    Flag: {result.flag}")
-                    print(
-                        f"    Result: {dict(session.single_inspection(result.test_case))}"
-                    )
-                    print(
-                        textwrap.indent(get_source(result.test_case), " " * 4)
-                    )
-                    print()
+                print_fails_verbose(session, fails)
         else:
             print(padding * " ", "[SUCCEED]", sep="")
 
-        exit(bool(fails))
+    exit(bool(fails))
 
 
 def main(argv=None):

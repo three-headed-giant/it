@@ -8,7 +8,7 @@ from inspectortiger.reports import Report
 from inspectortiger.utils import Events, Priority, _version_node, logger, mark
 
 with suppress(ImportError):
-    import conast
+    import conast_fast  # https://github.com/thg-consulting/conast
 
     ast.iter_fields = conast.fields
     ast.iter_child_nodes = conast.child_nodes
