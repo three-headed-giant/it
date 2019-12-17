@@ -17,7 +17,8 @@ jobs:
       run: |
         sudo add-apt-repository ppa:deadsnakes/nightly
         sudo apt-get update
-        sudo apt-get install -y --no-install-recommends python${{ matrix.python }} python${{ matrix.python }}-distutils
+        sudo apt-get install -y --no-install-recommends python${{ matrix.python }}
+        sudo apt-get install -y --no-install-recommends python${{ matrix.python }}-distutils || true
 
     - name: Setup testing deps
       run: |
