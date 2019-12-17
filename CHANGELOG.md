@@ -1,7 +1,8 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.8.0] - Unreleased
+## [0.9.0] - Unreleased
+## [0.8.0] - 17/12/2019
 - Project-local config files
 - Project-local plugins with `?` prefix
 - `inspectortiger.server` package for Inspector Web API
