@@ -10,7 +10,7 @@ PY38_MINUS = not PY38_PLUS
 
 USER_CONFIG = Path("~/.inspector.rc").expanduser()
 PROJECT_CONFIG = Path(".inspector.rc")
-logger = logging.getLogger("inspectortiger")
+logger = logging.getLogger("it")
 
 _CONSTANT_TYPES = {"Num", "Str", "Bytes", "NameConstant", "Ellipsis"}
 _PSEUDO_FIELDS = {"cls", "__class__"}

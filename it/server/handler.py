@@ -2,9 +2,9 @@ import ast
 import json
 from http.server import BaseHTTPRequestHandler
 
-from inspectortiger.inspector import Inspector
-from inspectortiger.session import Session
-from inspectortiger.utils import Group, logger
+from it.inspector import Inspector
+from it.session import Session
+from it.utils import Group, logger
 
 
 class InspectorServer(BaseHTTPRequestHandler):

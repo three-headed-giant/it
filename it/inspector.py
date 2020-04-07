@@ -4,8 +4,8 @@ from collections import defaultdict
 from contextlib import contextmanager, suppress
 from functools import lru_cache, partial
 
-from inspectortiger.reports import Report
-from inspectortiger.utils import Events, Priority, _version_node, logger, mark
+from it.reports import Report
+from it.utils import Events, Priority, _version_node, logger, mark
 
 with suppress(ImportError):
     import conast_fast  # https://github.com/thg-consulting/conast

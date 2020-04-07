@@ -13,15 +13,25 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    - name: Setup python
+    - name: Install Python 3.9
+      if: matrix.python == '3.9'
       run: |
-        sudo add-apt-repository ppa:deadsnakes/nightly
+        sudo add-apt-repository ppa:deadsnakes/ppa
         sudo apt-get update
-        sudo apt-get install -y --no-install-recommends python${{ matrix.python }}
+        sudo apt-get install -y --no-install-recommends python3.9-dev python3.9-distutils python3.9-venv
+        python3.9 -m pip install --upgrade pip setuptools
+        python3.9 -m venv $HOME/venv-python3.9
+        echo "::set-env name=VIRTUAL_ENV::$HOME/venv-python3.9"
+        echo "::add-path::$HOME/venv-python3.9/bin"
+
+    - uses: actions/setup-python@v1
+      if: matrix.python != '3.9'
+      with:
+        python-version: ${{ matrix.python }}
+        architecture: x64
 
     - name: Setup testing deps
       run: |
-        python${{ matrix.python }} -m pip install setuptools
         python${{ matrix.python }} -m pip install -r requirements-dev.txt
 
     - name: Build

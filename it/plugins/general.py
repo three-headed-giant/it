@@ -10,11 +10,11 @@ __author__ = "Batuhan Taskaya"
 import ast
 import inspect
 
-from inspectortiger.inspector import Inspector
-from inspectortiger.plugin import Plugin
-from inspectortiger.plugins.context import get_context
-from inspectortiger.plugins.parentize import parent_to
-from inspectortiger.utils import name_check
+from it.inspector import Inspector
+from it.plugin import Plugin
+from it.plugins.context import get_context
+from it.plugins.parentize import parent_to
+from it.utils import name_check
 
 MUTABLE_TYPE = (ast.List, ast.Dict, ast.Set)
 

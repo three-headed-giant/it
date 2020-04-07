@@ -7,8 +7,8 @@
 import ast
 import weakref
 
-from inspectortiger.inspector import Inspector
-from inspectortiger.utils import Events
+from it.inspector import Inspector
+from it.utils import Events
 
 __author__ = "Batuhan Taskaya"
 WEAK = False
@@ -29,7 +29,7 @@ def parentize(tree, db):
 def parent_to(child, parent):
     if not hasattr(child, "parent"):
         raise ValueError(
-            "Node should have `parent` reference created by `inspectortiger.plugins.parentize`"
+            "Node should have `parent` reference created by `it.plugins.parentize`"
         )
 
     current = child.parent

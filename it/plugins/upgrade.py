@@ -9,10 +9,10 @@ __author__ = "Batuhan Taskaya"
 import ast
 import string
 
-from inspectortiger.inspector import Inspector
-from inspectortiger.plugin import Plugin
-from inspectortiger.plugins.context import Contexts, get_context
-from inspectortiger.utils import (
+from it.inspector import Inspector
+from it.plugin import Plugin
+from it.plugins.context import Contexts, get_context
+from it.utils import (
     biname_check,
     constant_check,
     is_single_node,

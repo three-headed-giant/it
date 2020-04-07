@@ -15,8 +15,8 @@ from dataclasses import dataclass
 from enum import Enum, auto
 from functools import wraps
 
-from inspectortiger.inspector import Inspector
-from inspectortiger.utils import Events
+from it.inspector import Inspector
+from it.utils import Events
 
 __author__ = "Batuhan Taskaya"
 __py_version__ = (3, 8)

@@ -13,10 +13,10 @@ from itertools import chain
 from pathlib import Path
 from typing import Any, Dict, List, NewType
 
-import inspectortiger.plugins
-from inspectortiger.inspector import Inspector
-from inspectortiger.session import Session
-from inspectortiger.utils import Group
+import it.plugins
+from it.inspector import Inspector
+from it.session import Session
+from it.utils import Group
 
 try:
     get_source = ast.unparse
@@ -28,7 +28,7 @@ except AttributeError:
 
 AVG = 24
 AVG_RESULT = 40
-BASE = Path(inspectortiger.plugins.__file__).parent
+BASE = Path(it.plugins.__file__).parent
 DEFAULT_CONFIG = {"require_function": True}
 
 Handler = NewType("Handler", ast.AST)

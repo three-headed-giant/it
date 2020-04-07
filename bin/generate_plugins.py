@@ -5,15 +5,15 @@ from itertools import chain
 from pathlib import Path
 from textwrap import dedent
 
-import inspectortiger.plugins
-from inspectortiger import Inspector
+import it.plugins
+from it import Inspector
 
-BASE = Path(inspectortiger.plugins.__file__).parent
+BASE = Path(it.plugins.__file__).parent
 
 
 def generate():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--output", type=Path, help="output file")
+    parser.add_argument("output", type=Path, help="output file")
     args = parser.parse_args()
 
     plugins = []
@@ -24,7 +24,7 @@ def generate():
         plugin = plugin.relative_to(BASE)
         plugin = str(plugin)[: -len(plugin.suffix)].replace("/", ".")
         try:
-            plugin = import_module(f"inspectortiger.plugins.{plugin}")
+            plugin = import_module(f"it.plugins.{plugin}")
             plugins.append(plugin)
         except ImportError:
             print("Couldn't load", plugin)

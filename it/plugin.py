@@ -3,8 +3,8 @@ import sys
 from dataclasses import dataclass
 from typing import Optional, Tuple
 
-import inspectortiger.inspector
-from inspectortiger.utils import _PSEUDO_FIELDS, logger
+import it.inspector
+from it.utils import _PSEUDO_FIELDS, logger
 
 
 class PluginLoadError(ImportError):
@@ -85,7 +85,7 @@ class Plugin(metaclass=_Plugin):
         return self.plugin
 
     def load(self):
-        with inspectortiger.inspector.Inspector.buffer():
+        with it.inspector.Inspector.buffer():
             module = self.direct_load()
             if hasattr(module, "__py_version__"):
                 self.python_version = module.__py_version__
@@ -95,7 +95,7 @@ class Plugin(metaclass=_Plugin):
                 logger.debug(
                     f"`{self.plugin}` plugin from `{self.namespace}` couldn't load because of incompatible version."
                 )
-                raise inspectortiger.inspector.BufferExit
+                raise it.inspector.BufferExit
 
         self.apply(module)
 
@@ -120,13 +120,13 @@ class Plugin(metaclass=_Plugin):
     @staticmethod
     def expand(namespace):
         # prefixes
-        # @ => inspectortiger.plugins
+        # @ => it.plugins
         # ? => local plugin
 
         if namespace == "@":
-            return "inspectortiger.plugins"
+            return "it.plugins"
         elif namespace.startswith("@"):
-            return namespace.replace("@", "inspectortiger.plugins.")
+            return namespace.replace("@", "it.plugins.")
         elif namespace == "?":
             return ""
         else:

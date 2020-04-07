@@ -3,7 +3,7 @@ import sys
 
 import pytest
 
-from inspectortiger.utils import (
+from it.utils import (
     Priority,
     biname_check,
     constant_check,

@@ -2,9 +2,9 @@ import ast
 
 import pytest
 
-from inspectortiger import Inspector
-from inspectortiger.inspector import BufferExit
-from inspectortiger.plugin import Plugin
+from it import Inspector
+from it.inspector import BufferExit
+from it.plugin import Plugin
 
 
 @pytest.fixture
