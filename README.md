@@ -1,6 +1,6 @@
 # InspectorTiger
 ![CI](https://github.com/thg-consulting/it/workflows/CI/badge.svg)
-![codecov.io](http://codecov.io/github/thg-consulting/it/coverage.svg?branch=master)
+[![codecov](https://codecov.io/gh/thg-consulting/it/branch/master/graph/badge.svg)](https://codecov.io/gh/thg-consulting/it)
 ![PyPI version](https://badge.fury.io/py/it.svg)
 ![black](https://img.shields.io/badge/code%20style-black-000000.svg)
 ![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue.svg)
