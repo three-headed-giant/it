@@ -1,6 +1,6 @@
 from dataclasses import asdict
 
-from inspectortiger.reports import Report, _prepare_result
+from it.reports import Report, _prepare_result
 
 
 def test_prepare_result(tmp_path):

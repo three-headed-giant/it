@@ -3,10 +3,10 @@ import sys
 from distutils.util import strtobool
 from pathlib import Path
 
-from inspectortiger.plugin import Plugin
-from inspectortiger.reports import _prepare_result
-from inspectortiger.session import Session
-from inspectortiger.utils import logger, prepare_logger, traverse_paths
+from it.plugin import Plugin
+from it.reports import _prepare_result
+from it.session import Session
+from it.utils import logger, prepare_logger, traverse_paths
 
 
 def prepare_parser(session):
@@ -43,7 +43,7 @@ def prepare_parser(session):
     )
     parser.add_argument(
         "--load-core",
-        help="load core plugins (`inspectortiger.plugins`)",
+        help="load core plugins (`it.plugins`)",
         default=session.config.load_core,
     )
     parser.add_argument(

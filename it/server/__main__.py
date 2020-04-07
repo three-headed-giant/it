@@ -1,8 +1,8 @@
 import argparse
 import socketserver
 
-from inspectortiger.server import InspectorServer
-from inspectortiger.utils import logger, prepare_logger
+from it.server import InspectorServer
+from it.utils import logger, prepare_logger
 
 
 class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
@@ -11,7 +11,7 @@ class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="inspectortiger.server | Inspector Tiger Web API"
+        description="it.server | Inspector Tiger Web API"
     )
 
     parser.add_argument(

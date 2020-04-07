@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from multiprocessing import cpu_count
 from typing import List
 
-from inspectortiger.plugin import Plugin
+from it.plugin import Plugin
 
 
 @dataclass

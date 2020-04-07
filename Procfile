@@ -1,1 +1,1 @@
-web: python -m inspectortiger.server -P $PORT
+web: python -m it.server -P $PORT

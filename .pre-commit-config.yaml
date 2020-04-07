@@ -30,5 +30,5 @@ repos:
         name: Generate documents
         pass_filenames: false
         entry: 'bin/generate_plugins.py'
-        args: [--output=docs/]
+        args: [docs/]
         language: script

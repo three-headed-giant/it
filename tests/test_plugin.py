@@ -3,9 +3,9 @@ from types import ModuleType
 
 import pytest
 
-from inspectortiger.plugin import Plugin, PluginLoadError
-from inspectortiger.plugin import _Plugin as PluginMeta
-from inspectortiger.utils import mark
+from it.plugin import Plugin, PluginLoadError
+from it.plugin import _Plugin as PluginMeta
+from it.utils import mark
 
 
 def test_plugin_metaclass():
@@ -52,12 +52,12 @@ def test_plugin_from_simple():
     core_package = Plugin.from_simple("@context")
     assert (
         core_package.plugin == "context"
-        and core_package.namespace == "inspectortiger.plugins"
+        and core_package.namespace == "it.plugins"
     )
     sub_core_package = Plugin.from_simple("@community.unimport")
     assert (
         sub_core_package.plugin == "unimport"
-        and sub_core_package.namespace == "inspectortiger.plugins.community"
+        and sub_core_package.namespace == "it.plugins.community"
     )
 
 

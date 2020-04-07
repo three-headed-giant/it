@@ -3,13 +3,13 @@ from concurrent.futures import ProcessPoolExecutor
 from dataclasses import asdict, dataclass, field
 from typing import Set
 
-from inspectortiger.config import Config
-from inspectortiger.inspector import Inspector
-from inspectortiger.plugin import Plugin
-from inspectortiger.utils import Group, logger
+from it.config import Config
+from it.inspector import Inspector
+from it.plugin import Plugin
+from it.utils import Group, logger
 
 CORE_PLUGINS = Plugin.from_config(
-    {"inspectortiger.plugins": ["context", "parentize", "general", "upgrade"]}
+    {"it.plugins": ["context", "parentize", "general", "upgrade"]}
 )
 
 

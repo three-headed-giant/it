@@ -5,12 +5,13 @@ from enum import Enum, IntEnum, auto
 from functools import lru_cache
 from pathlib import Path
 
+PY39_PLUS = sys.version_info >= (3, 9)
 PY38_PLUS = sys.version_info >= (3, 8)
 PY38_MINUS = not PY38_PLUS
 
 USER_CONFIG = Path("~/.inspector.rc").expanduser()
 PROJECT_CONFIG = Path(".inspector.rc")
-logger = logging.getLogger("inspectortiger")
+logger = logging.getLogger("it")
 
 _CONSTANT_TYPES = {"Num", "Str", "Bytes", "NameConstant", "Ellipsis"}
 _PSEUDO_FIELDS = {"cls", "__class__"}
@@ -105,6 +106,21 @@ def constant_check(a, *b):
     return (type(constant_value), constant_value) in possible_types
 
 
+@lru_cache(1)
+def get_slice(a):
+    if PY39_PLUS:
+        return a.slice
+    else:
+        return a.slice.value
+
+
+def version_bound_check(node, base, flag):
+    if flag:
+        return True
+    else:
+        return isinstance(node, getattr(ast, base))
+
+
 def biname_check(a, b):
     return isinstance(a, ast.Name) and isinstance(b, ast.Name) and a.id == b.id
 
@@ -131,3 +147,7 @@ def target_check(a, b):
         return True
     else:
         return False
+
+
+def ismarked(a):
+    return getattr(a, "_inspection_mark", False)
