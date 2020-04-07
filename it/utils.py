@@ -147,3 +147,7 @@ def target_check(a, b):
         return True
     else:
         return False
+
+
+def ismarked(a):
+    return getattr(a, "_inspector_mark", False)

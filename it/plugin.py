@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Optional, Tuple
 
 import it.inspector
-from it.utils import _PSEUDO_FIELDS, logger
+from it.utils import _PSEUDO_FIELDS, ismarked, logger
 
 
 class PluginLoadError(ImportError):
@@ -112,9 +112,7 @@ class Plugin(metaclass=_Plugin):
     def apply(self, module):
         for actionable in dir(module):
             actionable = getattr(module, actionable)
-            if hasattr(
-                actionable, "_inspection_mark"
-            ):  # TODO: ismarked(callable)
+            if ismarked(actionable):
                 actionable.plugin = self
 
     @staticmethod
@@ -128,6 +126,6 @@ class Plugin(metaclass=_Plugin):
         elif namespace.startswith("@"):
             return namespace.replace("@", "it.plugins.")
         elif namespace == "?":
-            return ""
+            return namespace.strip("?")
         else:
             return namespace
