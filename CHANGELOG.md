@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [1.0.0] - Unreleased
 - Project renamed as `it`
+- TODO: FILL HERE
 
 ## [0.8.0] - 17/12/2019
 - Project-local config files
