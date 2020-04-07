@@ -3,15 +3,19 @@ import sys
 
 import pytest
 
+import it
+import it.utils
 from it.utils import (
     Priority,
     biname_check,
     constant_check,
+    get_slice,
     is_single_node,
     mark,
     name_check,
     target_check,
     tuple_check,
+    version_bound_check,
 )
 
 
@@ -98,3 +102,23 @@ def test_target_check():
     assert target_check(mytarget_2, mytarget_2)
     assert not target_check(mytarget_1, mytarget_2)
     assert not target_check(ast.Expression(), ast.Expression())
+
+
+def test_get_slice():
+    _39_plus = it.utils.PY39_PLUS
+    it.utils.PY39_PLUS = False
+
+    class Index(ast.AST):
+        def __init__(self, value):
+            self.value = value
+
+    assert get_slice(ast.Subscript(slice=Index(value=5))) == 5
+    it.utils.PY39_PLUS = True
+    assert get_slice(ast.Subscript(slice=5)) == 5
+    it.utils.PY39_PLUS = _39_plus
+
+
+def test_version_bound_check():
+    assert version_bound_check(1, 2, True)
+    assert version_bound_check(ast.Constant(1), "Constant", False)
+    assert not version_bound_check(ast.Constant(1), "Subscript", False)

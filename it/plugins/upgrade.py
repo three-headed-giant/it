@@ -13,11 +13,14 @@ from it.inspector import Inspector
 from it.plugin import Plugin
 from it.plugins.context import Contexts, get_context
 from it.utils import (
+    PY39_PLUS,
     biname_check,
     constant_check,
+    get_slice,
     is_single_node,
     name_check,
     target_check,
+    version_bound_check,
 )
 
 
@@ -39,13 +42,13 @@ def optional(node, db):
 
     if (
         name_check(node.value, "Union")
-        and isinstance(node.slice.value, ast.Tuple)
-        and len(node.slice.value.elts) == 2
+        and isinstance(get_slice(node), ast.Tuple)
+        and len(get_slice(node).elts) == 2
         and len(
             list(
                 filter(
                     lambda node: constant_check(node, None),
-                    node.slice.value.elts,
+                    get_slice(node).elts,
                 )
             )
         )
@@ -85,9 +88,9 @@ def builtin_enumerate(node, db):
             if (
                 isinstance(subnode, ast.Subscript)
                 and isinstance(subnode.ctx, ast.Load)
-                and isinstance(subnode.slice, ast.Index)
+                and version_bound_check(subnode.slice, "Index", PY39_PLUS)
                 and biname_check(subnode.value, iterable)
-                and biname_check(subnode.slice.value, target)
+                and biname_check(get_slice(subnode), target)
             ):
                 return node.iter
 

@@ -5,6 +5,7 @@ from enum import Enum, IntEnum, auto
 from functools import lru_cache
 from pathlib import Path
 
+PY39_PLUS = sys.version_info >= (3, 9)
 PY38_PLUS = sys.version_info >= (3, 8)
 PY38_MINUS = not PY38_PLUS
 
@@ -103,6 +104,21 @@ def constant_check(a, *b):
 
     possible_types = {(type(x), x) for x in b}
     return (type(constant_value), constant_value) in possible_types
+
+
+@lru_cache(1)
+def get_slice(a):
+    if PY39_PLUS:
+        return a.slice
+    else:
+        return a.slice.value
+
+
+def version_bound_check(node, base, flag):
+    if flag:
+        return True
+    else:
+        return isinstance(node, getattr(ast, base))
 
 
 def biname_check(a, b):
