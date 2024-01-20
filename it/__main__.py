@@ -1,12 +1,22 @@
 import argparse
 import sys
-from distutils.util import strtobool
 from pathlib import Path
 
 from it.plugin import Plugin
 from it.reports import _prepare_result
 from it.session import Session
 from it.utils import logger, prepare_logger, traverse_paths
+
+
+def strtobool(val):
+    try:
+        if val.lower() in ('y', 'yes', 't', 'true', 'on', '1'):
+            return True
+        elif val.lower() in ('n', 'no', 'f', 'false', 'off', '0'):
+            return False
+        raise ValueError()
+    except ValueError:
+        raise argparse.ArgumentTypeError('Invalid truth value %s' % str(val))
 
 
 def prepare_parser(session):
